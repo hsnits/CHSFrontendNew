@@ -1,0 +1,25 @@
+.section_about {
+    padding: 50px 0;
+}
+.border-radius-6 {
+    border-radius: 6px !important;
+    -webkit-border-radius: 6px !important;
+    -moz-border-radius: 6px !important;
+    -ms-border-radius: 6px !important;
+    -o-border-radius: 6px !important;
+    
+    overflow: hidden;
+}
+
+.bg-blue {
+    background-color: #005ba5 !important;
+}
+
+.bg-green {
+    background-color: #379339 !important;
+}
+
+.chs-list li {
+    margin-bottom: 10px;
+}
+

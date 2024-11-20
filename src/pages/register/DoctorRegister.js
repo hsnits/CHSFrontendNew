@@ -7,8 +7,79 @@ import { Input } from "reactstrap";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import "../register/Register.css";
+import * as yup from "yup";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
+const roles = [
+  "Patient",
+  "Doctor",
+  "Pharmacy Retailers",
+  "Pathology",
+  "Diagnosis",
+  "Ambulance",
+  "Nursing",
+  "Biomedical",
+  "Hospital",
+];
+
+const registrationSchema = yup.object().shape({
+  name: yup
+    .string()
+    .required("Name is required")
+    .min(3, "Name must be at least 3 characters")
+    .max(50, "Name must not exceed 50 characters"),
+  phone: yup
+    .string()
+    .required("Mobile Number is required")
+    .matches(/^[0-9]+$/, "Mobile Number must only contain digits")
+    .min(10, "Mobile Number must be exactly 10 digits")
+    .max(15, "Mobile Number must not exceed 15 digits"),
+  email: yup
+    .string()
+    .required("Email Address is required")
+    .email("Email Address must be valid"),
+  password: yup
+    .string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters")
+    .max(20, "Password must not exceed 20 characters"),
+  address: yup
+    .string()
+    .required("Address is required")
+    .min(5, "Address must be at least 5 characters")
+    .max(100, "Address must not exceed 100 characters"),
+  role: yup
+    .string()
+    .required("Role is required")
+    .oneOf(
+      [
+        "Patient",
+        "Doctor",
+        "Pharmacy Retailers",
+        "Pathology",
+        "Diagnosis",
+        "Ambulance",
+        "Nursing",
+        "Biomedical",
+        "Hospital",
+      ],
+      "Invalid role selected"
+    ),
+});
 
 export default function DoctorRegister() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(registrationSchema),
+  });
+
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+  };
   return (
     <>
       <Header />
@@ -30,58 +101,122 @@ export default function DoctorRegister() {
                       <h2>Register Now</h2>
                     </div>
 
-                    <Form>
+                    <Form onSubmit={handleSubmit(onSubmit)}>
                       <div className="mb-3 form-focus">
-                        <Input type="text" className="form-control floating" />
                         <label className="focus-label">Name</label>
-                      </div>
-                      <div className="mb-3 form-focus">
-                        <Input type="text" className="form-control floating" />
-                        <label className="focus-label">Mobile Number</label>
-                      </div>
-                      <div className="mb-3 form-focus">
-                        <Input
-                          type="password"
-                          className="form-control floating"
+                        <Controller
+                          name="name"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              type="text"
+                              className="form-control floating"
+                            />
+                          )}
                         />
+                        <p
+                          style={{
+                            color: "red",
+                            fontSize: "12px",
+                          }}
+                        >
+                          {errors.name?.message}
+                        </p>
+                      </div>
+                      <div className="mb-3 form-focus">
+                        <label className="focus-label">Mobile Number</label>
+                        <Controller
+                          name="phone"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              type="text"
+                              className="form-control floating"
+                            />
+                          )}
+                        />
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          {errors.phone?.message}
+                        </p>
+                      </div>
+                      <div className="mb-3 form-focus">
+                        <Controller
+                          name="email"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              className="form-control floating"
+                            />
+                          )}
+                        />
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          {errors.email?.message}
+                        </p>
                         <label className="focus-label">Email Address</label>
                       </div>
                       <div className="mb-3 form-focus">
-                        <Input
-                          type="password"
-                          className="form-control floating"
+                        <Controller
+                          name="password"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              {...field}
+                              type="password"
+                              className="form-control floating"
+                            />
+                          )}
                         />
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          {errors.password?.message}
+                        </p>
                         <label className="focus-label">Create Password</label>
                       </div>
                       <div className="mb-3 form-focus">
-                        <Input
-                          rows={4}
-                          type="textarea"
-                          className="form-control floating"
-                          style={{ Overflow: "hidden" }}
+                        <Controller
+                          name="address"
+                          control={control}
+                          render={({ field }) => (
+                            <Input
+                              rows={4}
+                              type="textarea"
+                              className="form-control floating"
+                              style={{ Overflow: "hidden" }}
+                              {...field}
+                            />
+                          )}
                         />
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          {errors.address?.message}
+                        </p>
                         <label className="focus-label">Address</label>
                       </div>
                       <div className="mb-3 form-focus">
                         <label for="exampleSelect" className="focus-label">
                           Choose Role
                         </label>
-                        <Input
-                          id="exampleSelect"
-                          className="form-control floating"
-                          name="select"
-                          type="select"
-                        >
-                          <option>Patient</option>
-                          <option>Doctor</option>
-                          <option>Pharmacy Retailers</option>
-                          <option>Pathology</option>
-                          <option>Diagnosis</option>
-                          <option>Ambulance</option>
-                          <option>Nursing</option>
-                          <option>Biomedical</option>
-                          <option>Hospital</option>
-                        </Input>
+                        <Controller
+                          name="role"
+                          control={control}
+                          render={({ field }) => (
+                            <select
+                              id="exampleSelect"
+                              className="form-control floating"
+                              {...field}
+                            >
+                              {roles.map((role) => (
+                                <option key={role} value={role}>
+                                  {role}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        />
+                        <p style={{ color: "red", fontSize: "12px" }}>
+                          {errors.role?.message}
+                        </p>
                       </div>
                       <div className="text-end">
                         <Link className="forgot-link" to="/Login">

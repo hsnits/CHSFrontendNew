@@ -29,42 +29,52 @@ import Appointment from "./pages/services/Appointment";
 import PrescriptionRefills from "./pages/services/PrescriptionRefills";
 import LabTest from "./pages/services/LabTest";
 import Diagnostics from "./pages/services/Diagnostics";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/VirtualConsultation" element={<VirtualConsultation />} />
-        <Route path="/patient" element={<PatientDashboard />} />
-        <Route path="/DoctorList" element={<DoctorList />} />
-        <Route path="/DoctorProfile" element={<DoctorProfile />} />
-        <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
-        <Route path="/pharmacy" element={<Pharmacy />} />
-        <Route path="/ProductDesc" element={<ProductDesc />} />
-        <Route path="/Cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/DoctorBooking" element={<DoctorBooking />} />
-        <Route path="/OrderSuccess" element={<OrderSuccess />} />
-        <Route path="/PatientDetails" element={<PatientDetails />} />
-        <Route path="/ConsultationType" element={<ConsultationType />} />
-        <Route path="/BookingSuccess" element={<BookingSuccess />} />
-        <Route path="/career" element={<Career />} />
-        <Route
-          path="/InvestorRegistration"
-          element={<InvestorRegistration />}
-        />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/DoctorRegister" element={<DoctorRegister />} />
-        <Route path="/Appointment" element={<Appointment />} />
-        <Route path="/PrescriptionRefills" element={<PrescriptionRefills />} />
-        <Route path="/LabTest" element={<LabTest />} />
-        <Route path="/Diagnostics" element={<Diagnostics />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/VirtualConsultation"
+            element={<VirtualConsultation />}
+          />
+          <Route path="/patient" element={<PatientDashboard />} />
+          <Route path="/DoctorList" element={<DoctorList />} />
+          <Route path="/DoctorProfile" element={<DoctorProfile />} />
+          <Route path="/DoctorDashboard" element={<DoctorDashboard />} />
+          <Route path="/pharmacy" element={<Pharmacy />} />
+          <Route path="/ProductDesc" element={<ProductDesc />} />
+          <Route path="/Cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/DoctorBooking" element={<DoctorBooking />} />
+          <Route path="/OrderSuccess" element={<OrderSuccess />} />
+          <Route path="/PatientDetails" element={<PatientDetails />} />
+          <Route path="/ConsultationType" element={<ConsultationType />} />
+          <Route path="/BookingSuccess" element={<BookingSuccess />} />
+          <Route path="/career" element={<Career />} />
+          <Route
+            path="/InvestorRegistration"
+            element={<InvestorRegistration />}
+          />
+          <Route path="/Login" element={<Login />} />
+          <Route path="/DoctorRegister" element={<DoctorRegister />} />
+          <Route path="/Appointment" element={<Appointment />} />
+          <Route
+            path="/PrescriptionRefills"
+            element={<PrescriptionRefills />}
+          />
+          <Route path="/LabTest" element={<LabTest />} />
+          <Route path="/Diagnostics" element={<Diagnostics />} />
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 

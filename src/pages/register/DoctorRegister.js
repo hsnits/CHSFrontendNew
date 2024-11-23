@@ -10,6 +10,8 @@ import "../register/Register.css";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../../redux/slices/api";
 
 const roles = [
   "Patient",
@@ -29,7 +31,7 @@ const registrationSchema = yup.object().shape({
     .required("Name is required")
     .min(3, "Name must be at least 3 characters")
     .max(50, "Name must not exceed 50 characters"),
-  phone: yup
+  phoneNumber: yup
     .string()
     .required("Mobile Number is required")
     .matches(/^[0-9]+$/, "Mobile Number must only contain digits")
@@ -69,6 +71,7 @@ const registrationSchema = yup.object().shape({
 });
 
 export default function DoctorRegister() {
+  const dispatch = useDispatch();
   const {
     control,
     handleSubmit,
@@ -77,8 +80,13 @@ export default function DoctorRegister() {
     resolver: yupResolver(registrationSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log("Form Data:", data);
+  const onSubmit = async (data) => {
+    const formattedData = {
+      ...data,
+      role: data.role.toLowerCase(),
+    };
+    const result = await dispatch(registerUser(formattedData)).unwrap();
+    console.log(result, "===");
   };
   return (
     <>
@@ -127,7 +135,7 @@ export default function DoctorRegister() {
                       <div className="mb-3 form-focus">
                         <label className="focus-label">Mobile Number</label>
                         <Controller
-                          name="phone"
+                          name="phoneNumber"
                           control={control}
                           render={({ field }) => (
                             <Input
@@ -138,7 +146,7 @@ export default function DoctorRegister() {
                           )}
                         />
                         <p style={{ color: "red", fontSize: "12px" }}>
-                          {errors.phone?.message}
+                          {errors.phoneNumber?.message}
                         </p>
                       </div>
                       <div className="mb-3 form-focus">

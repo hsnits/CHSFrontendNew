@@ -1,31 +1,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../helpers/axiosInstance";
 import { ENDPOINTS, STORAGE } from "../../constants";
+import { setLocalStorage } from "../../helpers/storage";
 
 // MARK: Login API
-export const loginUser = createAsyncThunk(
-  "login/loginUser",
-  async (credentials) => {
-    try {
-      const response = await axiosInstance.post(
-        ENDPOINTS.USER.LOGIN,
-        credentials
-      );
-      await localStorage.setItem(
-        STORAGE.USER_KEY,
-        JSON.stringify(response.data?.data)
-      );
-      return response.data;
-    } catch (error) {
-      console.log("Login Error:", error.response?.data ?? error?.message);
-      throw error;
-    }
+export const loginUser = createAsyncThunk("loginUser", async (credentials) => {
+  try {
+    const response = await axiosInstance.post(
+      ENDPOINTS.USER.LOGIN,
+      credentials
+    );
+    setLocalStorage(STORAGE.USER_KEY, response.data?.data);
+    return response.data;
+  } catch (error) {
+    alert(error.response?.data?.message);
+    console.log("Login Error:", error.response?.data?.message);
   }
-);
+});
 
 // MARK: Registration API
 export const registerUser = createAsyncThunk(
-  "login/registerUser",
+  "registerUser",
   async (credentials) => {
     try {
       const response = await axiosInstance.post(
@@ -34,8 +29,39 @@ export const registerUser = createAsyncThunk(
       );
       return response.data;
     } catch (error) {
+      console.log("Registration Error:", error.response?.data);
+      throw error;
+    }
+  }
+);
+
+// MARK: User Profile API
+export const userProfile = createAsyncThunk("userProfile", async () => {
+  try {
+    const response = await axiosInstance.get(ENDPOINTS.USER.GET_PROFILE);
+    return response.data.data;
+  } catch (error) {
+    console.log("User Profile Error:", error.response?.data);
+    throw error;
+  }
+});
+
+// MARK: Change Profile Pic API
+export const changeProfilePic = createAsyncThunk(
+  "changeProfilePic",
+  async (data) => {
+    try {
+      const response = await axiosInstance.put(
+        ENDPOINTS.USER.CHANGE_PROFILE_PICTURE,
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      return response.data.data;
+    } catch (error) {
       console.log(
-        "Registration Error:",
+        "Change Profile Pic Error:",
         error.response?.data ?? error?.message
       );
       throw error;
@@ -43,23 +69,13 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// MARK: User Profile API
-export const userProfile = createAsyncThunk("login/userProfile", async () => {
-  try {
-    const response = await axiosInstance.post(ENDPOINTS.USER.REGISTER);
-    return response.data;
-  } catch (error) {
-    console.log("User Profile Error:", error.response?.data ?? error?.message);
-    throw error;
-  }
-});
-
 const initialState = {
   data: {
     user: {
       loginResult: [],
       registerResult: [],
       userProfileResult: [],
+      changeProfilePicResult: [],
     },
   },
   loading: {
@@ -67,19 +83,20 @@ const initialState = {
       loginLoading: false,
       registerLoading: false,
       userProfileLoading: false,
+      changeProfilePicLoading: false,
     },
   },
   error: {
     user: {
       loinError: "",
       registerError: "",
-      userProfileError: "",
+      changeProfilePicError: "",
     },
   },
 };
 
-const apiSlice = createSlice({
-  name: "api",
+const userApiSlice = createSlice({
+  name: "userApi",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
@@ -124,8 +141,22 @@ const apiSlice = createSlice({
         state.loading.user.userProfileLoading = false;
         state.error.user.userProfileError =
           action.error.message || "User profile fetch failed!";
+      })
+      // MARK: Change Profile Pic
+      .addCase(changeProfilePic.pending, (state) => {
+        state.loading.user.changeProfilePicLoading = true;
+        state.error.user.changeProfilePicError = "";
+      })
+      .addCase(changeProfilePic.fulfilled, (state, action) => {
+        state.loading.user.changeProfilePicLoading = false;
+        state.data.user.changeProfilePicResult = action.payload;
+      })
+      .addCase(changeProfilePic.rejected, (state, action) => {
+        state.loading.user.changeProfilePicLoading = false;
+        state.error.user.changeProfilePicError =
+          action.error.message || "Change profile pic failed!";
       });
   },
 });
 
-export default apiSlice.reducer;
+export default userApiSlice.reducer;

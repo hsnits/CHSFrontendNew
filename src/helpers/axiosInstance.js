@@ -1,6 +1,8 @@
 import axios from "axios";
 import { STORAGE } from "../constants";
+import { getLocalStorage } from "./storage";
 const BASE_URL = "http://localhost:5000";
+
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
   headers: {
@@ -10,10 +12,9 @@ export const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem(STORAGE.USER_KEY);
-    const parsedValue = JSON.parse(token);
-    if (parsedValue?.accessToken) {
-      config.headers.Authorization = `Bearer ${parsedValue?.accessToken}`;
+    const token = getLocalStorage(STORAGE.USER_KEY);
+    if (token?.accessToken) {
+      config.headers.Authorization = `Bearer ${token?.accessToken}`;
     }
     return config;
   },

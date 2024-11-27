@@ -1,18 +1,11 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect } from "react";
 import "./App.css";
-import Home from "./pages/home/Home";
-
+import Routes from "./routes";
 function App() {
   return (
     <>
       <div className="main-wrapper">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          {/* <Route path="/pharmacy" element={<Pharmacy />} /> */}
-          {/* <Route path="/about" element={<About />} /> */}
-          {/* <Route path="/contact" element={<Contact />} /> */}
-        </Routes>
+        <Routes />
       </div>
     </>
   );

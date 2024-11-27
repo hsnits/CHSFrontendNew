@@ -1,24 +1,142 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Breadcrumb from "../../components/Breadcrumb";
 import { Col, Container, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../patient/Patient.css";
 import user_img from "../../assets/img/profile-06.jpg";
 import Footer from "../../components/Footer";
 import Nav from "react-bootstrap/Nav";
 import Tab from "react-bootstrap/Tab";
-import { useDispatch } from "react-redux";
-import { STORAGE } from "../../constants";
+import { useDispatch, useSelector } from "react-redux";
+import { changeProfilePic, userProfile } from "../../redux/slices/userApi";
+import { updatePatientProfile } from "../../redux/slices/patientApi";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object().shape({
+  firstName: yup.string().required("First Name is required"),
+  lastName: yup.string().required("Last Name is required"),
+  birthDate: yup.date().required("Date of Birth is required"),
+  phoneNumber: yup
+    .string()
+    .required("Phone Number is required")
+    .matches(/^[0-9]+$/, "Phone Number must be numeric"),
+  email: yup.string().email("Invalid Email").required("Email is required"),
+  bloodGroup: yup.string().required("Blood Group is required"),
+  address: yup.string().required("Address is required"),
+  city: yup.string().required("City is required"),
+  state: yup.string().required("State is required"),
+  country: yup.string().required("Country is required"),
+  pinCode: yup.string().required("Pincode is required"),
+});
 
 function PatientDashboard() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const data = useSelector(
+    (state) => state.USER_API?.data?.user?.userProfileResult
+  );
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [activeTab, setActiveTab] = useState("prescriptions");
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: data?.profile || {},
+  });
+
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const renderButton = () => {
+    switch (activeTab) {
+      case "appointments":
+        return (
+          <button
+            onClick={() => navigate("/doctorlist")}
+            className="btn btn-primary"
+          >
+            Book Appointment
+          </button>
+        );
+      case "medicalRecords":
+        return (
+          <button
+            onClick={() => console.log("Medical")}
+            className="btn btn-secondary"
+          >
+            Add Medical Record
+          </button>
+        );
+      case "prescriptions":
+        return (
+          <button
+            onClick={() => console.log("Prescription")}
+            className="btn btn-success"
+          >
+            Request Prescription
+          </button>
+        );
+      default:
+        return null;
+    }
+  };
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+      if (!validTypes.includes(file.type)) {
+        alert("Please upload a valid image file (JPEG/PNG).");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        alert("File size exceeds the 2MB limit.");
+        return;
+      }
+
+      setSelectedFile(file);
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("profilepic", file);
+      const result = dispatch(changeProfilePic(formData));
+      console.log("Uploaded successfully:", result);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+  };
+
   useEffect(() => {
-    // dispatch(userProfile());
-    const token = localStorage.getItem(STORAGE.USER_KEY);
-    const parsedValue = JSON.parse(token);
-    console.log(parsedValue?.accessToken);
+    dispatch(userProfile());
   }, []);
+
+  useEffect(() => {
+    if (data?.profile) {
+      reset(data?.profile);
+    }
+  }, [data, reset]);
+
+  const onSubmit = async (value) => {
+    const formattedData = {
+      ...value,
+      id: data._id,
+      birthDate: value.birthDate
+        ? new Date(value.birthDate).toISOString().split("T")[0]
+        : null,
+    };
+    await dispatch(updatePatientProfile(formattedData)).then((res) => {
+      if (res?.meta?.requestStatus === "fulfilled") dispatch(userProfile());
+    });
+  };
+
   return (
     <>
       <Header />
@@ -32,18 +150,22 @@ function PatientDashboard() {
                   <div className="widget-profile pro-widget-content">
                     <div className="profile-info-widget">
                       <Link to="#" className="booking-doc-img">
-                        <img src={user_img} alt="User Image" />
+                        <img
+                          src={data?.coverImage ?? user_img}
+                          alt="User Image"
+                        />
                       </Link>
                       <div className="profile-det-info">
                         <h3>
-                          <Link href="#">Hendrita</Link>
+                          <Link href="#">{data?.profile?.firstName}</Link>
                         </h3>
                         <div className="patient-details">
-                          <h5 className="mb-0">Patient ID : PT254654</h5>
+                          <h5 className="mb-0">Patient ID : {data?._id}</h5>
                         </div>
                         <span>
-                          Female <i className="fa-solid fa-circle"></i> 32 years
-                          03 Months
+                          {data?.profile?.gender}{" "}
+                          <i className="fa-solid fa-circle"></i> 32 years 03
+                          Months
                         </span>
                       </div>
                     </div>
@@ -95,72 +217,100 @@ function PatientDashboard() {
                       <h3>Dashboard</h3>
                     </div>
 
-                    <Col lg="12" xl="12" class="d-flex">
-                      <div class="dashboard-card w-100">
-                        <div class="dashboard-card-head">
-                          <div class="header-title">
+                    <Col lg="12" xl="12" className="d-flex">
+                      <div className="dashboard-card w-100">
+                        <div className="dashboard-card-head">
+                          <div className="header-title">
                             <h5>Reports</h5>
                           </div>
                           <a href="javascript:void(0);">
                             <img
-                              src={user_img}
-                              class="avatar dropdown-avatar"
+                              src={data?.coverImage ?? user_img}
+                              className="avatar dropdown-avatar"
                               alt="Img"
                             />
-                            &nbsp; &nbsp;Hendrita
+                            &nbsp; &nbsp;{data?.profile?.firstName}
                           </a>
                         </div>
-                        <div class="dashboard-card-body">
-                          <div class="account-detail-table">
-                            <nav class="patient-dash-tab border-0 pb-0 mb-3 mt-3">
-                              <ul class="nav nav-tabs-bottom" role="tablist">
-                                <li class="nav-item" role="presentation">
+                        <div className="dashboard-card-body">
+                          <div className="account-detail-table">
+                            <nav className="patient-dash-tab border-0 pb-0 mb-3 mt-3">
+                              <ul
+                                className="nav nav-tabs-bottom"
+                                role="tablist"
+                              >
+                                <li className="nav-item" role="presentation">
                                   <a
-                                    class="nav-link"
+                                    className={`nav-link ${
+                                      activeTab === "appointments"
+                                        ? "active"
+                                        : ""
+                                    }`}
                                     href="#appoint-tab"
                                     data-bs-toggle="tab"
-                                    aria-selected="false"
+                                    aria-selected={activeTab === "appointments"}
                                     role="tab"
-                                    tabindex="-1"
+                                    onClick={() =>
+                                      handleTabClick("appointments")
+                                    }
                                   >
                                     Appointments
                                   </a>
                                 </li>
-                                <li class="nav-item" role="presentation">
+                                <li className="nav-item" role="presentation">
                                   <a
-                                    class="nav-link"
+                                    className={`nav-link ${
+                                      activeTab === "medicalRecords"
+                                        ? "active"
+                                        : ""
+                                    }`}
                                     href="#medical-tab"
                                     data-bs-toggle="tab"
-                                    aria-selected="false"
-                                    tabindex="-1"
+                                    aria-selected={
+                                      activeTab === "medicalRecords"
+                                    }
                                     role="tab"
+                                    onClick={() =>
+                                      handleTabClick("medicalRecords")
+                                    }
                                   >
                                     Medical Records
                                   </a>
                                 </li>
-                                <li class="nav-item" role="presentation">
+                                <li className="nav-item" role="presentation">
                                   <a
-                                    class="nav-link active"
+                                    className={`nav-link ${
+                                      activeTab === "prescriptions"
+                                        ? "active"
+                                        : ""
+                                    }`}
                                     href="#prsc-tab"
                                     data-bs-toggle="tab"
-                                    aria-selected="true"
+                                    aria-selected={
+                                      activeTab === "prescriptions"
+                                    }
                                     role="tab"
+                                    onClick={() =>
+                                      handleTabClick("prescriptions")
+                                    }
                                   >
                                     Prescriptions
                                   </a>
                                 </li>
+                                <div className="d-flex justify-content-end">
+                                  {renderButton()}
+                                </div>
                               </ul>
                             </nav>
-
-                            <div class="tab-content pt-0">
+                            <div className="tab-content pt-0">
                               <div
                                 id="appoint-tab"
-                                class="tab-pane fade"
+                                className="tab-pane fade"
                                 role="tabpanel"
                               >
-                                <div class="custom-new-table">
-                                  <div class="table-responsive">
-                                    <table class="table table-hover table-center mb-0">
+                                <div className="custom-new-table">
+                                  <div className="table-responsive">
+                                    <table className="table table-hover table-center mb-0">
                                       <thead>
                                         <tr>
                                           <th>ID</th>
@@ -177,7 +327,7 @@ function PatientDashboard() {
                                         <tr>
                                           <td>
                                             <a href="javascript:void(0);">
-                                              <span class="text-blue">
+                                              <span className="text-blue">
                                                 RE124343
                                               </span>
                                             </a>
@@ -188,23 +338,23 @@ function PatientDashboard() {
                                           <td>$300</td>
                                           <td>Good take rest</td>
                                           <td>
-                                            <span class="badge badge-success-bg">
+                                            <span className="badge badge-success-bg">
                                               Normal
                                             </span>
                                           </td>
                                           <td>
-                                            <div class="d-flex align-items-center">
+                                            <div className="d-flex align-items-center">
                                               <a
                                                 href="#"
-                                                class="account-action me-2"
+                                                className="account-action me-2"
                                               >
-                                                <i class="fa-solid fa-prescription"></i>
+                                                <i className="fa-solid fa-prescription"></i>
                                               </a>
                                               <a
                                                 href="#"
-                                                class="account-action"
+                                                className="account-action"
                                               >
-                                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                                <i className="fa-solid fa-file-invoice-dollar"></i>
                                               </a>
                                             </div>
                                           </td>
@@ -212,7 +362,7 @@ function PatientDashboard() {
                                         <tr>
                                           <td>
                                             <a href="javascript:void(0);">
-                                              <span class="text-blue">
+                                              <span className="text-blue">
                                                 RE124342
                                               </span>
                                             </a>
@@ -223,23 +373,23 @@ function PatientDashboard() {
                                           <td>$400</td>
                                           <td>Stable, no change</td>
                                           <td>
-                                            <span class="badge badge-success-bg">
+                                            <span className="badge badge-success-bg">
                                               Normal
                                             </span>
                                           </td>
                                           <td>
-                                            <div class="d-flex align-items-center">
+                                            <div className="d-flex align-items-center">
                                               <a
                                                 href="#"
-                                                class="account-action me-2"
+                                                className="account-action me-2"
                                               >
-                                                <i class="fa-solid fa-prescription"></i>
+                                                <i className="fa-solid fa-prescription"></i>
                                               </a>
                                               <a
                                                 href="#"
-                                                class="account-action"
+                                                className="account-action"
                                               >
-                                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                                <i className="fa-solid fa-file-invoice-dollar"></i>
                                               </a>
                                             </div>
                                           </td>
@@ -247,7 +397,7 @@ function PatientDashboard() {
                                         <tr>
                                           <td>
                                             <a href="javascript:void(0);">
-                                              <span class="text-blue">
+                                              <span className="text-blue">
                                                 RE124341
                                               </span>
                                             </a>
@@ -258,23 +408,23 @@ function PatientDashboard() {
                                           <td>$350</td>
                                           <td>All Clear</td>
                                           <td>
-                                            <span class="badge badge-success-bg">
+                                            <span className="badge badge-success-bg">
                                               Normal
                                             </span>
                                           </td>
                                           <td>
-                                            <div class="d-flex align-items-center">
+                                            <div className="d-flex align-items-center">
                                               <a
                                                 href="#"
-                                                class="account-action me-2"
+                                                className="account-action me-2"
                                               >
-                                                <i class="fa-solid fa-prescription"></i>
+                                                <i className="fa-solid fa-prescription"></i>
                                               </a>
                                               <a
                                                 href="#"
-                                                class="account-action"
+                                                className="account-action"
                                               >
-                                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                                <i className="fa-solid fa-file-invoice-dollar"></i>
                                               </a>
                                             </div>
                                           </td>
@@ -286,13 +436,13 @@ function PatientDashboard() {
                               </div>
 
                               <div
-                                class="tab-pane fade"
+                                className="tab-pane fade"
                                 id="medical-tab"
                                 role="tabpanel"
                               >
-                                <div class="custom-table">
-                                  <div class="table-responsive">
-                                    <table class="table table-center mb-0">
+                                <div className="custom-table">
+                                  <div className="table-responsive">
+                                    <table className="table table-center mb-0">
                                       <thead>
                                         <tr>
                                           <th>ID</th>
@@ -304,7 +454,7 @@ function PatientDashboard() {
                                       </thead>
                                       <tbody>
                                         <tr>
-                                          <td class="text-blue-600">
+                                          <td className="text-blue-600">
                                             <a href="javascript:void(0);">
                                               #MR-123
                                             </a>
@@ -312,10 +462,10 @@ function PatientDashboard() {
                                           <td>
                                             <a
                                               href="javascript:void(0);"
-                                              class="lab-icon"
+                                              className="lab-icon"
                                             >
                                               <span>
-                                                <i class="fa-solid fa-paperclip"></i>
+                                                <i className="fa-solid fa-paperclip"></i>
                                               </span>
                                               Lab Report
                                             </a>
@@ -323,15 +473,15 @@ function PatientDashboard() {
                                           <td>24 Mar 2024</td>
                                           <td>Glucose Test V12</td>
                                           <td>
-                                            <div class="action-item">
+                                            <div className="action-item">
                                               <a href="javascript:void(0);">
-                                                <i class="fa-solid fa-pen-to-square"></i>
+                                                <i className="fa-solid fa-pen-to-square"></i>
                                               </a>
                                               <a href="javascript:void(0);">
-                                                <i class="fa-solid fa-download"></i>
+                                                <i className="fa-solid fa-download"></i>
                                               </a>
                                               <a href="javascript:void(0);">
-                                                <i class="fa-solid fa-trash-can"></i>
+                                                <i className="fa-solid fa-trash-can"></i>
                                               </a>
                                             </div>
                                           </td>
@@ -343,13 +493,13 @@ function PatientDashboard() {
                               </div>
 
                               <div
-                                class="tab-pane fade active show"
+                                className="tab-pane fade active show"
                                 id="prsc-tab"
                                 role="tabpanel"
                               >
-                                <div class="custom-table">
-                                  <div class="table-responsive">
-                                    <table class="table table-center mb-0">
+                                <div className="custom-table">
+                                  <div className="table-responsive">
+                                    <table className="table table-center mb-0">
                                       <thead>
                                         <tr>
                                           <th>ID</th>
@@ -361,7 +511,7 @@ function PatientDashboard() {
                                       </thead>
                                       <tbody>
                                         <tr>
-                                          <td class="text-blue-600">
+                                          <td className="text-blue-600">
                                             <a
                                               href="#"
                                               data-bs-toggle="modal"
@@ -373,23 +523,23 @@ function PatientDashboard() {
                                           <td>
                                             <a
                                               href="javascript:void(0);"
-                                              class="lab-icon prescription"
+                                              className="lab-icon prescription"
                                             >
                                               <span>
-                                                <i class="fa-solid fa-prescription"></i>
+                                                <i className="fa-solid fa-prescription"></i>
                                               </span>
                                               Prescription
                                             </a>
                                           </td>
                                           <td>24 Mar 2024, 10:30 AM</td>
                                           <td>
-                                            <h2 class="table-avatar">
+                                            <h2 className="table-avatar">
                                               <a
                                                 href="#"
-                                                class="avatar avatar-sm me-2"
+                                                className="avatar avatar-sm me-2"
                                               >
                                                 <img
-                                                  class="avatar-img rounded-3"
+                                                  className="avatar-img rounded-3"
                                                   src={user_img}
                                                   alt="User Image"
                                                 />
@@ -398,12 +548,12 @@ function PatientDashboard() {
                                             </h2>
                                           </td>
                                           <td>
-                                            <div class="action-item">
+                                            <div className="action-item">
                                               <a href="javascript:void(0);">
-                                                <i class="fa-solid fa-download"></i>
+                                                <i className="fa-solid fa-download"></i>
                                               </a>
                                               <a href="javascript:void(0);">
-                                                <i class="fa-solid fa-trash-can"></i>
+                                                <i className="fa-solid fa-trash-can"></i>
                                               </a>
                                             </div>
                                           </td>
@@ -421,19 +571,19 @@ function PatientDashboard() {
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="second">
-                    <div class="dashboard-header">
+                    <div className="dashboard-header">
                       <h3>Appointments</h3>
                     </div>
-                    <div class="appointment-tab-head">
-                      <div class="appointment-tabs">
+                    <div className="appointment-tab-head">
+                      <div className="appointment-tabs">
                         <ul
-                          class="nav nav-pills inner-tab "
+                          className="nav nav-pills inner-tab "
                           id="pills-tab"
                           role="tablist"
                         >
-                          <li class="nav-item" role="presentation">
+                          <li className="nav-item" role="presentation">
                             <button
-                              class="nav-link active"
+                              className="nav-link active"
                               id="pills-upcoming-tab"
                               data-bs-toggle="pill"
                               data-bs-target="#pills-upcoming"
@@ -445,9 +595,9 @@ function PatientDashboard() {
                               Upcoming<span>21</span>
                             </button>
                           </li>
-                          <li class="nav-item" role="presentation">
+                          <li className="nav-item" role="presentation">
                             <button
-                              class="nav-link"
+                              className="nav-link"
                               id="pills-cancel-tab"
                               data-bs-toggle="pill"
                               data-bs-target="#pills-cancel"
@@ -460,9 +610,9 @@ function PatientDashboard() {
                               Cancelled<span>16</span>
                             </button>
                           </li>
-                          <li class="nav-item" role="presentation">
+                          <li className="nav-item" role="presentation">
                             <button
-                              class="nav-link"
+                              className="nav-link"
                               id="pills-complete-tab"
                               data-bs-toggle="pill"
                               data-bs-target="#pills-complete"
@@ -478,21 +628,21 @@ function PatientDashboard() {
                         </ul>
                       </div>
                     </div>
-                    <div class="tab-content appointment-tab-content">
+                    <div className="tab-content appointment-tab-content">
                       <div
-                        class="tab-pane fade show active"
+                        className="tab-pane fade show active"
                         id="pills-upcoming"
                         role="tabpanel"
                         aria-labelledby="pills-upcoming-tab"
                       >
-                        <div class="appointment-wrap">
+                        <div className="appointment-wrap">
                           <ul>
                             <li>
-                              <div class="patinet-information">
+                              <div className="patinet-information">
                                 <a href="#">
                                   <img src={user_img} alt="User Image" />
                                 </a>
-                                <div class="patient-info">
+                                <div className="patient-info">
                                   <p>#Apt0001</p>
                                   <h6>
                                     <a href="#">Dr Edalin</a>
@@ -500,50 +650,50 @@ function PatientDashboard() {
                                 </div>
                               </div>
                             </li>
-                            <li class="appointment-info">
+                            <li className="appointment-info">
                               <p>
-                                <i class="fa-solid fa-clock"></i>11 Nov 2024
+                                <i className="fa-solid fa-clock"></i>11 Nov 2024
                                 10.45 AM
                               </p>
-                              <ul class="d-flex apponitment-types">
+                              <ul className="d-flex apponitment-types">
                                 <li>General Visit</li>
                                 <li>Video Call</li>
                               </ul>
                             </li>
-                            <li class="mail-info-patient">
+                            <li className="mail-info-patient">
                               <ul>
                                 <li>
-                                  <i class="fa-solid fa-envelope"></i>
+                                  <i className="fa-solid fa-envelope"></i>
                                   edalin@example.com
                                 </li>
                                 <li>
-                                  <i class="fa-solid fa-phone"></i>+1 504 368
-                                  6874
+                                  <i className="fa-solid fa-phone"></i>+1 504
+                                  368 6874
                                 </li>
                               </ul>
                             </li>
-                            <li class="appointment-action">
+                            <li className="appointment-action">
                               <ul>
                                 <li>
                                   <a href="#">
-                                    <i class="fa-solid fa-eye"></i>
+                                    <i className="fa-solid fa-eye"></i>
                                   </a>
                                 </li>
                                 <li>
                                   <a href="#">
-                                    <i class="fa-solid fa-comments"></i>
+                                    <i className="fa-solid fa-comments"></i>
                                   </a>
                                 </li>
                                 <li>
                                   <a href="#">
-                                    <i class="fa-solid fa-xmark"></i>
+                                    <i className="fa-solid fa-xmark"></i>
                                   </a>
                                 </li>
                               </ul>
                             </li>
-                            <li class="appointment-detail-btn">
-                              <a href="#" class="start-link">
-                                <i class="fa-solid fa-calendar-check me-1"></i>
+                            <li className="appointment-detail-btn">
+                              <a href="#" className="start-link">
+                                <i className="fa-solid fa-calendar-check me-1"></i>
                                 Attend
                               </a>
                             </li>
@@ -551,19 +701,19 @@ function PatientDashboard() {
                         </div>
                       </div>
                       <div
-                        class="tab-pane fade"
+                        className="tab-pane fade"
                         id="pills-cancel"
                         role="tabpanel"
                         aria-labelledby="pills-cancel-tab"
                       >
-                        <div class="appointment-wrap">
+                        <div className="appointment-wrap">
                           <ul>
                             <li>
-                              <div class="patinet-information">
+                              <div className="patinet-information">
                                 <a href="#">
                                   <img src={user_img} alt="User Image" />
                                 </a>
-                                <div class="patient-info">
+                                <div className="patient-info">
                                   <p>#Apt00011</p>
                                   <h6>
                                     <a href="#">Dr Edalin</a>
@@ -571,39 +721,39 @@ function PatientDashboard() {
                                 </div>
                               </div>
                             </li>
-                            <li class="appointment-info">
+                            <li className="appointment-info">
                               <p>
-                                <i class="fa-solid fa-clock"></i>11 Nov 2024
+                                <i className="fa-solid fa-clock"></i>11 Nov 2024
                                 10.45 AM
                               </p>
-                              <ul class="d-flex apponitment-types">
+                              <ul className="d-flex apponitment-types">
                                 <li>General Visit</li>
                                 <li>Video Call</li>
                               </ul>
                             </li>
-                            <li class="appointment-detail-btn">
-                              <a href="#" class="start-link">
+                            <li className="appointment-detail-btn">
+                              <a href="#" className="start-link">
                                 View Details
-                                <i class="fa-regular fa-circle-right ms-1"></i>
+                                <i className="fa-regular fa-circle-right ms-1"></i>
                               </a>
                             </li>
                           </ul>
                         </div>
                       </div>
                       <div
-                        class="tab-pane fade"
+                        className="tab-pane fade"
                         id="pills-complete"
                         role="tabpanel"
                         aria-labelledby="pills-complete-tab"
                       >
-                        <div class="appointment-wrap">
+                        <div className="appointment-wrap">
                           <ul>
                             <li>
-                              <div class="patinet-information">
+                              <div className="patinet-information">
                                 <a href="#">
                                   <img src={user_img} alt="User Image" />
                                 </a>
-                                <div class="patient-info">
+                                <div className="patient-info">
                                   <p>#Apt0001</p>
                                   <h6>
                                     <a href="#">Dr Edalin</a>
@@ -611,20 +761,20 @@ function PatientDashboard() {
                                 </div>
                               </div>
                             </li>
-                            <li class="appointment-info">
+                            <li className="appointment-info">
                               <p>
-                                <i class="fa-solid fa-clock"></i>11 Nov 2024
+                                <i className="fa-solid fa-clock"></i>11 Nov 2024
                                 10.45 AM
                               </p>
-                              <ul class="d-flex apponitment-types">
+                              <ul className="d-flex apponitment-types">
                                 <li>General Visit</li>
                                 <li>Video Call</li>
                               </ul>
                             </li>
-                            <li class="appointment-detail-btn">
-                              <a href="#" class="start-link">
+                            <li className="appointment-detail-btn">
+                              <a href="#" className="start-link">
                                 View Details
-                                <i class="fa-regular fa-circle-right ms-1"></i>
+                                <i className="fa-regular fa-circle-right ms-1"></i>
                               </a>
                             </li>
                           </ul>
@@ -735,137 +885,273 @@ function PatientDashboard() {
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="fourth">
-                    <form>
-                      <div class="setting-card">
-                        <div class="change-avatar img-upload">
-                          <div class="profile-img">
-                            <i class="fa-solid fa-file-image"></i>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <div className="setting-card">
+                        <div className="change-avatar img-upload">
+                          <div className="profile-img">
+                            {data?.coverImage ? (
+                              <img
+                                src={data?.coverImage}
+                                alt="Profile Preview"
+                              />
+                            ) : selectedFile ? (
+                              <img
+                                src={URL.createObjectURL(selectedFile)}
+                                alt="Profile Preview"
+                              />
+                            ) : (
+                              <i className="fa-solid fa-file-image"></i>
+                            )}
                           </div>
-                          <div class="upload-img">
+                          <div className="upload-img">
                             <h5>Profile Image</h5>
-                            <div class="imgs-load d-flex align-items-center">
-                              <div class="change-photo">
+                            <div className="imgs-load d-flex align-items-center">
+                              <div className="change-photo">
                                 Upload New
-                                <input type="file" class="upload" />
+                                <input
+                                  type="file"
+                                  className="upload"
+                                  accept="image/*"
+                                  // onChange={handlePhotoChange}
+                                />
                               </div>
-                              <a href="#" class="upload-remove">
+                              <a href="#" className="upload-remove">
                                 Remove
                               </a>
                             </div>
-                            <p class="form-text">
+                            <p className="form-text">
                               Your Image should Below 4 MB, Accepted format
                               jpg,png,svg
                             </p>
                           </div>
                         </div>
                       </div>
-                      <div class="setting-title">
+                      <div className="setting-title">
                         <h5>Information</h5>
                       </div>
-                      <div class="setting-card">
-                        <div class="row">
-                          <div class="col-lg-4 col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                First Name <span class="text-danger">*</span>
+                      <div className="setting-card">
+                        <div className="row">
+                          <div className="col-lg-4 col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                First Name{" "}
+                                <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="firstName"
+                                control={control}
+                                render={({ field }) => (
+                                  <input
+                                    {...field}
+                                    className="form-control"
+                                    placeholder="First Name"
+                                  />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.firstName?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-lg-4 col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Last Name <span class="text-danger">*</span>
+                          <div className="col-lg-4 col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Last Name <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="lastName"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.lastName?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-lg-4 col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Date of Birth <span class="text-danger">*</span>
+                          <div className="col-lg-4 col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Date of Birth{" "}
+                                <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="birthDate"
+                                control={control}
+                                render={({ field }) => (
+                                  <input
+                                    {...field}
+                                    type="date"
+                                    className="form-control"
+                                  />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.birthDate?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-lg-4 col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Phone Number <span class="text-danger">*</span>
+                          <div className="col-lg-4 col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Phone Number{" "}
+                                <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="phoneNumber"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.phoneNumber?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-lg-4 col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Email Address <span class="text-danger">*</span>
+                          <div className="col-lg-4 col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Email Address{" "}
+                                <span className="text-danger">*</span>
                               </label>
-                              <input type="email" class="form-control" />
+                              <Controller
+                                name="email"
+                                control={control}
+                                render={({ field }) => (
+                                  <input
+                                    {...field}
+                                    type="email"
+                                    className="form-control"
+                                  />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.email?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-lg-4 col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Blood Group <span class="text-danger">*</span>
+                          <div className="col-lg-4 col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Blood Group{" "}
+                                <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="bloodGroup"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.bloodGroup?.message}
+                              </p>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div class="setting-title">
+                      <div className="setting-title">
                         <h5>Address</h5>
                       </div>
-                      <div class="setting-card">
-                        <div class="row">
-                          <div class="col-lg-12">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Address <span class="text-danger">*</span>
+                      <div className="setting-card">
+                        <div className="row">
+                          <div className="col-lg-12">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Address <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="address"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.address?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                City <span class="text-danger">*</span>
+                          <div className="col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                City <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="city"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.city?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                State <span class="text-danger">*</span>
+                          <div className="col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                State <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="state"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.state?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Country <span class="text-danger">*</span>
+                          <div className="col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Country <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="country"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.country?.message}
+                              </p>
                             </div>
                           </div>
-                          <div class="col-md-6">
-                            <div class="form-wrap">
-                              <label class="col-form-label">
-                                Pincode <span class="text-danger">*</span>
+                          <div className="col-md-6">
+                            <div className="form-wrap">
+                              <label className="col-form-label">
+                                Pincode <span className="text-danger">*</span>
                               </label>
-                              <input type="text" class="form-control" />
+                              <Controller
+                                name="pinCode"
+                                control={control}
+                                render={({ field }) => (
+                                  <input {...field} className="form-control" />
+                                )}
+                              />
+                              <p className="text-danger">
+                                {errors.pinCode?.message}
+                              </p>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div class="modal-btn text-end">
-                        <a href="#" class="btn btn-gray">
+                      <div className="modal-btn text-end">
+                        <a href="#" className="btn btn-gray">
                           Cancel
                         </a>
-                        <button type="submit" class="btn btn-primary prime-btn">
+                        <button
+                          type="submit"
+                          className="btn btn-primary prime-btn"
+                        >
                           Save Changes
                         </button>
                       </div>

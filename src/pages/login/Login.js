@@ -10,19 +10,16 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../redux/slices/api";
+import { loginUser } from "../../redux/slices/userApi";
+import { ROLES } from "../../constants";
 
-// phoneNumber: yup
-//   .string()
-//   .required("Phone number is required")
-//   .matches(/^[0-9]+$/, "Phone number must only contain digits")
-//   .min(10, "Phone number must be at least 10 digits")
-//   .max(15, "Phone number must not exceed 15 digits"),
 const schema = yup.object().shape({
-  email: yup
+  phoneNumber: yup
     .string()
-    .required("Email is required")
-    .email("Please enter a valid email address"),
+    .required("Phone number is required")
+    .matches(/^[0-9]+$/, "Phone number must only contain digits")
+    .min(10, "Phone number must be at least 10 digits")
+    .max(15, "Phone number must not exceed 15 digits"),
   password: yup
     .string()
     .required("Password is required")
@@ -42,10 +39,13 @@ const Contact = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log(data, "login data");
     const result = await dispatch(loginUser(data)).unwrap();
-    if (result.status === true) {
+    if (result?.data?.role === ROLES.PATIENT) {
       navigate("/patient");
+    } else if (result?.data?.role === ROLES.DOCTOR) {
+      navigate("/DoctorDashboard");
+    } else {
+      navigate("/Login");
     }
   };
   return (
@@ -63,9 +63,8 @@ const Contact = () => {
                   </div>
                   <Form onSubmit={handleSubmit(onSubmit)}>
                     <div className="mb-3">
-                      {/*
                       <label className="mb-2">Phone Number</label>
-                       <Controller
+                      <Controller
                         name="phoneNumber"
                         control={control}
                         defaultValue=""
@@ -80,23 +79,7 @@ const Contact = () => {
                       />
                       <p style={{ color: "red" }}>
                         {errors.phoneNumber?.message}
-                      </p> */}
-                      <label className="mb-2">Email</label>
-                      <Controller
-                        name="email"
-                        control={control}
-                        defaultValue=""
-                        render={({ field }) => (
-                          <Input
-                            className="form-control form-control-lg group_formcontrol"
-                            id="email"
-                            type="email"
-                            placeholder="Enter your email"
-                            {...field}
-                          />
-                        )}
-                      />
-                      <p style={{ color: "red" }}>{errors.email?.message}</p>
+                      </p>
                     </div>
                     <div className="mb-3">
                       <div className="form-group-flex">

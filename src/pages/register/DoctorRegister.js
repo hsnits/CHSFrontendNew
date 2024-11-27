@@ -11,7 +11,7 @@ import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../../redux/slices/api";
+import { registerUser } from "../../redux/slices/userApi";
 
 const roles = [
   "Patient",
@@ -86,7 +86,6 @@ export default function DoctorRegister() {
       role: data.role.toLowerCase(),
     };
     const result = await dispatch(registerUser(formattedData)).unwrap();
-    console.log(result, "===");
   };
   return (
     <>

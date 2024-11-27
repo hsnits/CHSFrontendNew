@@ -8,4 +8,10 @@ export const ENDPOINTS = {
     GET_PROFILE: "/user",
     FORGOT_PASSWORD: "/user/forgot-password",
   },
+  PATIENT: {
+    UPDATE_PROFILE: "/patient",
+  },
+  DOCTOR: {
+    GET_DOCTORS: "/doctor/list",
+  },
 };

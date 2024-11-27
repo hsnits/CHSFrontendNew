@@ -36,10 +36,10 @@ function PatientDashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const data = useSelector(
-    (state) => state.USER_API?.data?.user?.userProfileResult
+    (state) => state.USER?.data?.user?.userProfileResult
   );
   const [selectedFile, setSelectedFile] = useState(null);
-  const [activeTab, setActiveTab] = useState("prescriptions");
+  const [activeTab, setActiveTab] = useState("appointments");
 
   const {
     control,

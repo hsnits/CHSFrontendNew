@@ -1,9 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import userApiSlice from "./slices/userApi";
+import patientSlice from "./slices/patientApi";
+import doctorSlice from "./slices/doctorApi";
 
 const store = configureStore({
   reducer: {
-    USER_API: userApiSlice,
+    USER: userApiSlice,
+    PATIENT: patientSlice,
+    DOCTOR: doctorSlice,
   },
 });
 

@@ -13,5 +13,6 @@ export const ENDPOINTS = {
   },
   DOCTOR: {
     GET_DOCTORS: "/doctor/list",
+    CREATE_APPOINTMENT: "/patient/appointment",
   },
 };

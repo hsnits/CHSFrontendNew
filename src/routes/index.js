@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes as Routing } from "react-router-dom";
 import About from "../pages/about/About";
 import Contact from "../pages/contact/Contact";
-import PatientDashboard from "../pages/patient/Patient";
+import PatientDashboard from "../pages/patient";
 import DoctorList from "../pages/doctorList/DoctorList";
 import DoctorProfile from "../pages/doctorProfile/DoctorProfile";
 import DoctorDashboard from "../pages/doctorDashboard/DoctorDashboard";

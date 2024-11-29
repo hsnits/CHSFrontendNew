@@ -14,6 +14,7 @@ import { updatePatientProfile } from "../../redux/slices/patientApi";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import PatSymptoms from "../../components/patient/symptoms";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -781,6 +782,26 @@ function PatientDashboard() {
                         </div>
                       </div>
                     </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="six">
+                    <Row>
+                      <Col xl="12" className="d-flex">
+                        <div className="dashboard-card w-100">
+                          <div className="dashboard-card-head">
+                            <div className="header-title">
+                              <h5>Symptom</h5>
+                            </div>
+                          </div>
+                          <div className="dashboard-card-body">
+                            <Row>
+                              <Col lg="12" md="12" sm="12">
+                                <PatSymptoms />
+                              </Col>
+                            </Row>
+                          </div>
+                        </div>
+                      </Col>
+                    </Row>
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="third">

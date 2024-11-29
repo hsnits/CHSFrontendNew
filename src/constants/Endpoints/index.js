@@ -10,9 +10,10 @@ export const ENDPOINTS = {
   },
   PATIENT: {
     UPDATE_PROFILE: "/patient",
+    CREATE_APPOINTMENT: "/patient/appointment",
+    GET_APPOINTMENT: "/patient/appointment/single",
   },
   DOCTOR: {
     GET_DOCTORS: "/doctor/list",
-    CREATE_APPOINTMENT: "/patient/appointment",
   },
 };

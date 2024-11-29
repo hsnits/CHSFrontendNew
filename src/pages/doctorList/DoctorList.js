@@ -7,9 +7,10 @@ import { Link, useNavigate } from "react-router-dom";
 import user_img from "../../assets/img/profile-06.jpg";
 import { Award, Clock, Heart, MapPin } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
-import { createAppointment, getDoctors } from "../../redux/slices/doctorApi";
+import { getDoctors } from "../../redux/slices/doctorApi";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
+import { createAppointment } from "../../redux/slices/patientApi";
 
 function DoctorList() {
   const dispatch = useDispatch();
@@ -17,18 +18,19 @@ function DoctorList() {
   const doctorsList = useSelector(
     (state) => state.DOCTOR?.data?.user?.getDoctorsResult
   );
-  const userId = getLocalStorage(STORAGE.USER_KEY)?._id;
+  const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
   useEffect(() => {
     dispatch(getDoctors());
   }, []);
 
   const handleBookAppointment = async (data) => {
     const formattedData = {
-      refDoctor: data?._id,
-      id: userId,
+      refDoctor: data?.profile?._id,
+      id: userProfileId,
     };
     dispatch(createAppointment(formattedData)).then((res) => {
-      if (res?.meta?.requestStatus === "fulfilled") navigate("/doctorbooking");
+      if (res?.meta?.requestStatus === "fulfilled")
+        navigate(`/doctorbooking/${res.payload?._id}`);
     });
   };
   return (

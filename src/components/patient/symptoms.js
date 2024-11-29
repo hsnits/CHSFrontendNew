@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import bodyImg from "../assets/images/img.png";
+import bodyImg from "../../assets/images/img.png";
 import markdownit from "markdown-it";
 import { callPostApi } from "../../_service";
 import { toastMessage } from "../../config/toast";

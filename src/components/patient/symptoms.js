@@ -17,7 +17,7 @@ const schema = yup.object().shape({
   weight: yup
     .string("Weight must be numeric")
     .required("Weight is required")
-    .matches(/^[0-9]+$/, "Weight must be numeric"),
+    .matches(/^[0-9]+$/, "Weight must be numeric "),
   symptoms: yup.string().required("Symptoms is required"),
 });
 

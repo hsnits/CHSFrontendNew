@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../helpers/axiosInstance";
 import { ENDPOINTS } from "../../constants";
+import { toastMessage } from "../../config/toast";
 
 // MARK: Update Patient Profile API
 export const updatePatientProfile = createAsyncThunk(
@@ -12,7 +13,7 @@ export const updatePatientProfile = createAsyncThunk(
         data
       );
       if (response.status === 200) {
-        alert("Profile Updated Successfully!");
+        toastMessage("success", "Profile Updated Successfully!");
       }
       return response.data.data;
     } catch (error) {

@@ -187,6 +187,12 @@ function PatientDashboard() {
                         </Nav.Link>
                       </Nav.Item>
                       <Nav.Item>
+                        <Nav.Link eventKey="six">
+                          {" "}
+                          <i className="fa-solid fa-calendar-days"></i> Symptoms
+                        </Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item>
                         <Nav.Link eventKey="third">
                           {" "}
                           <i className="fa-solid fa-shield-halved"></i> Health

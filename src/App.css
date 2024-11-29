@@ -38043,3 +38043,15 @@ span[aria-label='Previous'], span[aria-label='Next']
   width: 100%;
 }
 
+.genrate_para {
+  height: 18rem; /* Fixed height */
+  max-height: 22rem;
+  padding: 10px; /* Matches <textarea> padding */
+  border: 1px solid #ced4da; /* Matches <textarea> border */
+  border-radius: 0.375rem; /* Matches <textarea> border radius */
+  background-color: #fff; /* Matches <textarea> background */
+  overflow-y: auto; /* Enable vertical scrolling */
+  font-size: 1rem; /* Matches <textarea> font size */
+  font-family: inherit; /* Matches <textarea> font */
+  line-height: 1.5; /* Matches <textarea> line height */
+}

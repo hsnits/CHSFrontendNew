@@ -58,7 +58,7 @@ const Routes = () => {
         <Route path="/ProductDesc" element={<ProductDesc />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/DoctorBooking" element={<DoctorBooking />} />
+        <Route path="/DoctorBooking/:id" element={<DoctorBooking />} />
         <Route path="/OrderSuccess" element={<OrderSuccess />} />
         <Route path="/PatientDetails" element={<PatientDetails />} />
         <Route path="/ConsultationType" element={<ConsultationType />} />

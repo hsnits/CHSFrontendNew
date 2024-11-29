@@ -1,15 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Header from "../../components/Header";
 import Breadcrumb from "../../components/Breadcrumb";
 import Footer from "../../components/Footer";
 
 import "react-datepicker/dist/react-datepicker.css";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Row, Col, Container, Card, CardBody } from "react-bootstrap";
 import BookingSummary from "../../components/doctorBooking/BookingSummary";
 import { ArrowDownRight } from "react-feather";
+import { useDispatch, useSelector } from "react-redux";
+import { getAppointment } from "../../redux/slices/patientApi";
 
 export default function DoctorBooking() {
+  // Appointment ID
+  const { id } = useParams();
+
+  const dispatch = useDispatch();
+  const data = useSelector(
+    (state) => state.PATIENT.data?.user?.getAppointmentResult
+  );
+
+  useEffect(() => {
+    dispatch(getAppointment(id));
+  }, []);
+
   return (
     <>
       <Header />
@@ -154,7 +168,7 @@ export default function DoctorBooking() {
                 </Link>
               </div>
             </Col>
-            <BookingSummary />
+            <BookingSummary data={data?.refDoctor} />
           </Row>
         </Container>
       </div>

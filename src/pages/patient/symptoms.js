@@ -80,7 +80,7 @@ const PatSymptoms = () => {
           height: watch("height"),
           weight: watch("weight"),
           symptoms: watch("symptoms"),
-          symptomReport: summary,
+          symptomReport: JSON.stringify(summary),
         }
       );
       if (!response?.status) throw new Error(response?.message);
@@ -287,10 +287,10 @@ const PatSymptoms = () => {
                                         Age : {watch("age")}
                                       </label>
                                       <label class="col-lg-4 col-form-label">
-                                        Height : {watch("height")}
+                                        Height : {`${watch("height")}cm`}
                                       </label>
                                       <label class=" col-lg-4 col-form-label">
-                                        Weight : {watch("weight")}
+                                        Weight : {`${watch("weight")}kg`}
                                       </label>
                                       <div>
                                         <label class=" col-lg-12  col-form-label">

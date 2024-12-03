@@ -13,6 +13,8 @@ import MyAppointTabView from "./myAppointTabView";
 import HealthReport from "./healthReport";
 import ProfileSetting from "./profileSetting";
 import PatSymptoms from "./symptoms";
+import SymptomReport from "./syptomReports";
+import useGetMountData from "../../helpers/getDataHook";
 
 function PatientDashboard() {
   const dispatch = useDispatch();
@@ -20,6 +22,12 @@ function PatientDashboard() {
   const data = useSelector(
     (state) => state.USER?.data?.user?.userProfileResult
   );
+
+  const {
+    data: isReports,
+    loading,
+    getAllData,
+  } = useGetMountData(`/patient/reports/${data?.profile?._id}`);
 
   useEffect(() => {
     dispatch(userProfile());
@@ -43,6 +51,13 @@ function PatientDashboard() {
                   <MyAppointTabView />
                   {/* Sayptoms view */}
                   <PatSymptoms />
+                  {/* Sayptom Reports view */}
+                  <SymptomReport
+                    allReports={isReports}
+                    loading={loading}
+                    getAllData={getAllData}
+                    userData={data}
+                  />
                   {/* Health Report view */}
                   <HealthReport />
                   {/* Profile Setting */}

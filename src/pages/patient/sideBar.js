@@ -42,8 +42,12 @@ const SideBar = ({ data }) => {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="six">
-                {" "}
-                <i className="fa-solid fa-calendar-days"></i> Symptoms
+                <i className="fa-solid fa-heart-pulse"></i> Symptoms
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="seven">
+                <i className="fa-solid fa-file-medical"></i> Symptom Reports
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

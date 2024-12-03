@@ -6,6 +6,9 @@ const HealthReport = () => {
   return (
     <Tab.Pane eventKey="third">
       <Row>
+        <div className="dashboard-header">
+          <h3>Health </h3>
+        </div>
         <Col xl="12" className="d-flex">
           <div className="dashboard-card w-100">
             <div className="dashboard-card-head">

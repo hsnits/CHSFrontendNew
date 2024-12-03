@@ -12,6 +12,7 @@ import Dashboard from "./dashboard";
 import MyAppointTabView from "./myAppointTabView";
 import HealthReport from "./healthReport";
 import ProfileSetting from "./profileSetting";
+import PatSymptoms from "./symptoms";
 
 function PatientDashboard() {
   const dispatch = useDispatch();
@@ -40,6 +41,8 @@ function PatientDashboard() {
                   <Dashboard data={data} />
                   {/* My Appointment tab view */}
                   <MyAppointTabView />
+                  {/* Sayptoms view */}
+                  <PatSymptoms />
                   {/* Health Report view */}
                   <HealthReport />
                   {/* Profile Setting */}

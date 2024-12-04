@@ -11,10 +11,8 @@ import ProductDesc from "../components/pharmacy/ProductDesc";
 import Cart from "../components/pharmacy/Cart";
 import Checkout from "../components/pharmacy/Checkout";
 import VirtualConsultation from "../pages/services/VirtualConsultation";
-import DoctorBooking from "../pages/BookingDetail/DoctorBooking";
+import DoctorBooking from "../pages/doctorBooking";
 import OrderSuccess from "../components/pharmacy/OrderSuccess";
-import PatientDetails from "../components/doctorBooking/PatientDetails";
-import ConsultationType from "../components/doctorBooking/ConsultationType";
 import BookingSuccess from "../pages/BookingSuccess/BookingSuccess";
 import Career from "../pages/career/Career";
 import InvestorRegistration from "../pages/investor/InvestorRegistration";
@@ -60,8 +58,6 @@ const Routes = () => {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/DoctorBooking/:id" element={<DoctorBooking />} />
         <Route path="/OrderSuccess" element={<OrderSuccess />} />
-        <Route path="/PatientDetails" element={<PatientDetails />} />
-        <Route path="/ConsultationType" element={<ConsultationType />} />
         <Route path="/BookingSuccess" element={<BookingSuccess />} />
         <Route path="/career" element={<Career />} />
         <Route

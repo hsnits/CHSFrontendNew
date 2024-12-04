@@ -15,9 +15,13 @@ import ProfileSetting from "./profileSetting";
 import PatSymptoms from "./symptoms";
 import SymptomReport from "./syptomReports";
 import useGetMountData from "../../helpers/getDataHook";
+import { STORAGE } from "../../constants";
+import { getLocalStorage } from "../../helpers/storage";
+import { getAppointment } from "../../redux/slices/patientApi";
 
 function PatientDashboard() {
   const dispatch = useDispatch();
+  const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
   const data = useSelector(
     (state) => state.USER?.data?.user?.userProfileResult
@@ -29,8 +33,13 @@ function PatientDashboard() {
     getAllData,
   } = useGetMountData(`/patient/reports/${data?.profile?._id}`);
 
+  const appointmentData = useSelector(
+    (state) => state.PATIENT.data?.user?.getAppointmentResult
+  );
+  console.log(appointmentData, "abcc");
   useEffect(() => {
     dispatch(userProfile());
+    dispatch(getAppointment(userProfileId));
   }, []);
 
   return (

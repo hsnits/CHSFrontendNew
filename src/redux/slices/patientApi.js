@@ -47,6 +47,27 @@ export const createAppointment = createAsyncThunk(
   }
 );
 
+// MARK: Update Appointment API
+export const updateAppointment = createAsyncThunk(
+  "updateAppointment",
+  async (data) => {
+    try {
+      const response = await axiosInstance.put(
+        ENDPOINTS.PATIENT.UPDATE_APPOINTMENT + `/${data?.id}`,
+        data
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.log(
+        "Update appointment Error:",
+        error.response?.data ?? error?.message
+      );
+      throw error;
+    }
+  }
+);
+
 // MARK: Get Appointment
 export const getAppointment = createAsyncThunk("getAppointment", async (id) => {
   try {
@@ -64,26 +85,52 @@ export const getAppointment = createAsyncThunk("getAppointment", async (id) => {
   }
 });
 
+// MARK: Get All Appointment
+export const getAllAppointment = createAsyncThunk(
+  "getAllAppointment",
+  async (id) => {
+    try {
+      const response = await axiosInstance.get(
+        ENDPOINTS.PATIENT.GET_ALL_APPOINTMENT + `/${id}`
+      );
+
+      return response.data.data;
+    } catch (error) {
+      console.log(
+        "Get All Appointment Error:",
+        error.response?.data ?? error?.message
+      );
+      throw error;
+    }
+  }
+);
+
 const initialState = {
   data: {
     user: {
       updatePatientProfileResult: [],
       getAppointmentResult: [],
+      getAllAppointmentResult: [],
       createAppointmentResult: [],
+      updateAppointmentResult: [],
     },
   },
   loading: {
     user: {
       updatePatientProfileLoading: false,
       getAppointmentLoading: true,
+      getAllAppointmentLoading: true,
       createAppointmentLoading: false,
+      updateAppointmentLoading: false,
     },
   },
   error: {
     user: {
       updatePatientProfileError: "",
       getAppointmentError: "",
+      getAllAppointmentError: "",
       createAppointmentError: "",
+      updateAppointmentError: "",
     },
   },
 };
@@ -121,7 +168,22 @@ const patientApiSlice = createSlice({
         state.loading.user.getAppointmentLoading = false;
         state.error.user.getAppointmentError =
           action.error.message || "Get Appointment failed!";
-      }) // MARK: Create Appointment
+      })
+      // MARK: Get All Appointment
+      .addCase(getAllAppointment.pending, (state) => {
+        state.loading.user.getAllAppointmentLoading = true;
+        state.error.user.getAppointmentError = "";
+      })
+      .addCase(getAllAppointment.fulfilled, (state, action) => {
+        state.loading.user.getAllAppointmentLoading = false;
+        state.data.user.getAllAppointmentResult = action.payload;
+      })
+      .addCase(getAllAppointment.rejected, (state, action) => {
+        state.loading.user.getAllAppointmentLoading = false;
+        state.error.user.getAppointmentError =
+          action.error.message || "Get All Appointment failed!";
+      })
+      // MARK: Create Appointment
       .addCase(createAppointment.pending, (state) => {
         state.loading.user.createAppointmentLoading = true;
         state.error.user.createAppointmentError = "";
@@ -133,7 +195,21 @@ const patientApiSlice = createSlice({
       .addCase(createAppointment.rejected, (state, action) => {
         state.loading.user.createAppointmentLoading = false;
         state.error.user.createAppointmentError =
-          action.error.message || "Get doctors failed!";
+          action.error.message || "Create Appointment failed!";
+      })
+      // MARK: Update Appointment
+      .addCase(updateAppointment.pending, (state) => {
+        state.loading.user.updateAppointmentLoading = true;
+        state.error.user.updateAppointmentError = "";
+      })
+      .addCase(updateAppointment.fulfilled, (state, action) => {
+        state.loading.user.updateAppointmentLoading = false;
+        state.data.user.updateAppointmentResult = action.payload;
+      })
+      .addCase(updateAppointment.rejected, (state, action) => {
+        state.loading.user.updateAppointmentLoading = false;
+        state.error.user.updateAppointmentError =
+          action.error.message || "Update Appointment failed!";
       });
   },
 });

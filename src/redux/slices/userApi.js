@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../helpers/axiosInstance";
 import { ENDPOINTS, STORAGE } from "../../constants";
 import { setLocalStorage } from "../../helpers/storage";
+import { toastMessage } from "../../config/toast";
 
 // MARK: Login API
 export const loginUser = createAsyncThunk("loginUser", async (credentials) => {
@@ -13,7 +14,8 @@ export const loginUser = createAsyncThunk("loginUser", async (credentials) => {
     setLocalStorage(STORAGE.USER_KEY, response.data?.data);
     return response.data;
   } catch (error) {
-    alert(error.response?.data?.message);
+    toastMessage("error", error.response?.data?.message);
+
     console.log("Login Error:", error.response?.data?.message);
   }
 });

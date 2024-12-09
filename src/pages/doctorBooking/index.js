@@ -9,23 +9,37 @@ import { Row, Col, Container, Card, CardBody } from "react-bootstrap";
 import BookingSummary from "../../components/doctorBooking/BookingSummary";
 import { ArrowDownRight } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
-import { getAppointment } from "../../redux/slices/patientApi";
+import {
+  getAppointment,
+  updateAppointment,
+} from "../../redux/slices/patientApi";
 import DatePicker from "react-datepicker";
 import { toastMessage } from "../../config/toast";
 import PatientDetails from "./patientDetails";
 import ConsultationType from "./consultationType";
+import { getLocalStorage } from "../../helpers/storage";
+import { STORAGE } from "../../constants";
+import { uploadFile } from "../../redux/slices/userApi";
+const formatDate = (date) => date.toISOString().split("T")[0];
 
 export default function DoctorBooking() {
-  // Appointment ID
-  const { id } = useParams();
-  const dispatch = useDispatch();
+  const { id } = useParams(); // Appointment ID
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState(null);
-  const [step, setStep] = useState(1); // Track the current step
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    date: formatDate(new Date()),
+    time: null,
+    isMySelf: true,
+    attachment: null,
+    dependent: "",
+    reason: "",
+    symptoms: "",
+    appointmentType: "chat",
+    isInsurance: false,
+  });
 
-  console.log(selectedDate, "s date");
-  console.log(selectedTime, "s time");
+  const [step, setStep] = useState(1);
+
   const data = useSelector(
     (state) => state.PATIENT.data?.user?.getAppointmentResult
   );
@@ -35,27 +49,38 @@ export default function DoctorBooking() {
   }, [dispatch, id]);
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    setFormData((prev) => ({ ...prev, date: date }));
   };
 
   const handleTimeSelect = (time) => {
-    setSelectedTime(time);
+    setFormData((prev) => ({ ...prev, time: time }));
   };
 
-  const validateForm = () => {
+  const handleAppointmentChange = (e) => {
+    setFormData((prev) => ({ ...prev, isMySelf: e.target.value === "myself" }));
+  };
+
+  const handleInsuranceChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      isInsurance: e.target.value === "yes",
+    }));
+  };
+
+  const validateStep1 = () => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
 
-    const selectedDateOnly = new Date(selectedDate);
+    const selectedDateOnly = new Date(formData.date);
     selectedDateOnly.setHours(0, 0, 0, 0);
-    const isPastDate = selectedDate < currentDate;
+    const isPastDate = formData.date < currentDate;
 
     if (isPastDate) {
       toastMessage("error", "Selected date cannot be in the past.");
       return false;
     }
 
-    if (!selectedTime) {
+    if (!formData.time) {
       toastMessage("error", "Please select a time slot.");
       return false;
     }
@@ -63,9 +88,107 @@ export default function DoctorBooking() {
     return true;
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "image/jpg",
+        "application/pdf",
+      ];
+      if (allowedTypes.includes(file.type)) {
+        const formData = new FormData();
+
+        formData.append("file", file);
+
+        setFormData((prev) => ({ ...prev, attachment: formData }));
+      } else {
+        alert("Please upload a valid PDF or image file (JPG, JPEG, PNG).");
+      }
+    }
+  };
+
+  const handleReasonChange = (e) => {
+    setFormData((prev) => ({ ...prev, reason: e.target.value }));
+  };
+
+  const handleSymptomsChange = (e) => {
+    setFormData((prev) => ({ ...prev, symptoms: e.target.value }));
+  };
+
+  const handleConsultationTypeChange = (type) => {
+    setFormData((prev) => ({ ...prev, appointmentType: type }));
+  };
+
+  const validateStep2 = () => {
+    if (!formData.reason) {
+      toastMessage("error", "Please provide the reason for the appointment.");
+      return false;
+    }
+
+    if (!formData.symptoms) {
+      toastMessage("error", "Please describe your symptoms.");
+      return false;
+    }
+
+    if (!formData.attachment) {
+      toastMessage("error", "Please upload attachment.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const validateStep3 = () => {
+    if (!formData.appointmentType) {
+      toastMessage("error", "Please select a consultation type.");
+      return false;
+    }
+
+    return true;
+  };
+
+  const getAppointmentId = getLocalStorage(STORAGE.APPOINTMENT_KEY);
   const handleSubmit = () => {
-    if (validateForm()) {
-      setStep(step + 1);
+    let isValid = false;
+
+    switch (step) {
+      case 1:
+        isValid = validateStep1();
+        break;
+      case 2:
+        isValid = validateStep2();
+        break;
+      case 3:
+        isValid = validateStep3();
+        break;
+      default:
+        break;
+    }
+
+    if (isValid) {
+      console.log(formData);
+      if (step === 3) {
+        dispatch(uploadFile(formData?.attachment)).then((res) => {
+          if (res?.meta?.requestStatus === "fulfilled") {
+            const formattedData = {
+              ...formData,
+              refDoctor: data?.refDoctor?._id,
+              id: getAppointmentId?.appointment_id,
+              appointmentFor: formData?.isMySelf ? "" : formData?.dependent,
+              attachment: res?.payload?.file,
+            };
+            dispatch(updateAppointment(formattedData)).then((res) => {
+              if (res?.meta?.requestStatus === "fulfilled") {
+                navigate("/BookingSuccess");
+              }
+            });
+          }
+        });
+      } else {
+        setStep(step + 1);
+      }
     }
   };
 
@@ -74,7 +197,6 @@ export default function DoctorBooking() {
       setStep(step - 1);
     }
   };
-
   return (
     <>
       <Header />
@@ -104,7 +226,7 @@ export default function DoctorBooking() {
                     <p>Choose Date</p>
                     <div className="booking-range">
                       <DatePicker
-                        selected={selectedDate}
+                        selected={formData.date}
                         onChange={handleDateChange}
                         dateFormat="MMMM d, yyyy"
                         className="form-control"
@@ -130,7 +252,7 @@ export default function DoctorBooking() {
                                   <li key={time}>
                                     <a
                                       className={`timing ${
-                                        selectedTime === time ? "active" : ""
+                                        formData.time === time ? "active" : ""
                                       }`}
                                       href="javascript:void(0);"
                                       onClick={() => handleTimeSelect(time)}
@@ -166,7 +288,7 @@ export default function DoctorBooking() {
                                   <li key={time}>
                                     <a
                                       className={`timing ${
-                                        selectedTime === time ? "active" : ""
+                                        formData.time === time ? "active" : ""
                                       }`}
                                       href="javascript:void(0);"
                                       onClick={() => handleTimeSelect(time)}
@@ -196,7 +318,7 @@ export default function DoctorBooking() {
                                   <li key={time}>
                                     <a
                                       className={`timing ${
-                                        selectedTime === time ? "active" : ""
+                                        formData.time === time ? "active" : ""
                                       }`}
                                       href="javascript:void(0);"
                                       onClick={() => handleTimeSelect(time)}
@@ -232,7 +354,15 @@ export default function DoctorBooking() {
                 <Col lg="8" md="12">
                   <Card className="booking-card">
                     <CardBody className="time-slot-card-body">
-                      <PatientDetails />
+                      <PatientDetails
+                        formData={formData}
+                        setFormData={setFormData}
+                        onAppointmentChange={handleAppointmentChange}
+                        onInsuranceChange={handleInsuranceChange}
+                        onFileChange={handleFileChange}
+                        onReasonChange={handleReasonChange}
+                        onSymptomsChange={handleSymptomsChange}
+                      />
                     </CardBody>
                   </Card>
                   <div className="booking-btn">
@@ -252,7 +382,10 @@ export default function DoctorBooking() {
                 <Col lg="8" md="12">
                   <Card className="booking-card">
                     <CardBody className="time-slot-card-body">
-                      <ConsultationType />
+                      <ConsultationType
+                        formData={formData}
+                        onConsultationTypeChange={handleConsultationTypeChange}
+                      />
                     </CardBody>
                   </Card>
                   <div className="booking-btn">

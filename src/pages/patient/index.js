@@ -17,7 +17,10 @@ import SymptomReport from "./syptomReports";
 import useGetMountData from "../../helpers/getDataHook";
 import { STORAGE } from "../../constants";
 import { getLocalStorage } from "../../helpers/storage";
-import { getAppointment } from "../../redux/slices/patientApi";
+import {
+  getAllAppointment,
+  getAppointment,
+} from "../../redux/slices/patientApi";
 
 function PatientDashboard() {
   const dispatch = useDispatch();
@@ -34,12 +37,16 @@ function PatientDashboard() {
   } = useGetMountData(`/patient/reports/${data?.profile?._id}`);
 
   const appointmentData = useSelector(
-    (state) => state.PATIENT.data?.user?.getAppointmentResult
+    (state) => state.PATIENT.data?.user?.getAllAppointmentResult
   );
-  console.log(appointmentData, "abcc");
+  // const appointmentData = useSelector(
+  //   (state) => state.PATIENT.data?.user?.getAppointmentResult
+  // );
+
   useEffect(() => {
     dispatch(userProfile());
-    dispatch(getAppointment(userProfileId));
+    // dispatch(getAppointment(userProfileId));
+    dispatch(getAllAppointment(userProfileId));
   }, []);
 
   return (
@@ -55,7 +62,7 @@ function PatientDashboard() {
               <Col lg="8" xl="9">
                 <Tab.Content>
                   {/* Dashboard view */}
-                  <Dashboard data={data} />
+                  <Dashboard data={data} appointmentData={appointmentData} />
                   {/* My Appointment tab view */}
                   <MyAppointTabView />
                   {/* Sayptoms view */}

@@ -69,6 +69,23 @@ export const changeProfilePic = createAsyncThunk(
   }
 );
 
+// MARK: Upload file API
+export const uploadFile = createAsyncThunk("uploadFile", async (data) => {
+  try {
+    const response = await axiosInstance.post(
+      ENDPOINTS.USER.UPLOAD_FILE,
+      data,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("Upload file Error:", error.response?.data ?? error?.message);
+    throw error;
+  }
+});
+
 const initialState = {
   data: {
     user: {

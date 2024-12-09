@@ -13,7 +13,10 @@ import {
 import Header from "../../components/Header";
 import { Link } from "react-router-dom";
 
-export default function ConsultationType() {
+export default function ConsultationType({
+  formData,
+  onConsultationTypeChange,
+}) {
   return (
     <>
       <div className="row">
@@ -27,7 +30,12 @@ export default function ConsultationType() {
               <div className="consultation-list">
                 <ul>
                   <li>
-                    <div className="consultation-types active">
+                    <div
+                      className={`consultation-types ${
+                        formData.appointmentType === "video" ? "active" : ""
+                      }`}
+                      onClick={() => onConsultationTypeChange("video")}
+                    >
                       <a href="javascript:void(0);">
                         <Video /> &nbsp; Video Consulting
                       </a>
@@ -37,7 +45,12 @@ export default function ConsultationType() {
                     </div>
                   </li>
                   <li>
-                    <div className="consultation-types">
+                    <div
+                      className={`consultation-types ${
+                        formData.appointmentType === "audio" ? "active" : ""
+                      }`}
+                      onClick={() => onConsultationTypeChange("audio")}
+                    >
                       <a href="javascript:void(0);">
                         <Mic /> &nbsp; Audio Consulting
                       </a>
@@ -47,7 +60,12 @@ export default function ConsultationType() {
                     </div>
                   </li>
                   <li>
-                    <div className="consultation-types">
+                    <div
+                      className={`consultation-types ${
+                        formData.appointmentType === "chat" ? "active" : ""
+                      }`}
+                      onClick={() => onConsultationTypeChange("chat")}
+                    >
                       <a href="javascript:void(0);">
                         <MessageCircle /> &nbsp; Chat Consulting
                       </a>
@@ -61,7 +79,12 @@ export default function ConsultationType() {
             </div>
             <div className="consultation-info">
               <p>Home Visit</p>
-              <div className="consultation-list">
+              <div
+                className={`consultation-types ${
+                  formData.appointmentType === "home" ? "active" : ""
+                }`}
+                onClick={() => onConsultationTypeChange("home")}
+              >
                 <ul>
                   <li>
                     <div className="consultation-types">
@@ -73,18 +96,25 @@ export default function ConsultationType() {
                       </span>
                     </div>
                   </li>
-                  <li>
-                    <div className="consultation-types">
-                      <a href="javascript:void(0);">
-                        <User /> &nbsp; Consult Instatly
-                      </a>
-                      <span>
-                        <i className="fas fa-circle-check"></i>
-                      </span>
-                    </div>
-                  </li>
                 </ul>
               </div>
+              <ul>
+                <li>
+                  <div
+                    className={`consultation-types ${
+                      formData.appointmentType === "instant" ? "active" : ""
+                    }`}
+                    onClick={() => onConsultationTypeChange("instant")}
+                  >
+                    <a href="javascript:void(0);">
+                      <User /> &nbsp; Consult Instantly
+                    </a>
+                    <span>
+                      <i className="fas fa-circle-check"></i>
+                    </span>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
           {/* <div className="booking-btn">

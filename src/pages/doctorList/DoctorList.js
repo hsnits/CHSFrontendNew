@@ -8,7 +8,7 @@ import user_img from "../../assets/img/profile-06.jpg";
 import { Award, Clock, Heart, MapPin } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
 import { getDoctors } from "../../redux/slices/doctorApi";
-import { getLocalStorage } from "../../helpers/storage";
+import { getLocalStorage, setLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import { createAppointment } from "../../redux/slices/patientApi";
 
@@ -30,7 +30,10 @@ function DoctorList() {
     };
     dispatch(createAppointment(formattedData)).then((res) => {
       if (res?.meta?.requestStatus === "fulfilled")
-        navigate(`/doctorbooking/${res.payload?._id}`);
+        setLocalStorage(STORAGE.APPOINTMENT_KEY, {
+          appointment_id: res?.payload?._id,
+        });
+      navigate(`/doctorbooking/${res.payload?._id}`);
     });
   };
   return (

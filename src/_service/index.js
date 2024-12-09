@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getLocalStorage } from "../helpers/storage";
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/",
@@ -10,10 +11,10 @@ const axiosInstance = axios.create({
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // const authToken = getClientCookie("token");
-    // if (authToken) {
-    //   config.headers.Authorization = `Bearer ${authToken}`;
-    // }
+    const authToken = getLocalStorage("user-data")?.accessToken;
+    if (authToken) {
+      config.headers.Authorization = `Bearer ${authToken}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)

@@ -14,10 +14,13 @@ const useGetMountData = (baseUrl) => {
   const pageLimit = 10;
 
   const getAllData = useCallback(
-    async (loadText) => {
+    async (baseUrl, loadText) => {
       setLoading(loadText || true);
       try {
-        const url = `${baseUrl}`;
+        let url = `${baseUrl}`;
+        // if (filter) {
+        //   url = `${url}&status=${filter?.status}`;
+        // }
         const response = await callGetApi(url);
         if (response?.status) {
           setData(response.data);
@@ -34,7 +37,7 @@ const useGetMountData = (baseUrl) => {
 
   useEffect(() => {
     if (baseUrl) {
-      getAllData(true);
+      getAllData(baseUrl, true);
     }
   }, [getAllData, baseUrl]);
 

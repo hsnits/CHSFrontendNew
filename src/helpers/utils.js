@@ -1,5 +1,6 @@
 import markdownit from "markdown-it";
 import DOMPurify from "dompurify";
+import moment from "moment/moment";
 
 const md = markdownit({
   html: false,
@@ -22,4 +23,25 @@ const getMdHTMLValue = (summary) => {
   return safeHTML;
 };
 
-export { getMdHTMLValue };
+const getDateFormate = (date) => {
+  if (!date) {
+    return null;
+  }
+  return moment(date).format("DD MMM YYYY");
+};
+
+const getIdLastDigit = (date) => {
+  if (!date) {
+    return null;
+  }
+  return moment(date).format("DD MMM YYYY");
+};
+
+const getIdLastDigits = (id) => {
+  if (!id) {
+    return null;
+  }
+  return id.slice(-5);
+};
+
+export { getMdHTMLValue, getDateFormate, getIdLastDigits };

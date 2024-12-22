@@ -105,6 +105,29 @@ export const getAllAppointment = createAsyncThunk(
   }
 );
 
+// MARK: Update Appointment Status
+export const updateAppointmentStatus = createAsyncThunk(
+  "updateAppointmentStatus",
+  async ({ data }) => {
+    // Where `data.id` is appointment ID
+    try {
+      const response = await axiosInstance.put(
+        ENDPOINTS.PATIENT.GET_ALL_APPOINTMENT + `/${data.id}`,
+        { status: data.status }
+      );
+      toastMessage("success", response?.data?.message);
+
+      return response.data.data;
+    } catch (error) {
+      console.log(
+        "Appointment Update Status Error:",
+        error.response?.data ?? error?.message
+      );
+      throw error;
+    }
+  }
+);
+
 const initialState = {
   data: {
     user: {

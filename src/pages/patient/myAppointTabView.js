@@ -1,8 +1,18 @@
 import React from "react";
 import { Tab } from "react-bootstrap";
 import user_img from "../../assets/img/profile-06.jpg";
+import { useDispatch } from "react-redux";
+import {
+  getAllAppointment,
+  updateAppointmentStatus,
+} from "../../redux/slices/patientApi";
+import { getLocalStorage } from "../../helpers/storage";
+import { STORAGE } from "../../constants";
+import moment from "moment/moment";
 
 const MyAppointTabView = ({ appointmentData }) => {
+  const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
+
   const upcomingAppointments = appointmentData.filter(
     (appointment) => appointment.status === "Pending"
   );
@@ -12,6 +22,17 @@ const MyAppointTabView = ({ appointmentData }) => {
   const completedAppointments = appointmentData.filter(
     (appointment) => appointment.status === "Completed"
   );
+
+  const dispatch = useDispatch();
+
+  const handleUpdateStatus = async (id) => {
+    await dispatch(
+      updateAppointmentStatus({ data: { id: id, status: "Cancelled" } })
+    ).then(() => dispatch(getAllAppointment(userProfileId)));
+  };
+
+  const formattedDate = (date) => moment(date).format("DD MMM YYYY");
+
   return (
     <Tab.Pane eventKey="second">
       <div className="dashboard-header">
@@ -84,26 +105,27 @@ const MyAppointTabView = ({ appointmentData }) => {
             </div>
           ) : (
             upcomingAppointments.map((el, index) => {
+              console.log(upcomingAppointments);
               return (
                 <div className="appointment-wrap">
                   <ul>
                     <li>
                       <div className="patinet-information">
-                        <a href="#">
+                        <a>
                           <img src={user_img} alt="User Image" />
                         </a>
                         <div className="patient-info">
                           <p>#Apt{el?._id.slice(-3)}</p>
                           <h6>
-                            <a href="#">Dr {el?.refDoctor?.firstName}</a>
+                            <a>Dr {el?.refDoctor?.firstName}</a>
                           </h6>
                         </div>
                       </div>
                     </li>
                     <li className="appointment-info">
                       <p>
-                        <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45
-                        AM
+                        <i className="fa-solid fa-clock"></i>
+                        {formattedDate(el?.date)}, {el?.time}
                       </p>
                       <ul className="d-flex apponitment-types">
                         <li>General Visit</li>
@@ -125,24 +147,20 @@ const MyAppointTabView = ({ appointmentData }) => {
                     <li className="appointment-action">
                       <ul>
                         <li>
-                          <a href="#">
+                          <a>
                             <i className="fa-solid fa-eye"></i>
                           </a>
                         </li>
-                        <li>
-                          <a href="#">
-                            <i className="fa-solid fa-comments"></i>
-                          </a>
-                        </li>
-                        <li>
-                          <a href="#">
+
+                        <li onClick={() => handleUpdateStatus(el?._id)}>
+                          <a>
                             <i className="fa-solid fa-xmark"></i>
                           </a>
                         </li>
                       </ul>
                     </li>
                     <li className="appointment-detail-btn">
-                      <a href="#" className="start-link">
+                      <a className="start-link">
                         <i className="fa-solid fa-calendar-check me-1"></i>
                         Attend
                       </a>
@@ -164,38 +182,43 @@ const MyAppointTabView = ({ appointmentData }) => {
               <p>No appointments found.</p>
             </div>
           ) : (
-            <div className="appointment-wrap">
-              <ul>
-                <li>
-                  <div className="patinet-information">
-                    <a href="#">
-                      <img src={user_img} alt="User Image" />
-                    </a>
-                    <div className="patient-info">
-                      <p>#Apt00011</p>
-                      <h6>
-                        <a href="#">Dr Edalin</a>
-                      </h6>
-                    </div>
-                  </div>
-                </li>
-                <li className="appointment-info">
-                  <p>
-                    <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                  </p>
-                  <ul className="d-flex apponitment-types">
-                    <li>General Visit</li>
-                    <li>Video Call</li>
+            canceledAppointments.map((el, index) => {
+              return (
+                <div className="appointment-wrap">
+                  <ul>
+                    <li>
+                      <div className="patinet-information">
+                        <a>
+                          <img src={user_img} alt="User Image" />
+                        </a>
+                        <div className="patient-info">
+                          <p>#Apt{el?._id.slice(-3)}</p>
+                          <h6>
+                            <a>Dr {el?.refDoctor?.firstName}</a>
+                          </h6>
+                        </div>
+                      </div>
+                    </li>
+                    <li className="appointment-info">
+                      <p>
+                        <i className="fa-solid fa-clock"></i>
+                        {formattedDate(el?.date)}, {el?.time}
+                      </p>
+                      <ul className="d-flex apponitment-types">
+                        <li>General Visit</li>
+                        <li>{el?.appointmentType}</li>
+                      </ul>
+                    </li>
+                    <li className="appointment-detail-btn">
+                      <a className="start-link">
+                        View Details
+                        <i className="fa-regular fa-circle-right ms-1"></i>
+                      </a>
+                    </li>
                   </ul>
-                </li>
-                <li className="appointment-detail-btn">
-                  <a href="#" className="start-link">
-                    View Details
-                    <i className="fa-regular fa-circle-right ms-1"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
+                </div>
+              );
+            })
           )}
         </div>
         <div
@@ -213,13 +236,13 @@ const MyAppointTabView = ({ appointmentData }) => {
               <ul>
                 <li>
                   <div className="patinet-information">
-                    <a href="#">
+                    <a>
                       <img src={user_img} alt="User Image" />
                     </a>
                     <div className="patient-info">
                       <p>#Apt0001</p>
                       <h6>
-                        <a href="#">Dr Edalin</a>
+                        <a>Dr Edalin</a>
                       </h6>
                     </div>
                   </div>
@@ -234,7 +257,7 @@ const MyAppointTabView = ({ appointmentData }) => {
                   </ul>
                 </li>
                 <li className="appointment-detail-btn">
-                  <a href="#" className="start-link">
+                  <a className="start-link">
                     View Details
                     <i className="fa-regular fa-circle-right ms-1"></i>
                   </a>

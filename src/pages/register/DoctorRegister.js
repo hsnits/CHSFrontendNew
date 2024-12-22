@@ -1,7 +1,7 @@
 import React from "react";
 import "../register/Register.css";
 import login_img from "../../assets/img/login_img.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { Input } from "reactstrap";
 import Header from "../../components/Header";
@@ -72,6 +72,7 @@ const registrationSchema = yup.object().shape({
 
 export default function DoctorRegister() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     control,
     handleSubmit,
@@ -85,7 +86,10 @@ export default function DoctorRegister() {
       ...data,
       role: data.role.toLowerCase(),
     };
-    const result = await dispatch(registerUser(formattedData)).unwrap();
+    const result = await dispatch(registerUser(formattedData));
+    if (result?.payload?.status) {
+      navigate("/login");
+    }
   };
   return (
     <>

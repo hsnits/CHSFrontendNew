@@ -151,7 +151,6 @@ const Dashboard = ({ data, appointmentData }) => {
                             </tr>
                           </thead>
                           {appointmentData?.map((el, index) => {
-                            console.log(appointmentData, "appointmentData");
                             return (
                               <tbody key={index}>
                                 <tr>

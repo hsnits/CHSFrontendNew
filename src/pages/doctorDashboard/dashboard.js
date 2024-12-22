@@ -14,7 +14,6 @@ const Dashboard = () => {
   const { data: Appointments } = useGetMountData(
     `/doctor/appointment/${userProfileId}`
   );
-  console.log(Appointments, "Appointments");
 
   return (
     <div>

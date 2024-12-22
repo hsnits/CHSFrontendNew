@@ -58,7 +58,6 @@ const ProfileSetting = ({ data }) => {
       const formData = new FormData();
       formData.append("profilepic", file);
       const result = dispatch(changeProfilePic(formData));
-      console.log("Uploaded successfully:", result);
     } catch (error) {
       console.error("Upload failed:", error);
     }

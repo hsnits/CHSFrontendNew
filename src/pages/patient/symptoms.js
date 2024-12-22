@@ -108,7 +108,6 @@ const PatSymptoms = () => {
 
   useEffect(() => {
     symptomSocket.on("summary", (messages) => {
-      console.log(messages, "summary");
       if (messages && messages?.summary) {
         setSummary(messages?.summary);
       }

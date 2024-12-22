@@ -29,10 +29,11 @@ export const registerUser = createAsyncThunk(
         ENDPOINTS.USER.REGISTER,
         credentials
       );
+      toastMessage("success", "Registration successful!");
       return response.data;
     } catch (error) {
       console.log("Registration Error:", error.response?.data);
-      throw error;
+      toastMessage("error", error.response?.data?.message);
     }
   }
 );

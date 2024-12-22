@@ -29,8 +29,6 @@ const schema = yup.object().shape({
 });
 
 const Profile = ({ getAllData, doctorDetails }) => {
-  console.log(doctorDetails, "doctorDetails");
-
   const [listOpen, setListOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 

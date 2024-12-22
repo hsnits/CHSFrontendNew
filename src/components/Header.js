@@ -351,7 +351,7 @@ function Header() {
                     padding: "10px",
                   }}
                 >
-                  LOGOUT
+                  <i className="fa-solid fa-calendar-check"></i> Logout
                 </div>
               ) : (
                 <Link className="nav-link header-login" to="/Login">

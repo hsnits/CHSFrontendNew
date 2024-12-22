@@ -2,7 +2,16 @@ import React from "react";
 import { Tab } from "react-bootstrap";
 import user_img from "../../assets/img/profile-06.jpg";
 
-const MyAppointTabView = () => {
+const MyAppointTabView = ({ appointmentData }) => {
+  const upcomingAppointments = appointmentData.filter(
+    (appointment) => appointment.status === "Pending"
+  );
+  const canceledAppointments = appointmentData.filter(
+    (appointment) => appointment.status === "Cancelled"
+  );
+  const completedAppointments = appointmentData.filter(
+    (appointment) => appointment.status === "Completed"
+  );
   return (
     <Tab.Pane eventKey="second">
       <div className="dashboard-header">
@@ -26,7 +35,7 @@ const MyAppointTabView = () => {
                 aria-controls="pills-upcoming"
                 aria-selected="true"
               >
-                Upcoming<span>21</span>
+                Upcoming<span>{upcomingAppointments.length}</span>
               </button>
             </li>
             <li className="nav-item" role="presentation">
@@ -41,7 +50,7 @@ const MyAppointTabView = () => {
                 aria-selected="false"
                 tabindex="-1"
               >
-                Cancelled<span>16</span>
+                Cancelled<span>{canceledAppointments.length}</span>
               </button>
             </li>
             <li className="nav-item" role="presentation">
@@ -56,7 +65,7 @@ const MyAppointTabView = () => {
                 aria-selected="false"
                 tabindex="-1"
               >
-                Completed<span>214</span>
+                Completed<span>{completedAppointments.length}</span>
               </button>
             </li>
           </ul>
@@ -69,68 +78,80 @@ const MyAppointTabView = () => {
           role="tabpanel"
           aria-labelledby="pills-upcoming-tab"
         >
-          <div className="appointment-wrap">
-            <ul>
-              <li>
-                <div className="patinet-information">
-                  <a href="#">
-                    <img src={user_img} alt="User Image" />
-                  </a>
-                  <div className="patient-info">
-                    <p>#Apt0001</p>
-                    <h6>
-                      <a href="#">Dr Edalin</a>
-                    </h6>
-                  </div>
+          {upcomingAppointments.length === 0 ? (
+            <div className="appointment-wrap">
+              <p>No upcoming appointments.</p>
+            </div>
+          ) : (
+            upcomingAppointments.map((el, index) => {
+              return (
+                <div className="appointment-wrap">
+                  <ul>
+                    <li>
+                      <div className="patinet-information">
+                        <a href="#">
+                          <img src={user_img} alt="User Image" />
+                        </a>
+                        <div className="patient-info">
+                          <p>#Apt{el?._id.slice(-3)}</p>
+                          <h6>
+                            <a href="#">Dr {el?.refDoctor?.firstName}</a>
+                          </h6>
+                        </div>
+                      </div>
+                    </li>
+                    <li className="appointment-info">
+                      <p>
+                        <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45
+                        AM
+                      </p>
+                      <ul className="d-flex apponitment-types">
+                        <li>General Visit</li>
+                        <li>{el?.appointmentType}</li>
+                      </ul>
+                    </li>
+                    <li className="mail-info-patient">
+                      <ul>
+                        <li>
+                          <i className="fa-solid fa-envelope"></i>
+                          {el?.refDoctor?.email}
+                        </li>
+                        <li>
+                          <i className="fa-solid fa-phone"></i>
+                          {el?.refDoctor?.phoneNumber}
+                        </li>
+                      </ul>
+                    </li>
+                    <li className="appointment-action">
+                      <ul>
+                        <li>
+                          <a href="#">
+                            <i className="fa-solid fa-eye"></i>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#">
+                            <i className="fa-solid fa-comments"></i>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#">
+                            <i className="fa-solid fa-xmark"></i>
+                          </a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li className="appointment-detail-btn">
+                      <a href="#" className="start-link">
+                        <i className="fa-solid fa-calendar-check me-1"></i>
+                        Attend
+                      </a>
+                    </li>
+                  </ul>
                 </div>
-              </li>
-              <li className="appointment-info">
-                <p>
-                  <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <ul className="d-flex apponitment-types">
-                  <li>General Visit</li>
-                  <li>Video Call</li>
-                </ul>
-              </li>
-              <li className="mail-info-patient">
-                <ul>
-                  <li>
-                    <i className="fa-solid fa-envelope"></i>
-                    edalin@example.com
-                  </li>
-                  <li>
-                    <i className="fa-solid fa-phone"></i>+1 504 368 6874
-                  </li>
-                </ul>
-              </li>
-              <li className="appointment-action">
-                <ul>
-                  <li>
-                    <a href="#">
-                      <i className="fa-solid fa-eye"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa-solid fa-comments"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i className="fa-solid fa-xmark"></i>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li className="appointment-detail-btn">
-                <a href="#" className="start-link">
-                  <i className="fa-solid fa-calendar-check me-1"></i>
-                  Attend
-                </a>
-              </li>
-            </ul>
-          </div>
+              );
+            })
+          )}
         </div>
         <div
           className="tab-pane fade"
@@ -138,38 +159,44 @@ const MyAppointTabView = () => {
           role="tabpanel"
           aria-labelledby="pills-cancel-tab"
         >
-          <div className="appointment-wrap">
-            <ul>
-              <li>
-                <div className="patinet-information">
-                  <a href="#">
-                    <img src={user_img} alt="User Image" />
-                  </a>
-                  <div className="patient-info">
-                    <p>#Apt00011</p>
-                    <h6>
-                      <a href="#">Dr Edalin</a>
-                    </h6>
+          {canceledAppointments.length === 0 ? (
+            <div className="appointment-wrap">
+              <p>No appointments found.</p>
+            </div>
+          ) : (
+            <div className="appointment-wrap">
+              <ul>
+                <li>
+                  <div className="patinet-information">
+                    <a href="#">
+                      <img src={user_img} alt="User Image" />
+                    </a>
+                    <div className="patient-info">
+                      <p>#Apt00011</p>
+                      <h6>
+                        <a href="#">Dr Edalin</a>
+                      </h6>
+                    </div>
                   </div>
-                </div>
-              </li>
-              <li className="appointment-info">
-                <p>
-                  <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <ul className="d-flex apponitment-types">
-                  <li>General Visit</li>
-                  <li>Video Call</li>
-                </ul>
-              </li>
-              <li className="appointment-detail-btn">
-                <a href="#" className="start-link">
-                  View Details
-                  <i className="fa-regular fa-circle-right ms-1"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
+                </li>
+                <li className="appointment-info">
+                  <p>
+                    <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
+                  </p>
+                  <ul className="d-flex apponitment-types">
+                    <li>General Visit</li>
+                    <li>Video Call</li>
+                  </ul>
+                </li>
+                <li className="appointment-detail-btn">
+                  <a href="#" className="start-link">
+                    View Details
+                    <i className="fa-regular fa-circle-right ms-1"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
         <div
           className="tab-pane fade"
@@ -177,38 +204,44 @@ const MyAppointTabView = () => {
           role="tabpanel"
           aria-labelledby="pills-complete-tab"
         >
-          <div className="appointment-wrap">
-            <ul>
-              <li>
-                <div className="patinet-information">
-                  <a href="#">
-                    <img src={user_img} alt="User Image" />
-                  </a>
-                  <div className="patient-info">
-                    <p>#Apt0001</p>
-                    <h6>
-                      <a href="#">Dr Edalin</a>
-                    </h6>
+          {completedAppointments.length === 0 ? (
+            <div className="appointment-wrap">
+              <p>No appointments found.</p>
+            </div>
+          ) : (
+            <div className="appointment-wrap">
+              <ul>
+                <li>
+                  <div className="patinet-information">
+                    <a href="#">
+                      <img src={user_img} alt="User Image" />
+                    </a>
+                    <div className="patient-info">
+                      <p>#Apt0001</p>
+                      <h6>
+                        <a href="#">Dr Edalin</a>
+                      </h6>
+                    </div>
                   </div>
-                </div>
-              </li>
-              <li className="appointment-info">
-                <p>
-                  <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <ul className="d-flex apponitment-types">
-                  <li>General Visit</li>
-                  <li>Video Call</li>
-                </ul>
-              </li>
-              <li className="appointment-detail-btn">
-                <a href="#" className="start-link">
-                  View Details
-                  <i className="fa-regular fa-circle-right ms-1"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
+                </li>
+                <li className="appointment-info">
+                  <p>
+                    <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
+                  </p>
+                  <ul className="d-flex apponitment-types">
+                    <li>General Visit</li>
+                    <li>Video Call</li>
+                  </ul>
+                </li>
+                <li className="appointment-detail-btn">
+                  <a href="#" className="start-link">
+                    View Details
+                    <i className="fa-regular fa-circle-right ms-1"></i>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          )}
         </div>
       </div>
     </Tab.Pane>

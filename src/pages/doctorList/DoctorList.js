@@ -294,12 +294,12 @@ function DoctorList() {
                     </div>
                   </div>
                   <div className="card doctor-card">
-                    <div className="card-body">
-                      <div className="doctor-widget-one">
-                        {doctorsList?.map((el, index) => {
-                          const data = el?.profile;
-                          return (
-                            <>
+                    {doctorsList?.map((el, index) => {
+                      const data = el?.profile;
+                      return (
+                        <>
+                          <div className="card-body">
+                            <div className="doctor-widget-one">
                               <div key={index} className="doc-info-left">
                                 <div className="doctor-img">
                                   <a href="#">
@@ -369,11 +369,11 @@ function DoctorList() {
                                   </div>
                                 </div>
                               </div>
-                            </>
-                          );
-                        })}
-                      </div>
-                    </div>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })}
                   </div>
                 </Col>
               </Row>

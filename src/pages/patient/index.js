@@ -64,7 +64,7 @@ function PatientDashboard() {
                   {/* Dashboard view */}
                   <Dashboard data={data} appointmentData={appointmentData} />
                   {/* My Appointment tab view */}
-                  <MyAppointTabView />
+                  <MyAppointTabView appointmentData={appointmentData} />
                   {/* Sayptoms view */}
                   <PatSymptoms />
                   {/* Sayptom Reports view */}

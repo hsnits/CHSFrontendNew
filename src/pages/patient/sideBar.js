@@ -62,12 +62,12 @@ const SideBar = ({ data }) => {
                 <i className="fa-solid fa-user-pen"></i> Profile Settings
               </Nav.Link>
             </Nav.Item>
-            <Nav.Item>
+            {/* <Nav.Item>
               <Nav.Link eventKey="fifth">
                 {" "}
                 <i className="fa-solid fa-calendar-check"></i> Logout
               </Nav.Link>
-            </Nav.Item>
+            </Nav.Item> */}
           </Nav>
         </div>
       </div>

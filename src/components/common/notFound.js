@@ -2,45 +2,39 @@ import React from "react";
 import { Spinner } from "reactstrap";
 
 const NotFound = ({
-  isData,
-  message,
-  className,
-
-  loading,
-  loaderSize,
-  loaderType,
-  loaderColor,
-  loaderLabel,
+  isData = true,
+  message = "Data not Found!",
+  className = "flex justify-center w-full my-2 text-base text-black px-4",
+  loading = false,
+  loaderSize = "sm",
+  loaderType = "border",
+  loaderColor = "primary",
+  loaderLabel = "Loading...",
 }) => {
-  return (
-    <div className="w-full text-center">
-      {loading ? (
-        <>
-          <div className="flex flex-1 justify-center items-center">
-            <span style={{ color: "black", marginInline: 3 }}>
-              {loaderLabel || "Loading..."}
-            </span>
-            <Spinner
-              size={loaderSize || "sm"}
-              color={loaderColor || "primary"}
-              type={loaderType || "border"}
-            />
-          </div>
-        </>
-      ) : !isData ? (
-        <div
-          className={
-            className ||
-            `flex justify-center w-full my-2 text-base text-black px-4`
-          }
-        >
-          {message || "Data not Found !"}
-        </div>
-      ) : (
-        ""
-      )}
-    </div>
-  );
+  if (loading) {
+    return (
+      <div
+        className="flex flex-1 justify-center items-center"
+        style={{ height: "70vh" }}
+      >
+        <span style={{ color: "black", marginInline: 3 }}>{loaderLabel}</span>
+        <Spinner size={loaderSize} color={loaderColor} type={loaderType} />
+      </div>
+    );
+  }
+
+  if (!isData) {
+    return (
+      <div
+        style={{ height: "70vh" }}
+        className="flex justify-center items-center"
+      >
+        <h5 className={className}>{message}</h5>
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default NotFound;

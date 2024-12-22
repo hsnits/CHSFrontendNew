@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import user_img from "../../assets/img/doctor-profile-img.jpg";
 import useGetMountData from "../../helpers/getDataHook";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
+import { ChevronDown, ChevronUp } from "react-feather";
+import { Dropdown, Form } from "react-bootstrap";
 
 const Requests = () => {
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
@@ -30,12 +32,10 @@ const Requests = () => {
     //   const verifyResponse = await callPutApi(`/doctor/${doctorDetails?._id}`, {
     //     availability: isAvl,
     //   });
-
     //   if (!verifyResponse.status) throw new Error(verifyResponse.message);
     //   toastMessage("success", "You availability is updated now");
     //   const userProfile = getLocalStorage(STORAGE.USER_KEY);
     //   let profile = userProfile.profile;
-
     //   let updatedStorage = {
     //     ...userProfile,
     //     profile: {
@@ -43,7 +43,6 @@ const Requests = () => {
     //       availability: isAvl,
     //     },
     //   };
-
     //   setLocalStorage(STORAGE.USER_KEY, updatedStorage);
     // } catch (error) {
     //   setAvailability(!isAvl);
@@ -57,26 +56,22 @@ const Requests = () => {
         <h3>Requests</h3>
         <ul>
           <li>
-            <div class="dropdown header-dropdown">
-              <select
-                className="select form-control"
-                // value={filter}
-                onChange={(e) => {
-                  getByFilter(e.target.value);
-                }}
-              >
-                <option value="today">Today</option>
-                <option value="week">This Week</option>
-                <option value="month">This Month</option>
-              </select>
-            </div>
+            <Form.Select
+              onChange={(e) => {
+                getByFilter(e.target.value);
+              }}
+            >
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+            </Form.Select>
           </li>
         </ul>
       </div>
       <NotFound
         loading={loading}
         isData={Appointments?.length > 0}
-        message="No appointments found."
+        message="No Appointments Found."
       />
       {!loading &&
         Appointments &&

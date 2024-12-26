@@ -33,7 +33,7 @@ function DoctorList() {
         setLocalStorage(STORAGE.APPOINTMENT_KEY, {
           appointment_id: res?.payload?._id,
         });
-      navigate(`/doctorbooking/${res.payload?._id}`);
+      navigate(`/doctorbooking/${data?.profile?._id}`);
     });
   };
   return (

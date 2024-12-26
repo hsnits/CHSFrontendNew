@@ -110,7 +110,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -136,7 +136,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -162,7 +162,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -188,7 +188,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -214,7 +214,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -240,7 +240,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -266,7 +266,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -292,7 +292,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -318,7 +318,7 @@ function Header() {
                             <div class="demo-info">
                               <Link
                                 className="btn btn-primary text-white"
-                                to="/DoctorRegister"
+                                to="/register"
                               >
                                 Register
                               </Link>
@@ -332,7 +332,7 @@ function Header() {
               </li>
 
               <li className="login-link">
-                <Link to="/Login">Login</Link>
+                <Link to="/login">Login</Link>
               </li>
             </ul>
           </div>
@@ -342,7 +342,7 @@ function Header() {
                 <div
                   onClick={() => {
                     removeLocalStorage(STORAGE.USER_KEY);
-                    navigate("/Login");
+                    navigate("/login");
                   }}
                   style={{
                     cursor: "pointer",
@@ -354,7 +354,7 @@ function Header() {
                   <i className="fa-solid fa-calendar-check"></i> Logout
                 </div>
               ) : (
-                <Link className="nav-link header-login" to="/Login">
+                <Link className="nav-link header-login" to="/login">
                   login
                 </Link>
               )}

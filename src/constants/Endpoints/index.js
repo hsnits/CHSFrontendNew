@@ -2,6 +2,8 @@ export const ENDPOINTS = {
   USER: {
     LOGIN: "/user/login",
     REGISTER: "/user/register",
+    FORGOTUSER: "/user/forgot",
+    RESETPASSWORD: "/user/reset",
     UPDATE_PROFILE: "/user/update",
     CHANGE_PROFILE_PICTURE: "/user/change-dp",
     VERIFY_EMAIL: "/user/verify-email",

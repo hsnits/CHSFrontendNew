@@ -15,7 +15,6 @@ export const loginUser = createAsyncThunk("loginUser", async (credentials) => {
     return response.data;
   } catch (error) {
     toastMessage("error", error.response?.data?.message);
-
     console.log("Login Error:", error.response?.data?.message);
   }
 });
@@ -34,6 +33,40 @@ export const registerUser = createAsyncThunk(
     } catch (error) {
       console.log("Registration Error:", error.response?.data);
       toastMessage("error", error.response?.data?.message);
+    }
+  }
+);
+
+// MARK: Forgot Password API
+export const forgotUserPassword = createAsyncThunk(
+  "forgotUserPassword",
+  async (credentials) => {
+    try {
+      const response = await axiosInstance.post(
+        ENDPOINTS.USER.FORGOTUSER,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      toastMessage("error", error.response?.data?.message);
+      console.log("Forgot Password Error:", error.response?.data?.message);
+    }
+  }
+);
+
+// MARK: Reset Password API
+export const resetUserPassword = createAsyncThunk(
+  "resetUserPassword",
+  async (credentials) => {
+    try {
+      const response = await axiosInstance.post(
+        ENDPOINTS.USER.RESETPASSWORD,
+        credentials
+      );
+      return response.data;
+    } catch (error) {
+      toastMessage("error", error.response?.data?.message);
+      console.log("Forgot Password Error:", error.response?.data?.message);
     }
   }
 );

@@ -1,0 +1,13 @@
+.login-header h2 {
+  font-size: 30px;
+}
+
+input[type="textarea"] {
+  height: 60px !important;
+}
+
+.error-input p {
+  color: red;
+  font-size: 12px;
+  margin: 0 0 12px;
+}

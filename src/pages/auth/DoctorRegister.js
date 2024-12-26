@@ -1,82 +1,28 @@
 import React from "react";
-import "../register/Register.css";
 import login_img from "../../assets/img/login_img.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { Input } from "reactstrap";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import "../register/Register.css";
+import "./Register.css";
 import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../../redux/slices/userApi";
-
-const roles = [
-  "Patient",
-  "Doctor",
-  "Pharmacy Retailers",
-  "Pathology",
-  "Diagnosis",
-  "Ambulance",
-  "Nursing",
-  "Biomedical",
-  "Hospital",
-];
-
-const registrationSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required("Name is required")
-    .min(3, "Name must be at least 3 characters")
-    .max(50, "Name must not exceed 50 characters"),
-  phoneNumber: yup
-    .string()
-    .required("Mobile Number is required")
-    .matches(/^[0-9]+$/, "Mobile Number must only contain digits")
-    .min(10, "Mobile Number must be exactly 10 digits")
-    .max(15, "Mobile Number must not exceed 15 digits"),
-  email: yup
-    .string()
-    .required("Email Address is required")
-    .email("Email Address must be valid"),
-  password: yup
-    .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters")
-    .max(20, "Password must not exceed 20 characters"),
-  address: yup
-    .string()
-    .required("Address is required")
-    .min(5, "Address must be at least 5 characters")
-    .max(100, "Address must not exceed 100 characters"),
-  role: yup
-    .string()
-    .required("Role is required")
-    .oneOf(
-      [
-        "Patient",
-        "Doctor",
-        "Pharmacy Retailers",
-        "Pathology",
-        "Diagnosis",
-        "Ambulance",
-        "Nursing",
-        "Biomedical",
-        "Hospital",
-      ],
-      "Invalid role selected"
-    ),
-});
+import { userRoles } from "../../constants/auth";
+import { registrationSchema } from "../../helpers/validations/auth";
 
 export default function DoctorRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm({
     resolver: yupResolver(registrationSchema),
   });
@@ -86,7 +32,7 @@ export default function DoctorRegister() {
       ...data,
       role: data.role.toLowerCase(),
     };
-    const result = await dispatch(registerUser(formattedData));
+    const result = dispatch(registerUser(formattedData));
     if (result?.payload?.status) {
       navigate("/login");
     }
@@ -217,7 +163,7 @@ export default function DoctorRegister() {
                               className="form-control floating"
                               {...field}
                             >
-                              {roles.map((role) => (
+                              {userRoles.map((role) => (
                                 <option key={role} value={role}>
                                   {role}
                                 </option>

@@ -58,13 +58,20 @@ const forgotSchema = yup.object().shape({
 const resetSchema = yup.object().shape({
   code: yup
     .string()
-    .required("Otp is required")
-    .min(4, "Otp must be at least 4 digits")
-    .max(6, "Otp must not exceed 6 digits"),
+    .required("OTP is required.")
+    .min(4, "OTP must be at least 4 digits.")
+    .max(6, "OTP must not exceed 6 digits."),
   password: yup
     .string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+    .required("Password is required.")
+    .min(6, "Password must be at least 6 characters long."),
+  confirmPassword: yup
+    .string()
+    .required("Confirm password is required.")
+    .oneOf(
+      [yup.ref("password"), null],
+      "Confirm password must match the password."
+    ),
 });
 
 export { registrationSchema, loginSchema, forgotSchema, resetSchema };

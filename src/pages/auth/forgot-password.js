@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import "../career/Career.css";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { Input } from "reactstrap";
-import { Eye, EyeOff } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { forgotUserPassword } from "../../redux/slices/userApi";
-import { ROLES } from "../../constants";
 import { forgotSchema } from "../../helpers/validations/auth";
 import ErrorInput from "../../components/common/errorInput";
+import { setLocalStorage } from "../../helpers/storage";
 
 const ForgotPassword = () => {
   const dispatch = useDispatch();
@@ -23,6 +21,7 @@ const ForgotPassword = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    reset,
   } = useForm({
     resolver: yupResolver(forgotSchema),
   });
@@ -30,7 +29,9 @@ const ForgotPassword = () => {
   const onSubmit = async (data) => {
     const result = await dispatch(forgotUserPassword(data)).unwrap();
     if (result?.status) {
+      setLocalStorage("userNumber", data?.phoneNumber);
       navigate("/reset-password");
+      reset();
     }
   };
 

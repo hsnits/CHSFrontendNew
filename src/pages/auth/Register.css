@@ -11,3 +11,12 @@ input[type="textarea"] {
   font-size: 12px;
   margin: 0 0 12px;
 }
+
+.eye-icon-span {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: grey;
+}

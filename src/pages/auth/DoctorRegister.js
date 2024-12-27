@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import login_img from "../../assets/img/login_img.png";
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
@@ -6,17 +6,20 @@ import { Input } from "reactstrap";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import "./Register.css";
-import * as yup from "yup";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../../redux/slices/userApi";
 import { userRoles } from "../../constants/auth";
 import { registrationSchema } from "../../helpers/validations/auth";
+import ErrorInput from "../../components/common/errorInput";
+import { Eye, EyeOff } from "react-feather";
 
 export default function DoctorRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [eyeOpen, setEyeOpen] = useState(false);
 
   const {
     control,
@@ -37,6 +40,7 @@ export default function DoctorRegister() {
       navigate("/login");
     }
   };
+
   return (
     <>
       <Header />
@@ -59,8 +63,11 @@ export default function DoctorRegister() {
                     </div>
 
                     <Form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="mb-3 form-focus">
-                        <label className="focus-label">Name</label>
+                      <div
+                        className={`mb-3 form-focus ${
+                          watch("name") ? "focused" : ""
+                        }`}
+                      >
                         <Controller
                           name="name"
                           control={control}
@@ -72,17 +79,15 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <p
-                          style={{
-                            color: "red",
-                            fontSize: "12px",
-                          }}
-                        >
-                          {errors.name?.message}
-                        </p>
+                        <label className="focus-label">Name</label>
                       </div>
-                      <div className="mb-3 form-focus">
-                        <label className="focus-label">Mobile Number</label>
+                      <ErrorInput error={errors?.name?.message} />
+
+                      <div
+                        className={`mb-3 form-focus ${
+                          watch("phoneNumber") ? "focused" : ""
+                        }`}
+                      >
                         <Controller
                           name="phoneNumber"
                           control={control}
@@ -94,11 +99,15 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <p style={{ color: "red", fontSize: "12px" }}>
-                          {errors.phoneNumber?.message}
-                        </p>
+                        <label className="focus-label">Mobile Number</label>
                       </div>
-                      <div className="mb-3 form-focus">
+                      <ErrorInput error={errors?.phoneNumber?.message} />
+
+                      <div
+                        className={`mb-3 form-focus ${
+                          watch("email") ? "focused" : ""
+                        }`}
+                      >
                         <Controller
                           name="email"
                           control={control}
@@ -109,29 +118,42 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <p style={{ color: "red", fontSize: "12px" }}>
-                          {errors.email?.message}
-                        </p>
                         <label className="focus-label">Email Address</label>
                       </div>
-                      <div className="mb-3 form-focus">
+                      <ErrorInput error={errors?.email?.message} />
+
+                      <div
+                        className={`mb-3 form-focus ${
+                          watch("password") ? "focused" : ""
+                        }`}
+                      >
                         <Controller
                           name="password"
                           control={control}
                           render={({ field }) => (
                             <Input
                               {...field}
-                              type="password"
+                              type={!eyeOpen ? "password" : "text"}
                               className="form-control floating"
                             />
                           )}
                         />
-                        <p style={{ color: "red", fontSize: "12px" }}>
-                          {errors.password?.message}
-                        </p>
-                        <label className="focus-label">Create Password</label>
+                        <span className="eye-icon-span">
+                          {eyeOpen ? (
+                            <Eye onClick={() => setEyeOpen((pre) => !pre)} />
+                          ) : (
+                            <EyeOff onClick={() => setEyeOpen((pre) => !pre)} />
+                          )}
+                        </span>
+                        <label className="focus-label">Password</label>
                       </div>
-                      <div className="mb-3 form-focus">
+                      <ErrorInput error={errors?.password?.message} />
+
+                      <div
+                        className={`mb-3 form-focus ${
+                          watch("address") ? "focused" : ""
+                        }`}
+                      >
                         <Controller
                           name="address"
                           control={control}
@@ -145,15 +167,11 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <p style={{ color: "red", fontSize: "12px" }}>
-                          {errors.address?.message}
-                        </p>
                         <label className="focus-label">Address</label>
                       </div>
-                      <div className="mb-3 form-focus">
-                        <label for="exampleSelect" className="focus-label">
-                          Choose Role
-                        </label>
+                      <ErrorInput error={errors?.address?.message} />
+
+                      <div className={`mb-3 form-focus focused`}>
                         <Controller
                           name="role"
                           control={control}
@@ -171,10 +189,12 @@ export default function DoctorRegister() {
                             </select>
                           )}
                         />
-                        <p style={{ color: "red", fontSize: "12px" }}>
-                          {errors.role?.message}
-                        </p>
+                        <label for="exampleSelect" className="focus-label">
+                          Choose Role
+                        </label>
                       </div>
+                      <ErrorInput error={errors?.role?.message} />
+
                       <div className="text-end">
                         <Link className="forgot-link" to="/Login">
                           Already have an account?

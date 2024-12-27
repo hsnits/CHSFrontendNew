@@ -46,6 +46,7 @@ export const forgotUserPassword = createAsyncThunk(
         ENDPOINTS.USER.FORGOTUSER,
         credentials
       );
+      toastMessage("success", "Otp sent to phone number successfully.");
       return response.data;
     } catch (error) {
       toastMessage("error", error.response?.data?.message);
@@ -59,10 +60,11 @@ export const resetUserPassword = createAsyncThunk(
   "resetUserPassword",
   async (credentials) => {
     try {
-      const response = await axiosInstance.post(
+      const response = await axiosInstance.put(
         ENDPOINTS.USER.RESETPASSWORD,
         credentials
       );
+      toastMessage("success", response?.data?.message);
       return response.data;
     } catch (error) {
       toastMessage("error", error.response?.data?.message);

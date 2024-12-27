@@ -89,19 +89,13 @@ const Contact = () => {
                           />
                         )}
                       />
-                      {eyeOpen ? (
-                        <Eye
-                          onClick={() => setEyeOpen((pre) => !pre)}
-                          className="feather-eye-off toggle-password"
-                          size={10}
-                        />
-                      ) : (
-                        <EyeOff
-                          onClick={() => setEyeOpen((pre) => !pre)}
-                          className="feather-eye-off toggle-password"
-                          size={10}
-                        />
-                      )}
+                      <span className="eye-icon-span">
+                        {eyeOpen ? (
+                          <Eye onClick={() => setEyeOpen((pre) => !pre)} />
+                        ) : (
+                          <EyeOff onClick={() => setEyeOpen((pre) => !pre)} />
+                        )}
+                      </span>
                       <label className="focus-label">Password</label>
                     </div>
                     <ErrorInput error={errors?.password?.message} />

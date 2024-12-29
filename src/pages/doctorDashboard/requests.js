@@ -7,8 +7,15 @@ import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
 import { ChevronDown, ChevronUp } from "react-feather";
 import { Dropdown, Form } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+
 
 const Requests = () => {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
   const {
@@ -24,6 +31,11 @@ const Requests = () => {
     await getAllData(
       `/doctor/appointment/${userProfileId}?status=Pending&time=${filter}`
     );
+  };
+  const handleDateChange = (dates) => {
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
   };
 
   const handleUpdate = async (isAvl) => {
@@ -54,6 +66,27 @@ const Requests = () => {
     <div>
       <div class="dashboard-header">
         <h3>Requests</h3>
+        
+          <div className="flex justify-between mr-1 ">
+        <DatePicker
+        selected={startDate}
+        onChange={handleDateChange}
+        startDate={startDate}
+        endDate={endDate}
+        selectsRange
+        isClearable
+        className=" border rounded p-2  w-full h-full "
+        placeholderText="Select a date range"
+      />
+
+      {startDate && endDate && (
+        <p className="text-sm">
+          Selected Range: {startDate.toLocaleDateString()} -{" "}
+          {endDate.toLocaleDateString()}
+        </p>
+      )}
+       
+
         <ul>
           <li>
             <Form.Select
@@ -67,6 +100,7 @@ const Requests = () => {
             </Form.Select>
           </li>
         </ul>
+        </div>
       </div>
       <NotFound
         loading={loading}

@@ -111,12 +111,14 @@ const DoctorSidebar = ({ doctorDetails }) => {
                 <Calendar /> Appointments
               </Nav.Link>
             </Nav.Item>
-            {/* 
-                                            <Nav.Item>
-                                                <Nav.Link eventKey="fifth">  <MessageCircle /> Message</Nav.Link>
-                                            </Nav.Item> */}
             <Nav.Item>
               <Nav.Link eventKey="fifth">
+                {" "}
+                <i className="fa-solid fa-calendar-check"></i> Clinic
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="sixth">
                 {" "}
                 <i className="fa-solid fa-user-pen"></i> Profile Settings{" "}
               </Nav.Link>

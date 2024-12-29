@@ -10,6 +10,7 @@ import Patients from "./patients";
 import Appointments from "./appoitments";
 import Profile from "./profile";
 import useGetMountData from "../../helpers/getDataHook";
+import Clinic from "../doctorDashboard/clint";
 
 function DoctorDashboard() {
   const { data, getAllData } = useGetMountData(`/user`);
@@ -46,8 +47,14 @@ function DoctorDashboard() {
                   </Tab.Pane>
 
                   <Tab.Pane eventKey="fifth">
+                    <Clinic />
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="sixth">
                     <Profile doctorDetails={data} getAllData={getAllData} />
                   </Tab.Pane>
+
+                  
                 </Tab.Content>
               </Col>
             </Row>

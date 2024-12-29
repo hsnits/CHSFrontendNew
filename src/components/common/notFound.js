@@ -1,5 +1,6 @@
 import React from "react";
 import { Spinner } from "reactstrap";
+import noDataImg from "../../assets/images/noDataFound2.png";
 
 const NotFound = ({
   isData = true,
@@ -10,12 +11,13 @@ const NotFound = ({
   loaderType = "border",
   loaderColor = "primary",
   loaderLabel = "Loading...",
+  height = "70vh",
 }) => {
   if (loading) {
     return (
       <div
         className="flex flex-1 justify-center items-center"
-        style={{ height: "70vh" }}
+        style={{ height: height }}
       >
         <span style={{ color: "black", marginInline: 3 }}>{loaderLabel}</span>
         <Spinner size={loaderSize} color={loaderColor} type={loaderType} />
@@ -26,10 +28,14 @@ const NotFound = ({
   if (!isData) {
     return (
       <div
-        style={{ height: "70vh" }}
-        className="flex justify-center items-center"
+        style={{ height: height }}
+        className="flex flex-col justify-center items-center"
       >
-        <h5 className={className}>{message}</h5>
+        <div className="mb-2">
+          {" "}
+          <img src={noDataImg} alt="noData" />
+        </div>
+        <h5 className={`text-center ${className}`}>{message}</h5>{" "}
       </div>
     );
   }

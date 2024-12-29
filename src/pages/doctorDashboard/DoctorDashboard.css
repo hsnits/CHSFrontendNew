@@ -1,0 +1,73 @@
+.patient-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 15px;
+  }
+  
+  .patient-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .patient-details {
+    flex: 1;
+  }
+  
+  .patient-name {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .patient-id {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .patient-age {
+    color: #444;
+    font-size: 14px;
+  }
+  
+  .patient-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 15px;
+  }
+  
+  .patient-card-body {
+    margin-top: 15px;
+  }
+  
+  .patient-card-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    color: #444;
+  }
+  
+  .patient-card-details li {
+    margin-bottom: 5px;
+  }
+  
+  .patient-card-address {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .appointment-info {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .appointment-info p {
+    margin-bottom: 5px;
+  }
+  

@@ -1,66 +1,139 @@
-import React from "react";
+import React, { useRef, useState } from "react";
+import "./DoctorDashboard.css";
 import { Search } from "react-feather";
 import user_img from "../../assets/img/doctor-profile-img.jpg";
+import useGetMountData from "../../helpers/getDataHook";
+import { STORAGE } from "../../constants";
+import { getLocalStorage } from "../../helpers/storage";
+import NotFound from "../../components/common/notFound";
+import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 
 const Patients = () => {
+  const [searchValue, setSearchValue] = useState("");
+  const debounceTimer = useRef(null);
+
+  const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
+
+  const { data, setData, backupData, loading } = useGetMountData(
+    `/doctor/patient/${userProfileId}`
+  );
+
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchValue(value);
+
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      const filteredData = backupData?.filter((it) =>
+        `${it?.patientId?.firstName} ${it?.patientId?.lastName}`
+          .toLowerCase()
+          .includes(value)
+      );
+      setData(filteredData);
+    }, 300);
+  };
+
   return (
     <div>
-      <div class="dashboard-header">
+      <div className="dashboard-header">
         <h3>My Patients</h3>
-        <ul class="header-list-btns">
+        <ul className="header-list-btns">
           <li>
-            <div class="input-block dash-search-input">
-              <input type="text" class="form-control" placeholder="Search" />
-              <span class="search-icon">
+            <div className="input-block dash-search-input">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search"
+                value={searchValue}
+                onChange={handleSearch}
+              />
+              <span className="search-icon">
                 <Search size={18} />
               </span>
             </div>
           </li>
         </ul>
       </div>
-      <div class="row">
-        <div class="col-xl-4 col-lg-6 col-md-6 d-flex">
-          <div class="appointment-wrap appointment-grid-wrap">
-            <ul>
-              <li>
-                <div class="appointment-grid-head">
-                  <div class="patinet-information">
-                    <a href="#">
-                      <img src={user_img} alt="User Image" />
-                    </a>
-                    <div class="patient-info">
-                      <p>#Apt0001</p>
-                      <h6>
-                        <a href="#">Adrian</a>
-                      </h6>
-                      <ul>
-                        <li>Age : 42</li>
-                        <li>Male</li>
-                        <li>AB+</li>
-                      </ul>
-                    </div>
+      <div className="row">
+        <NotFound
+          loading={loading}
+          isData={data?.length > 0}
+          message="No Patients Found."
+        />
+        {!loading &&
+          data?.length > 0 &&
+          data.map((it, index) => (
+            <div key={index} className="col-xl-4 col-lg-6 col-md-6 d-flex mb-4">
+              <div className="card patient-card">
+                <div className="patient-card-header">
+                  <div className="patient-details">
+                    <h6 className="patient-name">
+                      {`${it?.patientId?.firstName} ${it?.patientId?.lastName}`}
+                    </h6>
+                    <p className="patient-id" style={{ color: "blue" }}>
+                      {getIdLastDigits(it?.patientId?._id, "PT")}
+                    </p>
+                    <p className="patient-age">
+                      Age: {it?.patientId?.age || "N/A"}
+                    </p>
+                  </div>
+                  <img
+                    src={it?.patientId?.coverImage || user_img}
+                    alt="User"
+                    className="patient-img"
+                  />
+                </div>
+                <div className="patient-card-body">
+                  <ul className="patient-card-details">
+                    <li>Gender: {it?.patientId?.gender || "N/A"}</li>
+                    <li>Blood Group: {it?.patientId?.bloodGroup || "N/A"}</li>
+                  </ul>
+                  <p className="patient-card-address">
+                    <b>
+                      <i className="fa-solid fa-location-dot"></i>{" "}
+                      {it?.patientId?.address}, {it?.patientId?.city},{" "}
+                      {it?.patientId?.state}, {it?.patientId?.country} -{" "}
+                      {it?.patientId?.pinCode}
+                    </b>
+                  </p>
+                  <div className="appointment-info">
+                    <p>
+                      <i className="fa-solid fa-clock"></i> Upcoming Booking:{" "}
+                      {it?.upcomingAppointment ? (
+                        <>
+                          <span style={{ color: "green" }}>
+                            {getDateFormate(it?.upcomingAppointment?.date)}{" "}
+                            {it?.upcomingAppointment?.time}
+                          </span>
+                        </>
+                      ) : (
+                        <span style={{ color: "red" }}>
+                          No upcoming booking
+                        </span>
+                      )}
+                    </p>
+                    <p>
+                      <i className="fa-solid fa-calendar-days"></i> Last
+                      Booking:{" "}
+                      {it?.lastCompletedAppointment ? (
+                        <>
+                          <span style={{ color: "green" }}>
+                            {getDateFormate(it?.lastCompletedAppointment?.date)}{" "}
+                            {it?.lastCompletedAppointment?.time}
+                          </span>
+                        </>
+                      ) : (
+                        <span style={{ color: "red" }}>No Last booking</span>
+                      )}
+                    </p>
                   </div>
                 </div>
-              </li>
-              <li class="appointment-info">
-                <p>
-                  <i class="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <p class="mb-0">
-                  <i class="fa-solid fa-location-dot"></i>Alabama, USA
-                </p>
-              </li>
-              <li class="appointment-action">
-                <div class="patient-book">
-                  <p>
-                    <i class="fa-solid fa-calendar-days"></i>Last Booking{" "}
-                    <span>27 Feb 2024</span>
-                  </p>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

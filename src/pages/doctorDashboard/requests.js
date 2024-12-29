@@ -7,6 +7,8 @@ import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
 import { ChevronDown, ChevronUp } from "react-feather";
 import { Dropdown, Form } from "react-bootstrap";
+import { toastMessage } from "../../config/toast";
+import { callPutApi } from "../../_service";
 
 const Requests = () => {
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
@@ -15,41 +17,37 @@ const Requests = () => {
     data: Appointments,
     loading,
     getAllData,
+    setData,
   } = useGetMountData(
     `/doctor/appointment/${userProfileId}?status=Pending&time=today`
   );
 
   const getByFilter = async (filter) => {
-    console.log(filter, "filterrr");
     await getAllData(
       `/doctor/appointment/${userProfileId}?status=Pending&time=${filter}`
     );
   };
 
-  const handleUpdate = async (isAvl) => {
-    // setAvailability(isAvl);
-    // try {
-    //   const verifyResponse = await callPutApi(`/doctor/${doctorDetails?._id}`, {
-    //     availability: isAvl,
-    //   });
-    //   if (!verifyResponse.status) throw new Error(verifyResponse.message);
-    //   toastMessage("success", "You availability is updated now");
-    //   const userProfile = getLocalStorage(STORAGE.USER_KEY);
-    //   let profile = userProfile.profile;
-    //   let updatedStorage = {
-    //     ...userProfile,
-    //     profile: {
-    //       ...profile,
-    //       availability: isAvl,
-    //     },
-    //   };
-    //   setLocalStorage(STORAGE.USER_KEY, updatedStorage);
-    // } catch (error) {
-    //   setAvailability(!isAvl);
-    //   toastMessage("error", "Availability update process failed!");
-    // }
+  const handleUpdate = async (id, status) => {
+    try {
+      const verifyResponse = await callPutApi(`/patient/appointment/${id}`, { status });
+      if (!verifyResponse.status) throw new Error(verifyResponse.message);
+
+      toastMessage(
+        "success",
+        status === "Accepted"
+          ? "The appointment has been accepted."
+          : "The appointment has been rejected."
+      );
+
+      const updatedData = Appointments?.filter((item) => item?._id !== id);
+      setData(updatedData || []);
+    } catch (error) {
+      toastMessage("error", "Appointment update process failed!");
+    }
   };
 
+  console.log(Appointments, "Appointments");
   return (
     <div>
       <div class="dashboard-header">
@@ -74,7 +72,7 @@ const Requests = () => {
         message="No Appointments Found."
       />
       {!loading &&
-        Appointments &&
+        Appointments?.length > 0 &&
         Appointments?.map((it, index) => {
           return (
             <div class="appointment-wrap">
@@ -117,26 +115,20 @@ const Requests = () => {
                 <li>
                   <ul class="request-action">
                     <li>
-                      <a
-                        onClick={() => handleUpdate(true)}
-                        href="#"
+                      <span
+                        onClick={() => handleUpdate(it?._id, "Accepted")}
                         class="accept-link"
-                        data-bs-toggle="modal"
-                        data-bs-target="#accept_appointment"
                       >
                         <i class="fa-solid fa-check"></i>Accept
-                      </a>
+                      </span>
                     </li>
                     <li>
-                      <a
-                        onClick={() => handleUpdate(false)}
-                        href="#"
+                      <span
+                        onClick={() => handleUpdate(it?._id, "Cancelled")}
                         class="reject-link"
-                        data-bs-toggle="modal"
-                        data-bs-target="#cancel_appointment"
                       >
                         <i class="fa-solid fa-xmark"></i>Reject
-                      </a>
+                      </span>
                     </li>
                   </ul>
                 </li>

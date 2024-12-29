@@ -1,7 +1,53 @@
-import React from "react";
+import React, { useState } from "react";
 import user_img from "../../assets/img/doctor-profile-img.jpg";
+import useGetMountData from "../../helpers/getDataHook";
+import { getLocalStorage } from "../../helpers/storage";
+import { STORAGE } from "../../constants";
+import NotFound from "../../components/common/notFound";
+import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
+import { callPutApi } from "../../_service";
+import { toastMessage } from "../../config/toast";
+import AppointmentDetails from "../../components/modals/appotmentDetails";
 
 const Appointments = () => {
+  const [tab, setTab] = useState("Accepted");
+  const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
+
+  const { data: AppointmentsCount } = useGetMountData(
+    `/doctor/appointment-count/${userProfileId}`
+  );
+
+  const {
+    data: Appointments,
+    loading,
+    getAllData,
+    setData,
+    customData,
+    isOpen,
+    openModelWithItem,
+  } = useGetMountData(`/doctor/appointment/${userProfileId}?status=Accepted`);
+
+  const getByFilter = async (filter) => {
+    setTab(filter);
+    await getAllData(`/doctor/appointment/${userProfileId}?status=${filter}`);
+  };
+
+  const handleUpdate = async (id, status) => {
+    try {
+      const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
+        status,
+      });
+      if (!verifyResponse.status) throw new Error(verifyResponse.message);
+
+      toastMessage("success", "The appointment has been rejected.");
+
+      const updatedData = Appointments?.filter((item) => item?._id !== id);
+      setData(updatedData || []);
+    } catch (error) {
+      toastMessage("error", "Appointment update process failed!");
+    }
+  };
+
   return (
     <div>
       <div class="dashboard-header">
@@ -20,8 +66,9 @@ const Appointments = () => {
                 role="tab"
                 aria-controls="pills-upcoming"
                 aria-selected="true"
+                onClick={() => getByFilter("Accepted")}
               >
-                Upcoming<span>21</span>
+                Upcoming<span>{AppointmentsCount?.Accepted || 0}</span>
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -35,8 +82,9 @@ const Appointments = () => {
                 aria-controls="pills-cancel"
                 aria-selected="false"
                 tabindex="-1"
+                onClick={() => getByFilter("Cancelled")}
               >
-                Cancelled<span>16</span>
+                Cancelled<span>{AppointmentsCount?.Cancelled || 0}</span>
               </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -50,162 +98,116 @@ const Appointments = () => {
                 aria-controls="pills-complete"
                 aria-selected="false"
                 tabindex="-1"
+                onClick={() => getByFilter("Completed")}
               >
-                Completed<span>214</span>
+                Completed<span>{AppointmentsCount?.Completed || 0}</span>
               </button>
             </li>
           </ul>
         </div>
       </div>
       <div class="tab-content appointment-tab-content">
-        <div
-          class="tab-pane fade show active"
-          id="pills-upcoming"
-          role="tabpanel"
-          aria-labelledby="pills-upcoming-tab"
-        >
-          <div class="appointment-wrap">
-            <ul>
-              <li>
-                <div class="patinet-information">
-                  <a href="#">
-                    <img src={user_img} alt="User Image" />
-                  </a>
-                  <div class="patient-info">
-                    <p>#Apt0001</p>
-                    <h6>
-                      <a href="#">Dr Edalin</a>
-                    </h6>
-                  </div>
+        <NotFound
+          loading={loading}
+          isData={Appointments?.length > 0}
+          message="No Appointments Found."
+        />
+        {!loading &&
+          Appointments?.length > 0 &&
+          Appointments?.map((it, index) => {
+            return (
+              <div
+                class="tab-pane fade show active"
+                id="pills-upcoming"
+                role="tabpanel"
+                aria-labelledby="pills-upcoming-tab"
+              >
+                <div class="appointment-wrap">
+                  <ul>
+                    <li>
+                      <div class="patinet-information">
+                        {/* <a href="#"> */}
+                        <img
+                          src={it?.patientId?.coverImage || user_img}
+                          alt="User Image"
+                        />
+                        {/* </a> */}
+                        <div class="patient-info">
+                          <p>{getIdLastDigits(it?._id, "Ap")}</p>
+                          <h6>
+                            <a href="#">
+                              {it?.appointmentPersonName ||
+                                it?.patientId?.firstName}
+                            </a>
+                          </h6>
+                        </div>
+                      </div>
+                    </li>
+                    <li class="appointment-info">
+                      <p>
+                        <i class="fa-solid fa-clock"></i>{" "}
+                        {`${getDateFormate(it?.date)} ${it?.time}`}
+                      </p>
+                      <ul class="d-flex apponitment-types">
+                        {it?.appointmentType || "General Visit"}
+                      </ul>
+                    </li>
+                    <li class="mail-info-patient">
+                      <ul>
+                        <li>
+                          <i class="fa-solid fa-envelope"></i>
+                          {it?.patientId?.email}
+                        </li>
+                        <li>
+                          <i class="fa-solid fa-phone"></i>{" "}
+                          {it?.patientId?.phoneNumber}
+                        </li>
+                      </ul>
+                    </li>
+                    {tab == "Accepted" ? (
+                      <li class="appointment-action">
+                        <ul>
+                          <li>
+                            <a onClick={() => openModelWithItem("details", it)}>
+                              <i class="fa-solid fa-eye"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#">
+                              <i class="fa-solid fa-comments"></i>
+                            </a>
+                          </li>
+                          <li>
+                            <a
+                              onClick={() => handleUpdate(it?._id, "Cancelled")}
+                            >
+                              <i class="fa-solid fa-xmark"></i>
+                            </a>
+                          </li>
+                        </ul>
+                      </li>
+                    ) : (
+                      <li class="appointment-detail-btn">
+                        <a
+                          onClick={() => openModelWithItem("details", it)}
+                          class="start-link"
+                        >
+                          View Details
+                          <i class="fa-regular fa-circle-right ms-1"></i>
+                        </a>
+                      </li>
+                    )}
+                  </ul>
                 </div>
-              </li>
-              <li class="appointment-info">
-                <p>
-                  <i class="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <ul class="d-flex apponitment-types">
-                  <li>General Visit</li>
-                  <li>Video Call</li>
-                </ul>
-              </li>
-              <li class="mail-info-patient">
-                <ul>
-                  <li>
-                    <i class="fa-solid fa-envelope"></i>
-                    edalin@example.com
-                  </li>
-                  <li>
-                    <i class="fa-solid fa-phone"></i>+1 504 368 6874
-                  </li>
-                </ul>
-              </li>
-              <li class="appointment-action">
-                <ul>
-                  <li>
-                    <a href="#">
-                      <i class="fa-solid fa-eye"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa-solid fa-comments"></i>
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#">
-                      <i class="fa-solid fa-xmark"></i>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="appointment-detail-btn">
-                <a href="#" class="start-link">
-                  <i class="fa-solid fa-calendar-check me-1"></i>
-                  Attend
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div
-          class="tab-pane fade"
-          id="pills-cancel"
-          role="tabpanel"
-          aria-labelledby="pills-cancel-tab"
-        >
-          <div class="appointment-wrap">
-            <ul>
-              <li>
-                <div class="patinet-information">
-                  <a href="#">
-                    <img src={user_img} alt="User Image" />
-                  </a>
-                  <div class="patient-info">
-                    <p>#Apt00011</p>
-                    <h6>
-                      <a href="#">Dr Edalin</a>
-                    </h6>
-                  </div>
-                </div>
-              </li>
-              <li class="appointment-info">
-                <p>
-                  <i class="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <ul class="d-flex apponitment-types">
-                  <li>General Visit</li>
-                  <li>Video Call</li>
-                </ul>
-              </li>
-              <li class="appointment-detail-btn">
-                <a href="#" class="start-link">
-                  View Details
-                  <i class="fa-regular fa-circle-right ms-1"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div
-          class="tab-pane fade"
-          id="pills-complete"
-          role="tabpanel"
-          aria-labelledby="pills-complete-tab"
-        >
-          <div class="appointment-wrap">
-            <ul>
-              <li>
-                <div class="patinet-information">
-                  <a href="#">
-                    <img src={user_img} alt="User Image" />
-                  </a>
-                  <div class="patient-info">
-                    <p>#Apt0001</p>
-                    <h6>
-                      <a href="#">Dr Edalin</a>
-                    </h6>
-                  </div>
-                </div>
-              </li>
-              <li class="appointment-info">
-                <p>
-                  <i class="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                </p>
-                <ul class="d-flex apponitment-types">
-                  <li>General Visit</li>
-                  <li>Video Call</li>
-                </ul>
-              </li>
-              <li class="appointment-detail-btn">
-                <a href="#" class="start-link">
-                  View Details
-                  <i class="fa-regular fa-circle-right ms-1"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
+              </div>
+            );
+          })}
       </div>
+      <AppointmentDetails
+        showModal={isOpen == "details"}
+        handleModalClose={openModelWithItem}
+        selectedAppointment={customData}
+      />
     </div>
   );
 };

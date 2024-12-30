@@ -306,6 +306,7 @@ const Dashboard = ({ data }) => {
                               <th>Action</th>
                             </tr>
                           </thead>
+                          
                           {!loading &&
                             appointmentData?.length > 0 &&
                             appointmentData

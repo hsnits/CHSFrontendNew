@@ -281,6 +281,7 @@ const Dashboard = ({ data, appointmentData }) => {
                                 </a>
                               </td>
                               <td>
+                                
                                 <a
                                   href="javascript:void(0);"
                                   className="lab-icon prescription"

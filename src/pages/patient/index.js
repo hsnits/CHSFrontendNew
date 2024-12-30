@@ -39,13 +39,9 @@ function PatientDashboard() {
   const appointmentData = useSelector(
     (state) => state.PATIENT.data?.user?.getAllAppointmentResult
   );
-  // const appointmentData = useSelector(
-  //   (state) => state.PATIENT.data?.user?.getAppointmentResult
-  // );
 
   useEffect(() => {
     dispatch(userProfile());
-    // dispatch(getAppointment(userProfileId));
     dispatch(getAllAppointment(userProfileId));
   }, []);
 

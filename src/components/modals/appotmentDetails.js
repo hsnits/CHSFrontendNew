@@ -7,6 +7,7 @@ const AppointmentDetails = ({
   showModal,
   handleModalClose,
   selectedAppointment,
+  type = null,
 }) => {
   return (
     <div>
@@ -19,42 +20,92 @@ const AppointmentDetails = ({
             <div>
               {/* 1. Profile Details */}
               <section>
-                <h5>Profile Details</h5>
-                <Row className="mb-3">
-                  <Col md={4}>
-                    <Image
-                      src={
-                        selectedAppointment?.patientId?.coverImage || user_img
-                      }
-                      alt="Patient Image"
-                      roundedCircle
-                      fluid
-                    />
-                  </Col>
-                  <Col md={8}>
-                    <p>
-                      <strong>Name:</strong>{" "}
-                      {selectedAppointment?.appointmentPersonName ||
-                        `${selectedAppointment?.patientId?.firstName} ${selectedAppointment?.patientId?.lastName}`}
-                    </p>
-                    <p>
-                      <strong>Email:</strong>{" "}
-                      {selectedAppointment?.patientId?.email}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong>{" "}
-                      {selectedAppointment?.patientId?.phoneNumber}
-                    </p>
-                    <p>
-                      <strong>Address:</strong>{" "}
-                      {selectedAppointment?.patientId?.address},
-                      {selectedAppointment?.patientId?.city},{" "}
-                      {selectedAppointment?.patientId?.state},
-                      {selectedAppointment?.patientId?.country} -{" "}
-                      {selectedAppointment?.patientId?.pinCode}
-                    </p>
-                  </Col>
-                </Row>
+                {type == "patient" ? (
+                  <>
+                    {" "}
+                    <h5>Doctor Details</h5>
+                    <Row className="mb-3">
+                      <Col md={4}>
+                        <Image
+                          src={
+                            selectedAppointment?.refDoctor?.coverImage ||
+                            user_img
+                          }
+                          alt="Doctor Image"
+                          roundedCircle
+                          fluid
+                        />
+                      </Col>
+                      <Col md={8}>
+                        <p>
+                          <strong>Name:</strong>{" "}
+                          {`Dr ${selectedAppointment?.refDoctor?.firstName} ${selectedAppointment?.refDoctor?.lastName}`}
+                        </p>
+                        <p>
+                          <strong>Display Name:</strong>{" "}
+                          {`Dr ${selectedAppointment?.refDoctor?.displayName}`}
+                        </p>
+                        <p>
+                          <strong>Email:</strong>{" "}
+                          {selectedAppointment?.refDoctor?.email}
+                        </p>
+                        <p>
+                          <strong>Phone:</strong>{" "}
+                          {selectedAppointment?.refDoctor?.phoneNumber}
+                        </p>
+                        <p>
+                          <strong>Address:</strong>{" "}
+                          {selectedAppointment?.refDoctor?.address},
+                          {selectedAppointment?.refDoctor?.city},{" "}
+                          {selectedAppointment?.refDoctor?.state},
+                          {selectedAppointment?.refDoctor?.country} -{" "}
+                          {selectedAppointment?.refDoctor?.pinCode}
+                        </p>
+                      </Col>
+                    </Row>
+                  </>
+                ) : (
+                  <>
+                    {" "}
+                    <h5>Profile Details</h5>
+                    <Row className="mb-3">
+                      <Col md={4}>
+                        <Image
+                          src={
+                            selectedAppointment?.patientId?.coverImage ||
+                            user_img
+                          }
+                          alt="Patient Image"
+                          roundedCircle
+                          fluid
+                        />
+                      </Col>
+                      <Col md={8}>
+                        <p>
+                          <strong>Name:</strong>{" "}
+                          {selectedAppointment?.appointmentPersonName ||
+                            `${selectedAppointment?.patientId?.firstName} ${selectedAppointment?.patientId?.lastName}`}
+                        </p>
+                        <p>
+                          <strong>Email:</strong>{" "}
+                          {selectedAppointment?.patientId?.email}
+                        </p>
+                        <p>
+                          <strong>Phone:</strong>{" "}
+                          {selectedAppointment?.patientId?.phoneNumber}
+                        </p>
+                        <p>
+                          <strong>Address:</strong>{" "}
+                          {selectedAppointment?.patientId?.address},
+                          {selectedAppointment?.patientId?.city},{" "}
+                          {selectedAppointment?.patientId?.state},
+                          {selectedAppointment?.patientId?.country} -{" "}
+                          {selectedAppointment?.patientId?.pinCode}
+                        </p>
+                      </Col>
+                    </Row>
+                  </>
+                )}
               </section>
 
               <hr />

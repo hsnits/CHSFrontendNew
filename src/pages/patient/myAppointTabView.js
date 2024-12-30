@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Tab } from "react-bootstrap";
 import user_img from "../../assets/img/profile-06.jpg";
 import { useDispatch } from "react-redux";
@@ -9,12 +9,18 @@ import {
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import moment from "moment/moment";
+import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
+import NotFound from "../../components/common/notFound";
+import AppointmentDetails from "../../components/modals/appotmentDetails";
 
 const MyAppointTabView = ({ appointmentData }) => {
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
+  const [isOpen, setIsOpen] = useState("");
+  const [customData, setCustomData] = useState("");
 
   const upcomingAppointments = appointmentData.filter(
-    (appointment) => appointment.status === "Pending"
+    (appointment) =>
+      appointment.status === "Pending" || appointment.status === "Accepted"
   );
   const canceledAppointments = appointmentData.filter(
     (appointment) => appointment.status === "Cancelled"
@@ -31,7 +37,10 @@ const MyAppointTabView = ({ appointmentData }) => {
     ).then(() => dispatch(getAllAppointment(userProfileId)));
   };
 
-  const formattedDate = (date) => moment(date).format("DD MMM YYYY");
+  const openModelWithItem = (key, item) => {
+    setIsOpen(key);
+    setCustomData(item);
+  };
 
   return (
     <Tab.Pane eventKey="second">
@@ -100,9 +109,11 @@ const MyAppointTabView = ({ appointmentData }) => {
           aria-labelledby="pills-upcoming-tab"
         >
           {upcomingAppointments.length === 0 ? (
-            <div className="appointment-wrap">
-              <p>No upcoming appointments.</p>
-            </div>
+            <NotFound
+              loading={false}
+              isData={false}
+              message="No upcoming appointments found."
+            />
           ) : (
             upcomingAppointments.map((el, index) => {
               console.log(upcomingAppointments);
@@ -112,12 +123,15 @@ const MyAppointTabView = ({ appointmentData }) => {
                     <li>
                       <div className="patinet-information">
                         <a>
-                          <img src={user_img} alt="User Image" />
+                          <img
+                            src={el?.refDoctor?.coverImage || user_img}
+                            alt="User Image"
+                          />
                         </a>
                         <div className="patient-info">
-                          <p>#Apt{el?._id.slice(-3)}</p>
+                          <p>{getIdLastDigits(el?._id, "AP")}</p>
                           <h6>
-                            <a>Dr {el?.refDoctor?.firstName}</a>
+                            <a>Dr {el?.refDoctor?.displayName || "--"}</a>
                           </h6>
                         </div>
                       </div>
@@ -125,7 +139,7 @@ const MyAppointTabView = ({ appointmentData }) => {
                     <li className="appointment-info">
                       <p>
                         <i className="fa-solid fa-clock"></i>
-                        {formattedDate(el?.date)}, {el?.time}
+                        {getDateFormate(el?.date)}, {el?.time}
                       </p>
                       <ul className="d-flex apponitment-types">
                         <li>General Visit</li>
@@ -146,7 +160,11 @@ const MyAppointTabView = ({ appointmentData }) => {
                     </li>
                     <li className="appointment-action">
                       <ul>
-                        <li>
+                        <li
+                          onClick={() => {
+                            openModelWithItem("details", el);
+                          }}
+                        >
                           <a>
                             <i className="fa-solid fa-eye"></i>
                           </a>
@@ -159,12 +177,12 @@ const MyAppointTabView = ({ appointmentData }) => {
                         </li>
                       </ul>
                     </li>
-                    <li className="appointment-detail-btn">
+                    {/* <li className="appointment-detail-btn">
                       <a className="start-link">
                         <i className="fa-solid fa-calendar-check me-1"></i>
                         Attend
                       </a>
-                    </li>
+                    </li> */}
                   </ul>
                 </div>
               );
@@ -178,9 +196,11 @@ const MyAppointTabView = ({ appointmentData }) => {
           aria-labelledby="pills-cancel-tab"
         >
           {canceledAppointments.length === 0 ? (
-            <div className="appointment-wrap">
-              <p>No appointments found.</p>
-            </div>
+            <NotFound
+              loading={false}
+              isData={false}
+              message="No cancel appointments found."
+            />
           ) : (
             canceledAppointments.map((el, index) => {
               return (
@@ -189,12 +209,15 @@ const MyAppointTabView = ({ appointmentData }) => {
                     <li>
                       <div className="patinet-information">
                         <a>
-                          <img src={user_img} alt="User Image" />
+                          <img
+                            src={el?.refDoctor?.coverImage || user_img}
+                            alt="User Image"
+                          />
                         </a>
                         <div className="patient-info">
-                          <p>#Apt{el?._id.slice(-3)}</p>
+                          <p>{getIdLastDigits(el?._id, "AP")}</p>
                           <h6>
-                            <a>Dr {el?.refDoctor?.firstName}</a>
+                            <a>Dr {el?.refDoctor?.displayName || "--"}</a>
                           </h6>
                         </div>
                       </div>
@@ -202,7 +225,7 @@ const MyAppointTabView = ({ appointmentData }) => {
                     <li className="appointment-info">
                       <p>
                         <i className="fa-solid fa-clock"></i>
-                        {formattedDate(el?.date)}, {el?.time}
+                        {getDateFormate(el?.date)}, {el?.time}
                       </p>
                       <ul className="d-flex apponitment-types">
                         <li>General Visit</li>
@@ -210,7 +233,12 @@ const MyAppointTabView = ({ appointmentData }) => {
                       </ul>
                     </li>
                     <li className="appointment-detail-btn">
-                      <a className="start-link">
+                      <a
+                        className="start-link"
+                        onClick={() => {
+                          openModelWithItem("details", el);
+                        }}
+                      >
                         View Details
                         <i className="fa-regular fa-circle-right ms-1"></i>
                       </a>
@@ -228,45 +256,66 @@ const MyAppointTabView = ({ appointmentData }) => {
           aria-labelledby="pills-complete-tab"
         >
           {completedAppointments.length === 0 ? (
-            <div className="appointment-wrap">
-              <p>No appointments found.</p>
-            </div>
+            <NotFound
+              loading={false}
+              isData={false}
+              message="No completed appointments found."
+            />
           ) : (
-            <div className="appointment-wrap">
-              <ul>
-                <li>
-                  <div className="patinet-information">
-                    <a>
-                      <img src={user_img} alt="User Image" />
-                    </a>
-                    <div className="patient-info">
-                      <p>#Apt0001</p>
-                      <h6>
-                        <a>Dr Edalin</a>
-                      </h6>
-                    </div>
-                  </div>
-                </li>
-                <li className="appointment-info">
-                  <p>
-                    <i className="fa-solid fa-clock"></i>11 Nov 2024 10.45 AM
-                  </p>
-                  <ul className="d-flex apponitment-types">
-                    <li>General Visit</li>
-                    <li>Video Call</li>
+            canceledAppointments.map((el, index) => {
+              return (
+                <div className="appointment-wrap">
+                  <ul>
+                    <li>
+                      <div className="patinet-information">
+                        <a>
+                          <img
+                            src={el?.refDoctor?.coverImage || user_img}
+                            alt="User Image"
+                          />
+                        </a>
+                        <div className="patient-info">
+                          <p>{getIdLastDigits(el?._id, "AP")}</p>
+                          <h6>
+                            <a>Dr {el?.refDoctor?.displayName || "--"}</a>
+                          </h6>
+                        </div>
+                      </div>
+                    </li>
+                    <li className="appointment-info">
+                      <p>
+                        <i className="fa-solid fa-clock"></i>{" "}
+                        {getDateFormate(el?.date)}, {el?.time}
+                      </p>
+                      <ul className="d-flex apponitment-types">
+                        <li>General Visit</li>
+                        <li>{el?.appointmentType}</li>
+                      </ul>
+                    </li>
+                    <li className="appointment-detail-btn">
+                      <a
+                        className="start-link"
+                        onClick={() => {
+                          openModelWithItem("details", el);
+                        }}
+                      >
+                        View Details
+                        <i className="fa-regular fa-circle-right ms-1"></i>
+                      </a>
+                    </li>
                   </ul>
-                </li>
-                <li className="appointment-detail-btn">
-                  <a className="start-link">
-                    View Details
-                    <i className="fa-regular fa-circle-right ms-1"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
+                </div>
+              );
+            })
           )}
         </div>
       </div>
+      <AppointmentDetails
+        showModal={isOpen == "details"}
+        handleModalClose={openModelWithItem}
+        selectedAppointment={customData}
+        type="patient"
+      />
     </Tab.Pane>
   );
 };

@@ -58,7 +58,7 @@ function PatientDashboard() {
               <Col lg="8" xl="9">
                 <Tab.Content>
                   {/* Dashboard view */}
-                  <Dashboard data={data} appointmentData={appointmentData} />
+                  <Dashboard data={data} appointmentData={appointmentData} getAllData={getAllData} userProfileId={userProfileId}/>
                   {/* My Appointment tab view */}
                   <MyAppointTabView appointmentData={appointmentData} />
                   {/* Sayptoms view */}

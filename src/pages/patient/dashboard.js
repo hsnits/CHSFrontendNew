@@ -3,6 +3,13 @@ import { Button, Col, Form, Modal, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import user_img from "../../assets/img/profile-06.jpg";
 import { useSelector } from "react-redux";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { toastMessage } from "../../config/toast";
+import { callPostApi } from "../../_service";
+import useGetMountData from "../../helpers/getDataHook";
+
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -16,38 +23,84 @@ function formatDate(dateString) {
   return date.toLocaleDateString("en-GB", options);
 }
 
-const Dashboard = ({ data, appointmentData }) => {
+// Validation schema with Yup
+const validationSchema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+  description: yup.string().required("Description is required"),
+  file: yup
+    .mixed()
+    .required("File is required")
+    .test("fileSize", "File size is too large", (value) => {
+      return value && value[0]?.size <= 2 * 1024 * 1024; // 2MB limit
+    }),
+});
+
+const Dashboard = ({ data, appointmentData , userProfileId,  }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("appointments");
   const [showModal, setShowModal] = useState(false); // Modal visibility state
-  const [record, setRecord] = useState({
-    name: "",
-    date: "",
-    description: "",
-  }); 
+  
+  const handleModelShow=()=>setShowModal(true);
+  const handleModelClose=()=>setShowModal(false);
 
   const handleTabClick = (tab, event) => {
     event.preventDefault();
     setActiveTab(tab);
   };
-  const handleModalClose = () => setShowModal(false);
-  const handleModalShow = () => setShowModal(true);
+  
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+  });
+  const {
+    data: isReports,
+    loading,
+    getAllData,
+  } = useGetMountData(
+    `/doctor/appointment/${userProfileId}?status=Pending&time=today`
+  );
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setRecord({ ...record, [name]: value });
-  };
-  const handleFileChange = (e) => {
-    setRecord({ ...record, file: e.target.files[0] });
-  };
+ 
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted Medical Record:", record);
-    // Handle form submission logic, e.g., API call
-    setShowModal(false);
-  };
 
+  const onSubmit = async (values) => {
+    try {
+      
+
+      // Step 1: Upload the file
+      const file = values.file[0];
+      const uploadedFile = await callPostApi(`/user/upload-file`, { file });
+      if (!uploadedFile.status) throw new Error(uploadedFile.message);
+
+      // Step 2: Prepare the updated data
+      const updatedData = {
+        name: values.name,
+        attachment: uploadedFile?.data?.file,
+        description: values.description,
+      };
+
+      // Step 3: Send the data to the API
+      const verifyResponse = await callPostApi(`/patient/medical/${userProfileId}`, updatedData);
+      if (!verifyResponse.status) throw new Error(verifyResponse.message);
+
+      // Step 4: Notify success and refresh data
+      toastMessage("success", "Report is added successfully.");
+      getAllData(`/patient/reports/${userProfileId}`);
+
+       // Refresh the list or data
+console.log("getData",data);
+
+      setShowModal(false)
+    } catch (error) {
+      toastMessage("error", error.message || "Report adding process failed!");
+    } finally {
+      setShowModal(false)
+    }
+  };
   const renderButton = () => {
     switch (activeTab) {
       case "appointments":
@@ -61,10 +114,10 @@ const Dashboard = ({ data, appointmentData }) => {
         );
       case "medicalRecords":
         return (
-          <button onClick={handleModalShow} className="btn btn-secondary">
+          <Button onClick={handleModelShow} className="btn btn-secondary bg-blue-500 text-white">
 
             Add Medical Record
-          </button>
+          </Button>
         );
       case "prescriptions":
         return (
@@ -350,63 +403,60 @@ const Dashboard = ({ data, appointmentData }) => {
       </Col>
     </Tab.Pane>
      {/* Modal for adding medical record */}
-     <Modal show={showModal} onHide={handleModalClose}>
-     <Modal.Header closeButton>
-       <Modal.Title>Add Medical Record</Modal.Title>
-     </Modal.Header>
-     <Form onSubmit={handleFormSubmit}>
-       <Modal.Body>
-         <Form.Group className="mb-3" controlId="formRecordName">
-           <Form.Label>Name</Form.Label>
-           <Form.Control
-             type="text"
-             placeholder="Enter record name"
-             name="name"
-             value={record.name}
-             onChange={handleInputChange}
-             required
-           />
-         </Form.Group>
-         <Form.Group className="mb-3" controlId="formRecordDate">
-           <Form.Label>Date</Form.Label>
-           <Form.Control
-             type="date"
-             name="date"
-             value={record.date}
-             onChange={handleInputChange}
-             required
-           />
-         </Form.Group>
-         <Form.Group className="mb-3" controlId="formRecordDescription">
-           <Form.Label>Description</Form.Label>
-           <Form.Control
-             as="textarea"
-             rows={3}
-             name="description"
-             value={record.description}
-             onChange={handleInputChange}
-             placeholder="Enter description"
-           />
-         </Form.Group>
-         <Form.Group className="mb-3" controlId="formFile">
+     <Modal show={showModal} onHide={handleModelClose} backdrop="static" keyboard={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>Add Medical Record</Modal.Title>
+      </Modal.Header>
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <Modal.Body>
+          {/* Name Field */}
+          <Form.Group className="mb-3" controlId="formRecordName">
+            <Form.Label>Name</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Enter record name"
+              {...register("name")}
+              isInvalid={!!errors.name}
+            />
+            <Form.Control.Feedback type="invalid">{errors.name?.message}</Form.Control.Feedback>
+          </Form.Group>
+
+          {/* Description Field */}
+          <Form.Group className="mb-3" controlId="formRecordDescription">
+            <Form.Label>Description</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              placeholder="Enter description"
+              {...register("description")}
+              isInvalid={!!errors.description}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.description?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
+
+          {/* File Upload Field */}
+          <Form.Group className="mb-3" controlId="formFile">
             <Form.Label>Attach File</Form.Label>
             <Form.Control
               type="file"
-              name="file"
-              onChange={handleFileChange}
+              {...register("file")}
+              isInvalid={!!errors.file}
             />
+            <Form.Control.Feedback type="invalid">{errors.file?.message}</Form.Control.Feedback>
           </Form.Group>
-       </Modal.Body>
-       <Modal.Footer>
-         <Button variant="secondary" onClick={handleModalClose}>
-           Close
-         </Button>
-         <Button variant="primary" type="submit">
-           Save Record
-         </Button>
-       </Modal.Footer>
-     </Form>
-   </Modal>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleModelClose} >
+            Close
+          </Button>
+          <Button variant="primary" type="submit" >
+           Save medicalRecords
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
    </>
   );
 };

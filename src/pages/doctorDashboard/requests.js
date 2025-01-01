@@ -85,7 +85,8 @@ const Requests = () => {
           {endDate.toLocaleDateString()}
         </p>
       )}
-       
+               </div>
+
 
         <ul>
           <li>
@@ -100,7 +101,6 @@ const Requests = () => {
             </Form.Select>
           </li>
         </ul>
-        </div>
       </div>
       <NotFound
         loading={loading}

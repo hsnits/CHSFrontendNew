@@ -26,6 +26,7 @@ export default function DoctorRegister() {
     handleSubmit,
     formState: { errors },
     watch,
+    reset,
   } = useForm({
     resolver: yupResolver(registrationSchema),
   });
@@ -35,8 +36,10 @@ export default function DoctorRegister() {
       ...data,
       role: data.role.toLowerCase(),
     };
-    const result = dispatch(registerUser(formattedData));
+    const result =await dispatch(registerUser(formattedData));
+    console.log(result,"jjjj")
     if (result?.payload?.status) {
+      reset();
       navigate("/login");
     }
   };

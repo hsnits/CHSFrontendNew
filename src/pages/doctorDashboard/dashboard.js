@@ -43,19 +43,22 @@ const Dashboard = () => {
                 <h4>{data?.totalPatients || 0}</h4>
                 <span
                   className={
-                    data?.percentageChange?.totalPatients <= 0
-                      ? "text-danger"
-                      : "text-success"
+                    // data?.percentageChange?.totalPatients <= 0
+                    //   ? "text-danger"
+                    //   :
+                    "text-success"
                   }
                 >
                   <i
                     className={
-                      data?.percentageChange?.totalPatients <= 0
-                        ? "fa-solid fa-arrow-down"
-                        : "fa-solid fa-arrow-up"
+                      // data?.percentageChange?.totalPatients <= 0
+                      //   ? "fa-solid fa-arrow-down"
+                      //   :
+                      "fa-solid fa-arrow-up"
                     }
                   ></i>
-                  {data?.percentageChange?.totalPatients || 0}% From Last Week
+                  {/* {data?.percentageChange?.totalPatients || 0}% From Last Week */}
+                  {1}% From Last Week
                 </span>
                 {/* <span className="text-success">
                   <i className="fa-solid fa-arrow-up"></i>15% From Last Week
@@ -85,7 +88,8 @@ const Dashboard = () => {
                         : "fa-solid fa-arrow-up"
                     }
                   ></i>
-                  {data?.percentageChange?.patients || 0}% From Yesterday
+                  {/* {data?.percentageChange?.patients || 0}% From Yesterday */}
+                  {0}% From Yesterday
                 </span>
               </div>
               <div className="dashboard-widget-icon">
@@ -112,7 +116,8 @@ const Dashboard = () => {
                         : "fa-solid fa-arrow-up"
                     }
                   ></i>{" "}
-                  {data?.percentageChange?.appointments || 0}% From Yesterday
+                  {/* {data?.percentageChange?.appointments || 0}% From Yesterday */}
+                  {0}% From Yesterday
                 </span>
               </div>
               <div className="dashboard-widget-icon">

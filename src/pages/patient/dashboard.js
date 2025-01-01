@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Col, Tab } from "react-bootstrap";
+import { Button, Col, Form, Modal, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import user_img from "../../assets/img/profile-06.jpg";
 import { useSelector } from "react-redux";
@@ -12,10 +12,33 @@ import { toastMessage } from "../../config/toast";
 const Dashboard = ({ data }) => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("appointments");
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const [record, setRecord] = useState({
+    name: "",
+    date: "",
+    description: "",
+  }); 
 
   const handleTabClick = (tab, event) => {
     event.preventDefault();
     setActiveTab(tab);
+  };
+  const handleModalClose = () => setShowModal(false);
+  const handleModalShow = () => setShowModal(true);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setRecord({ ...record, [name]: value });
+  };
+  const handleFileChange = (e) => {
+    setRecord({ ...record, file: e.target.files[0] });
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    console.log("Submitted Medical Record:", record);
+    // Handle form submission logic, e.g., API call
+    setShowModal(false);
   };
 
   const {
@@ -60,10 +83,8 @@ const Dashboard = ({ data }) => {
         );
       case "medicalRecords":
         return (
-          <button
-            onClick={() => console.log("Medical")}
-            className="btn btn-secondary"
-          >
+          <button onClick={handleModalShow} className="btn btn-secondary">
+
             Add Medical Record
           </button>
         );
@@ -82,6 +103,7 @@ const Dashboard = ({ data }) => {
   };
 
   return (
+    <>
     <Tab.Pane eventKey="first">
       <div className="dashboard-header">
         <h3>Dashboard</h3>
@@ -104,7 +126,7 @@ const Dashboard = ({ data }) => {
           </div>
           <div className="dashboard-card-body">
             <div className="account-detail-table">
-              <nav className="patient-dash-tab border-0 pb-0 mb-3 mt-3">
+              <nav className=" relative patient-dash-tab border-0 pb-0 mb-3 mt-3">
                 <ul className="nav nav-tabs-bottom" role="tablist">
                   <li className="nav-item" role="presentation">
                     <a
@@ -143,7 +165,7 @@ const Dashboard = ({ data }) => {
                       Prescriptions
                     </a>
                   </li>
-                  <div className="d-flex justify-content-end">
+                  <div className="d-flex absolute top-0 right-0">
                     {renderButton()}
                   </div>
                 </ul>
@@ -401,6 +423,65 @@ const Dashboard = ({ data }) => {
         </div>
       </Col>
     </Tab.Pane>
+     {/* Modal for adding medical record */}
+     <Modal show={showModal} onHide={handleModalClose}>
+     <Modal.Header closeButton>
+       <Modal.Title>Add Medical Record</Modal.Title>
+     </Modal.Header>
+     <Form onSubmit={handleFormSubmit}>
+       <Modal.Body>
+         <Form.Group className="mb-3" controlId="formRecordName">
+           <Form.Label>Name</Form.Label>
+           <Form.Control
+             type="text"
+             placeholder="Enter record name"
+             name="name"
+             value={record.name}
+             onChange={handleInputChange}
+             required
+           />
+         </Form.Group>
+         <Form.Group className="mb-3" controlId="formRecordDate">
+           <Form.Label>Date</Form.Label>
+           <Form.Control
+             type="date"
+             name="date"
+             value={record.date}
+             onChange={handleInputChange}
+             required
+           />
+         </Form.Group>
+         <Form.Group className="mb-3" controlId="formRecordDescription">
+           <Form.Label>Description</Form.Label>
+           <Form.Control
+             as="textarea"
+             rows={3}
+             name="description"
+             value={record.description}
+             onChange={handleInputChange}
+             placeholder="Enter description"
+           />
+         </Form.Group>
+         <Form.Group className="mb-3" controlId="formFile">
+            <Form.Label>Attach File</Form.Label>
+            <Form.Control
+              type="file"
+              name="file"
+              onChange={handleFileChange}
+            />
+          </Form.Group>
+       </Modal.Body>
+       <Modal.Footer>
+         <Button variant="secondary" onClick={handleModalClose}>
+           Close
+         </Button>
+         <Button variant="primary" type="submit">
+           Save Record
+         </Button>
+       </Modal.Footer>
+     </Form>
+   </Modal>
+   </>
   );
 };
 

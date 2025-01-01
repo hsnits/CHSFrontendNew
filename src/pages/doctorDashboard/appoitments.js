@@ -35,11 +35,16 @@ const Appointments = () => {
   const handleUpdate = async (id, status) => {
     try {
       const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
-        status,
+        status
       });
       if (!verifyResponse.status) throw new Error(verifyResponse.message);
 
-      toastMessage("success", "The appointment has been rejected.");
+      toastMessage(
+        "success",
+        status == "Rejected"
+          ? "The appointment has been rejected."
+          : "The appointment has been completed."
+      );
 
       const updatedData = Appointments?.filter((item) => item?._id !== id);
       setData(updatedData || []);
@@ -173,7 +178,9 @@ const Appointments = () => {
                             </a>
                           </li>
                           <li>
-                            <a href="#">
+                            <a
+                              onClick={() => handleUpdate(it?._id, "Completed")}
+                            >
                               <i class="fa-solid fa-comments"></i>
                             </a>
                           </li>

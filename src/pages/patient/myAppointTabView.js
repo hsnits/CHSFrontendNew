@@ -262,7 +262,7 @@ const MyAppointTabView = ({ appointmentData }) => {
               message="No completed appointments found."
             />
           ) : (
-            canceledAppointments.map((el, index) => {
+            completedAppointments.map((el, index) => {
               return (
                 <div className="appointment-wrap">
                   <ul>

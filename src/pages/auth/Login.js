@@ -30,12 +30,14 @@ const Contact = () => {
 
   const onSubmit = async (data) => {
     const result = await dispatch(loginUser(data)).unwrap();
-    if (result?.data?.role === ROLES.PATIENT) {
-      navigate("/patient");
-    } else if (result?.data?.role === ROLES.DOCTOR) {
-      navigate("/DoctorDashboard");
-    } else {
-      navigate("/login");
+    if (result?.status) {
+      if (result?.data?.role === ROLES.PATIENT) {
+        navigate("/patient");
+      } else if (result?.data?.role === ROLES.DOCTOR) {
+        navigate("/DoctorDashboard");
+      } else {
+        navigate("/pharmacy");
+      }
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import user_img from "../../assets/img/doctor-profile-img.jpg";
 import useGetMountData from "../../helpers/getDataHook";
 import { getLocalStorage } from "../../helpers/storage";
@@ -9,8 +9,14 @@ import { ChevronDown, ChevronUp } from "react-feather";
 import { Dropdown, Form } from "react-bootstrap";
 import { toastMessage } from "../../config/toast";
 import { callPutApi } from "../../_service";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Requests = () => {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [time, setTime] = useState("today");
+
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
   const {
@@ -22,15 +28,32 @@ const Requests = () => {
     `/doctor/appointment/${userProfileId}?status=Pending&time=today`
   );
 
-  const getByFilter = async (filter) => {
-    await getAllData(
-      `/doctor/appointment/${userProfileId}?status=Pending&time=${filter}`
-    );
+  const getByFilter = async (time, startDate, endDate) => {
+    let url = `/doctor/appointment/${userProfileId}?status=Pending&time=${time}`;
+    if (startDate && endDate) {
+      url = `/doctor/appointment/${userProfileId}?status=Pending&time=${time}&startDate=${startDate}&endDate=${endDate}`;
+    }
+    await getAllData(url);
+  };
+
+  useEffect(() => {
+    if (time || (startDate && endDate)) {
+      getByFilter(time, startDate, endDate);
+    }
+  }, [startDate, endDate, time]);
+
+  const handleDateChange = (dates) => {
+    console.log(dates, "ffff");
+    const [start, end] = dates;
+    setStartDate(start);
+    setEndDate(end);
   };
 
   const handleUpdate = async (id, status) => {
     try {
-      const verifyResponse = await callPutApi(`/patient/appointment/${id}`, { status });
+      const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
+        status,
+      });
       if (!verifyResponse.status) throw new Error(verifyResponse.message);
 
       toastMessage(
@@ -52,24 +75,45 @@ const Requests = () => {
     <div>
       <div class="dashboard-header">
         <h3>Requests</h3>
-        <ul>
-          <li>
-            <Form.Select
-              onChange={(e) => {
-                getByFilter(e.target.value);
-              }}
-            >
-              <option value="today">Today</option>
-              <option value="week">This Week</option>
-              <option value="month">This Month</option>
-            </Form.Select>
-          </li>
-        </ul>
+
+        <div className="flex justify-between mr-1 ">
+          <DatePicker
+            selected={startDate}
+            onChange={handleDateChange}
+            startDate={startDate}
+            endDate={endDate}
+            selectsRange
+            isClearable
+            className=" border rounded p-2  w-full h-full "
+            placeholderText="Select a date range"
+          />
+
+          {/* {startDate && endDate && (
+            <p className="text-sm">
+              Selected Range: {startDate.toLocaleDateString()} -{" "}
+              {endDate.toLocaleDateString()}
+            </p>
+          )} */}
+
+          <ul>
+            <li>
+              <Form.Select
+                onChange={(e) => {
+                  setTime(e.target.value);
+                }}
+              >
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+              </Form.Select>
+            </li>
+          </ul>
+        </div>
       </div>
       <NotFound
         loading={loading}
         isData={Appointments?.length > 0}
-        message="No Appointments Found."
+        message="No Appointment Requests Found."
       />
       {!loading &&
         Appointments?.length > 0 &&

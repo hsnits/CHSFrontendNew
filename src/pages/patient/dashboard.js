@@ -2,21 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import user_img from "../../assets/img/profile-06.jpg";
-import { useSelector } from "react-redux";
 import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import useGetMountData from "../../helpers/getDataHook";
 import NotFound from "../../components/common/notFound";
 import { callPutApi } from "../../_service";
 import { toastMessage } from "../../config/toast";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { toastMessage } from "../../config/toast";
+import { callPostApi } from "../../_service";
+import useGetMountData from "../../helpers/getDataHook";
 
 const Dashboard = ({ data }) => {
-  import { yupResolver } from "@hookform/resolvers/yup";
-  import { useForm } from "react-hook-form";
-  import * as yup from "yup";
-  import { toastMessage } from "../../config/toast";
-  import { callPostApi } from "../../_service";
-  import useGetMountData from "../../helpers/getDataHook";
-
   function formatDate(dateString) {
     const date = new Date(dateString);
 

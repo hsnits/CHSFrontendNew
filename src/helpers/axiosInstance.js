@@ -1,7 +1,8 @@
 import axios from "axios";
 import { STORAGE } from "../constants";
 import { getLocalStorage } from "./storage";
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://api.chshealthcare.in/";
+//  baseURL: "http://localhost:5000/",
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,

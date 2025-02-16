@@ -1,8 +1,7 @@
 import axios from "axios";
 import { STORAGE } from "../constants";
 import { getLocalStorage } from "./storage";
-const BASE_URL = "https://api.chshealthcare.in/";
-//  baseURL: "http://localhost:5000/",
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,

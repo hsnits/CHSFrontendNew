@@ -2,7 +2,7 @@ import axios from "axios";
 import { getLocalStorage } from "../helpers/storage";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: 'http://3.228.233.9:5000/' || process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

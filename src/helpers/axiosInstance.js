@@ -2,7 +2,7 @@ import axios from "axios";
 import { STORAGE } from "../constants";
 import { getLocalStorage } from "./storage";
 const BASE_URL =
-  "http://3.228.233.9:5000/" || process.env.NEXT_PUBLIC_API_BASE_URL;
+  "https://api.chshealthcare.in/" || process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,

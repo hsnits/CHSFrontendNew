@@ -29546,6 +29546,13 @@ a.mute-video.stop {
   margin-bottom: 0;
   color: #0F172A;
 }
+.products-card .product-content .product-cart .cart-price h6 {
+  font-size: 14px;
+  color: #D1D5DB;
+  font-weight: 500;
+  display: block;
+  margin-top: 3px;
+}
 .products-card .product-content .product-cart .cart-price h5 span {
   font-size: 14px;
   color: #D1D5DB;

@@ -43,7 +43,7 @@ export default function Footer()
                                 <ul>
                                     <li><Link to="/">Home</Link></li>
                                     <li><Link to="/about">About Us</Link></li>
-                                    <li><Link to="javascript:void(0);">Register</Link></li>
+                                    <li><Link to="/register">Register</Link></li>
                                     <li><Link to="/contact">Contact Us</Link></li>
                                 </ul>
                             </div>
@@ -52,10 +52,10 @@ export default function Footer()
                             <div className="footer-widget footer-menu">
                                 <h2 className="footer-title">For Doctors</h2>
                                 <ul>
-                                    <li><Link to="javascript:void(0);">Appointments</Link></li>
-                                    <li><Link to="javascript:void(0);">Chat</Link></li>
-                                    <li><Link to="javascript:void(0);">Login</Link></li>
-                                    <li><Link to="javascript:void(0);">Register</Link></li>
+                                    <li><Link to="/doctorList">Appointments</Link></li>
+                                    <li><Link to="#">Chat</Link></li>
+                                    <li><Link to="/login">Login</Link></li>
+                                    <li><Link to="/register">Register</Link></li>
                                 </ul>
                             </div>
                         </Col>

@@ -28,17 +28,48 @@ import Appointments from "../pages/doctorDashboard/appoitments";
 import PrescriptionRefills from "../pages/services/PrescriptionRefills";
 import LabTest from "../pages/services/LabTest";
 import Diagnostics from "../pages/services/Diagnostics";
+import PublicRoute from "./PublicRoute";
 
 const Routes = () => {
   return (
     <BrowserRouter>
       <Routing>
         {/* auth routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<DoctorRegister />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
 
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <DoctorRegister />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+
+        {/* </PublicRoute> */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
@@ -65,16 +96,32 @@ const Routes = () => {
         <Route path="/ProductDesc" element={<ProductDesc />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
-        <Route path="/DoctorBooking/:id" element={<DoctorBooking />} />
+
+        <Route
+          path="/DoctorBooking/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <DoctorBooking />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/OrderSuccess" element={<OrderSuccess />} />
-        <Route path="/BookingSuccess" element={<BookingSuccess />} />
+        <Route
+          path="/BookingSuccess"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <BookingSuccess />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/career" element={<Career />} />
         <Route
           path="/InvestorRegistration"
           element={<InvestorRegistration />}
         />
 
-        <Route path="/Appointment" element={<Appointments />} />
+        {/* <Route path="/Appointment" element={<Appointments />} /> */}
         <Route path="/PrescriptionRefills" element={<PrescriptionRefills />} />
         <Route path="/LabTest" element={<LabTest />} />
         <Route path="/Diagnostics" element={<Diagnostics />} />

@@ -35,7 +35,7 @@ export default function PharmacyMenu() {
                                 </div>
                             </div>
                         </div>
-                        <div className="main-menu-wrapper">
+                        {/* <div className="main-menu-wrapper">
                             <div className="menu-header">
                                 <a href="/" className="menu-logo">
                                     <img src={logo_img} className="img-fluid" alt="Logo"/>
@@ -61,7 +61,7 @@ export default function PharmacyMenu() {
                                     <a href="javascript:void(0);">Contact </a>
                                 </li>
                             </ul>
-                        </div>
+                        </div> */}
                     </nav>
                 </div>
             </header>

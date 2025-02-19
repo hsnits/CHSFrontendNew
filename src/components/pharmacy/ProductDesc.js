@@ -14,7 +14,7 @@ export default function ProductDesc() {
         <>
             <PharmacyTopBar />
             <PharmacySearchBar />
-            <PharmacyMenu/>
+            {/* <PharmacyMenu/> */}
             <Breadcrumb />
             <div className="content">
                 <Container>

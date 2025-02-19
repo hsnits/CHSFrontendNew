@@ -54,7 +54,7 @@ export default function ServiceBanner() {
                   <Link to="/pharmacy" className="panel" style={serviceBanner3}></Link>
                   </div>
                   <div id="panel-4">
-                  <Link to="/Appointment" className="panel" style={serviceBanner4}></Link>
+                  <Link to="/doctorList" className="panel" style={serviceBanner4}></Link>
                   </div>
                   <div id="panel-5">
                   <Link to="/VirtualConsultation" className="panel" style={serviceBanner5}></Link>

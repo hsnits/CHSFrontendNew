@@ -10,6 +10,7 @@ const useGetMountData = (baseUrl) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataLength, setDataLength] = useState(0);
   const [filter, setFilter] = useState("");
+  const [query, setQuery] = useState("");
 
   const pageLimit = 10;
 
@@ -17,10 +18,10 @@ const useGetMountData = (baseUrl) => {
     async (baseUrl, loadText) => {
       setLoading(loadText || true);
       try {
-        let url = `${baseUrl}`;
-        // if (filter) {
-        //   url = `${url}&status=${filter?.status}`;
-        // }
+        let url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}`;
+        if (query) {
+          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}`;
+        }
         const response = await callGetApi(url);
         if (response?.status) {
           setData(response.data);
@@ -39,7 +40,7 @@ const useGetMountData = (baseUrl) => {
     if (baseUrl) {
       getAllData(baseUrl, true);
     }
-  }, [getAllData, baseUrl]);
+  }, [getAllData, baseUrl,query]);
 
   const openModelWithItem = (key, item) => {
     setIsOpen(key);
@@ -63,6 +64,8 @@ const useGetMountData = (baseUrl) => {
     getAllData,
     customData,
     openModelWithItem,
+    query,
+    setQuery,
   };
 };
 

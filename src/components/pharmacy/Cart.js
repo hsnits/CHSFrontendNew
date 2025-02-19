@@ -11,7 +11,7 @@ export default function Cart() {
         <>
             <PharmacyTopBar />
             <PharmacySearchBar />
-            <PharmacyMenu/>
+            {/* <PharmacyMenu/> */}
             <Breadcrumb />
             <div class="content">
                 <div class="container">

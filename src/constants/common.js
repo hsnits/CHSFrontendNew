@@ -24,3 +24,13 @@ export const LanguagesList = [
   { name: "Tamil", localName: "தமிழ்", code: "ta" },
   { name: "Turkish", localName: "Türk", code: "tr" },
 ];
+
+export const allCategories = [
+  "Select Category",
+  "Healthcare Devices",
+  "Personal Care",
+  "Nutrition and Fitness Supplements",
+  "Ayurvedic Care",
+  "Home Care",
+  "Mother and Baby Care",
+];

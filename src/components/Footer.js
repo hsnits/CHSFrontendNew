@@ -41,7 +41,7 @@ export default function Footer()
                             <div className="footer-widget footer-menu">
                                 <h2 className="footer-title">About Us</h2>
                                 <ul>
-                                    <li><Link to="/">Home</Link></li>
+                                    <li><Link to="/">Home HomeHome</Link></li>
                                     <li><Link to="/about">About Us</Link></li>
                                     <li><Link to="/register">Register</Link></li>
                                     <li><Link to="/contact">Contact Us</Link></li>

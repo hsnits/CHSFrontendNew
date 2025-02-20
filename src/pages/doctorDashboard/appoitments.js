@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import user_img from "../../assets/img/doctor-profile-img.jpg";
 import useGetMountData from "../../helpers/getDataHook";
 import { getLocalStorage } from "../../helpers/storage";
@@ -24,18 +24,21 @@ const Appointments = () => {
     setData,
     customData,
     isOpen,
+    setQuery,
+    query,
     openModelWithItem,
-  } = useGetMountData(`/doctor/appointment/${userProfileId}?status=Accepted`);
+  } = useGetMountData(`/doctor/appointment/${userProfileId}`);
 
   const getByFilter = async (filter) => {
     setTab(filter);
-    await getAllData(`/doctor/appointment/${userProfileId}?status=${filter}`);
+    // setQuery((pre) => ({ ...pre, status: "Accepted" }));
+    // await getAllData(`/doctor/appointment/${userProfileId}?status=${filter}`);
   };
 
   const handleUpdate = async (id, status) => {
     try {
       const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
-        status
+        status,
       });
       if (!verifyResponse.status) throw new Error(verifyResponse.message);
 
@@ -52,6 +55,12 @@ const Appointments = () => {
       toastMessage("error", "Appointment update process failed!");
     }
   };
+
+  // useEffect(() => {
+  //   setQuery((pre) => ({ ...pre, status: tab }));
+  // }, [tab]);
+
+  console.log(AppointmentsCount, Appointments, "Appointments");
 
   return (
     <div>

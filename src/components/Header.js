@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ChsLogo from "../assets/img/chs_logo.png";
-import { Container, Nav } from "react-bootstrap";
+import { Container, Nav, Dropdown } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Navbar } from "../Data";
 import patient_img from "../assets/img/icons/patient.png";
@@ -18,11 +18,15 @@ import { getLocalStorage, removeLocalStorage } from "../helpers/storage";
 function Header() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [isSubmenuVisible, setIsSubmenuVisible] = useState(false);
-  const isLoggedIn = getLocalStorage(STORAGE.USER_KEY)?.accessToken;
+  const [isSubmenuVisible, setIsSubmenuVisible] = useState(null);
+  const isLoggedIn = getLocalStorage(STORAGE.USER_KEY);
 
-  const toggleSubmenu = () => {
-    setIsSubmenuVisible(!isSubmenuVisible);
+  const toggleSubmenu = (menu_name) => {
+    if (isSubmenuVisible == menu_name) {
+      setIsSubmenuVisible(null);
+    } else {
+      setIsSubmenuVisible(menu_name);
+    }
   };
 
   return (
@@ -64,298 +68,389 @@ function Header() {
                 >
                   {submenu ? (
                     <>
-                      <a href="javascript:void(0);" onClick={toggleSubmenu}>
+                      <a
+                        href="javascript:void(0);"
+                        onClick={() => toggleSubmenu(menu_name)}
+                      >
                         {menu_name} <i className="fas fa-chevron-down"></i>
                       </a>
                       <ul
-                        className={`submenu ${isSubmenuVisible ? "show" : ""}`}
+                        className={`submenu ${
+                          isSubmenuVisible == menu_name ? "show" : ""
+                        }`}
                       >
                         {submenu.map((subItem, subIndex) => (
                           <li key={subIndex}>
-                            <Link to={subItem.path}>{subItem.menu_name}</Link>
+                            <Link id="menu_close" to={subItem.path}>
+                              {subItem.menu_name}
+                            </Link>
                           </li>
                         ))}
                       </ul>
                     </>
                   ) : (
-                    <Link to={path}>{menu_name}</Link>
+                    <Link id="menu_close" to={path}>
+                      {menu_name}
+                    </Link>
                   )}
                 </li>
               ))}
 
-              <li class="has-submenu megamenu">
-                <a href="javascript:void(0);">
-                  Register Now <i class="fas fa-chevron-down"></i>
-                </a>
-                <ul class="submenu mega-submenu">
-                  <li>
-                    <div class="megamenu-wrapper">
-                      <div class="row">
-                        <div class="col-lg-2">
-                          <div class="single-demo active">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Patient
-                              </a>
+              {isLoggedIn ? (
+                <li className="login">
+                  <Link
+                    id="menu_close"
+                    to="/login"
+                    onClick={() => {
+                      removeLocalStorage(STORAGE.USER_KEY);
+                    }}
+                  >
+                    Logout
+                  </Link>
+                </li>
+              ) : (
+                <>
+                  {" "}
+                  {/* \web menu */}
+                  <li className="has-submenu megamenu d-none d-lg-block">
+                    <a href="javascript:void(0);">
+                      Register Now <i className="fas fa-chevron-down"></i>
+                    </a>
+                    <ul className="submenu mega-submenu">
+                      <li>
+                        <div className="megamenu-wrapper">
+                          <div className="row" id="menu_close">
+                            <div className="col-lg-2">
+                              <div className="single-demo active">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Patient
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={patient_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
                             </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={patient_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Doctor
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={doctor_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
                             </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Pharmacy Retailers
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={pharmacy_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Pathology
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={pathology_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Diagnosis
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={diagnosis_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Ambulance
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={ambulance_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Nursing
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={nursing_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Biomedical
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={biomedical_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-2">
+                              <div className="single-demo">
+                                <div className="demo-info mb-2">
+                                  <a href="#" className="inner-demo-img">
+                                    Hospital
+                                  </a>
+                                </div>
+                                <div className="demo-img">
+                                  <a href="#" className="inner-demo-img">
+                                    <img
+                                      src={hospital_img}
+                                      className="img-fluid "
+                                      alt="img"
+                                    />
+                                  </a>
+                                </div>
+                                <div className="demo-info">
+                                  <Link
+                                    className="btn btn-primary text-white"
+                                    to="/register"
+                                  >
+                                    Register
+                                  </Link>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Doctor
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={doctor_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Pharmacy Retailers
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={pharmacy_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Pathology
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={pathology_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Diagnosis
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={diagnosis_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Ambulance
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={ambulance_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Nursing
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={nursing_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Biomedical
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={biomedical_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-2">
-                          <div class="single-demo">
-                            <div class="demo-info mb-2">
-                              <a href="#" class="inner-demo-img">
-                                Hospital
-                              </a>
-                            </div>
-                            <div class="demo-img">
-                              <a href="#" class="inner-demo-img">
-                                <img
-                                  src={hospital_img}
-                                  class="img-fluid "
-                                  alt="img"
-                                />
-                              </a>
-                            </div>
-                            <div class="demo-info">
-                              <Link
-                                className="btn btn-primary text-white"
-                                to="/register"
-                              >
-                                Register
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      </li>
+                    </ul>
                   </li>
-                </ul>
-              </li>
-
-              <li className="login-link">
-                <Link to="/login">Login</Link>
-              </li>
+                  {/* \mobile menu */}
+                  <li className="has-submenu megamenu d-lg-none">
+                    <a
+                      href="javascript:void(0);"
+                      onClick={() => toggleSubmenu("Register")}
+                    >
+                      Register Now <i className="fas fa-chevron-down"></i>
+                    </a>
+                    <ul
+                      className={`submenu ${
+                        isSubmenuVisible == "Register" ? "show" : ""
+                      }`}
+                    >
+                      <li>
+                        <div className="megamenu-wrapper">
+                          <div className="row" id="menu_close">
+                            <Link to="/register">Patient Register</Link>
+                            <Link to="/register">Doctor Register</Link>
+                            <Link to="/register">
+                              Pharmacy Retailers Register
+                            </Link>
+                            <Link to="/register">Pathology Register</Link>
+                            <Link to="/register">Diagnosis Register</Link>
+                            <Link to="/register">Ambulance Register</Link>
+                            <Link to="/register">Nursing Register</Link>
+                            <Link to="/register">Biomedical Register</Link>
+                            <Link to="/register">Hospital Register</Link>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </li>
+                  {/* <li className="login" id="menu_close">
+                    <Link to="/login">Login</Link>
+                  </li> */}
+                </>
+              )}
             </ul>
           </div>
           <ul className="nav header-navbar-rht">
             <li className="nav-item">
               {isLoggedIn ? (
-                <div
-                  onClick={() => {
-                    removeLocalStorage(STORAGE.USER_KEY);
-                    navigate("/login");
-                  }}
-                  style={{
-                    cursor: "pointer",
-                    borderRadius: "50px",
-                    backgroundColor: "skyblue",
-                    padding: "10px",
-                  }}
-                >
-                  <i className="fa-solid fa-calendar-check"></i> Logout
-                </div>
+                <Dropdown>
+                  <Dropdown.Toggle
+                    variant="skyblue"
+                    id="dropdown-basic"
+                    style={{
+                      borderRadius: "50px",
+                      backgroundColor: "skyblue",
+                      padding: "10px",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fa-solid fa-user"></i> Account
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      as={Link}
+                      to={
+                        isLoggedIn?.role == "Doctor"
+                          ? "/DoctorDashboard"
+                          : "/patient"
+                      }
+                    >
+                      Dashboard
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      as={Link}
+                      to={
+                        isLoggedIn?.role == "Doctor"
+                          ? "/DoctorDashboard?key=profile"
+                          : "/patient?key=profile"
+                      }
+                    >
+                      Profile
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item
+                      onClick={() => {
+                        removeLocalStorage(STORAGE.USER_KEY);
+                        navigate("/login");
+                      }}
+                    >
+                      Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               ) : (
                 <Link className="nav-link header-login" to="/login">
-                  login
+                  Login
                 </Link>
               )}
             </li>

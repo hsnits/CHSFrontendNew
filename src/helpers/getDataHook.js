@@ -20,7 +20,7 @@ const useGetMountData = (baseUrl) => {
       try {
         let url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}`;
         if (query) {
-          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}`;
+          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}&status=${query?.status}`;
         }
         const response = await callGetApi(url);
         if (response?.status) {
@@ -33,14 +33,14 @@ const useGetMountData = (baseUrl) => {
         setLoading(false);
       }
     },
-    [baseUrl] // Dependencies
+    [baseUrl]
   );
 
   useEffect(() => {
     if (baseUrl) {
       getAllData(baseUrl, true);
     }
-  }, [getAllData, baseUrl,query]);
+  }, [getAllData, baseUrl, query]);
 
   const openModelWithItem = (key, item) => {
     setIsOpen(key);

@@ -34,7 +34,7 @@ export default function VirtualConsultation() {
                   </div>
                 </div>
                 <div className="">
-                  <Link className="btn btn-primary" to="/doctorList">
+                  <Link className="btn btn-primary" to="/doctorlist">
                     Consult Now
                   </Link>
                 </div>
@@ -81,7 +81,7 @@ export default function VirtualConsultation() {
               </div>
 
               <div class="special-btn">
-                <Link className="btn btn-primary" to="/doctorList">
+                <Link className="btn btn-primary" to="/doctorlist">
                   Book Your Appointment
                 </Link>
               </div>

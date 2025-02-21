@@ -105,7 +105,7 @@ export const Navbar = [
       {
         id: 2,
         menu_name: "Appointment Scheduling",
-        path: "/doctorList",
+        path: "/doctorlist",
       },
       {
         id: 3,
@@ -659,7 +659,7 @@ export const ServiceDescriptionData = [
     service_heading: "Appointment Scheduling",
     service_desc:
       "Virtual consultations allow doctors to see more patients in less time since they eliminate the need for travel and waiting room time.",
-    path: "/doctorList",
+    path: "/doctorlist",
   },
   {
     id: 3,

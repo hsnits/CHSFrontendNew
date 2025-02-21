@@ -1,6 +1,7 @@
 import markdownit from "markdown-it";
 import DOMPurify from "dompurify";
 import moment from "moment/moment";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 const md = markdownit({
   html: false,
@@ -50,4 +51,26 @@ function formatDate(dateString) {
   return date.toLocaleDateString("en-GB", options);
 }
 
-export { getMdHTMLValue, getDateFormate, getIdLastDigits, formatDate };
+const TruncatedText = (text) => {
+  if (!text) return "";
+  const words = text?.split(" ");
+  const truncatedText =
+    words?.length > 6 ? words?.slice(0, 6).join(" ") + "..." : text;
+
+  return (
+    <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip">{text}</Tooltip>}
+    >
+      <span>{truncatedText}</span>
+    </OverlayTrigger>
+  );
+};
+
+export {
+  getMdHTMLValue,
+  getDateFormate,
+  getIdLastDigits,
+  formatDate,
+  TruncatedText,
+};

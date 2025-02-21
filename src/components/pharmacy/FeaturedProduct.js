@@ -7,6 +7,7 @@ import "../../Data";
 import browsecategory_icon from "../../assets/img/icons/browse-categorie.svg";
 import NotFound from "../common/notFound";
 import { allCategories } from "../../constants/common";
+import { TruncatedText } from "../../helpers/utils";
 
 export default function FeaturedProduct({ loading, data, query, setQuery }) {
   const handleCategoryChange = (e) => {
@@ -80,7 +81,9 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
                     <div className="product-content">
                       <h6>{item.companyName}</h6>
                       <h4>
-                        <Link to="/ProductDesc">{item.name}</Link>
+                        <Link to="/ProductDesc">
+                          {TruncatedText(item.name)}
+                        </Link>
                       </h4>
                       <span className="badge">{`${item.quantity} ml`}</span>
                       <div className="product-cart">

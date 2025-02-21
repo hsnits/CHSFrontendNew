@@ -67,7 +67,7 @@ const Dashboard = ({
     loading: reportLoading,
     getAllData: reportGetData,
   } = useGetMountData(
-    `/doctor/appointment/${userProfileId}?status=Pending&time=today`
+    `/doctor/appointment/${userProfileId}`
   );
 
   const {

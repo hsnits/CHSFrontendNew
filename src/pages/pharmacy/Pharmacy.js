@@ -23,7 +23,7 @@ export default function Pharmacy() {
     <>
       <PharmacyTopBar userData={userData} />
       <PharmacySearchBar />
-      {/* <PharmacyMenu /> */}
+      <PharmacyMenu />
       <PharmacySlider />
 
       <section className="section welcome-section">

@@ -4,8 +4,13 @@ import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { updatePatientProfile } from "../../redux/slices/patientApi";
-import { changeProfilePic, userProfile } from "../../redux/slices/userApi";
+import {
+  changeProfilePic,
+  uploadFile,
+  userProfile,
+} from "../../redux/slices/userApi";
 import { useDispatch } from "react-redux";
+import { callDeleteApi, callPostApi, callPutApi } from "../../_service";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -38,28 +43,64 @@ const ProfileSetting = ({ data }) => {
     defaultValues: data?.profile || {},
   });
 
-  const handlePhotoChange = (e) => {
+  const handlePhotoChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
-      if (!validTypes.includes(file.type)) {
-        alert("Please upload a valid image file (JPEG/PNG).");
-        return;
-      }
-      if (file.size > 2 * 1024 * 1024) {
-        alert("File size exceeds the 2MB limit.");
-        return;
-      }
 
-      setSelectedFile(file);
+    if (!file) {
+      alert("No file selected.");
+      return;
     }
+
+    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!validTypes.includes(file.type)) {
+      alert("Please upload a valid image file (JPEG or PNG).");
+      return;
+    }
+
+    if (file.size > 4 * 1024 * 1024) {
+      alert("File size exceeds the 4MB limit.");
+      return;
+    }
+
+    setSelectedFile(file);
 
     try {
       const formData = new FormData();
-      formData.append("profilepic", file);
-      const result = dispatch(changeProfilePic(formData));
+      formData.append("file", file);
+
+      const res = await callPostApi("user/upload-file", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (!res?.data?.location) {
+        throw new Error("Invalid response from server.");
+      }
+
+      const updateRes = await callPutApi(`/user/update/${data._id}`, {
+        coverImage: res.data.location,
+        fileKey: res.data.key,
+      });
+      console.log(updateRes);
+      if (updateRes?.status) {
+        dispatch(userProfile());
+      }
     } catch (error) {
       console.error("Upload failed:", error);
+      alert("File upload failed. Please try again.");
+    }
+  };
+
+  const handleRemove = async (e) => {
+    setSelectedFile(null);
+
+    try {
+      const updateRes = await callDeleteApi(`/user/delete-dp/${data._id}`);
+      if (updateRes?.status) {
+        dispatch(userProfile());
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("File upload failed. Please try again.");
     }
   };
 
@@ -106,14 +147,17 @@ const ProfileSetting = ({ data }) => {
                   Upload New
                   <input
                     type="file"
-                    className="upload"
+                    className="upload hover-pointer"
                     accept="image/*"
-                    // onChange={handlePhotoChange}
+                    onChange={handlePhotoChange}
                   />
                 </div>
-                <a href="#" className="upload-remove">
+                <div
+                  onClick={handleRemove}
+                  className="upload-remove hover-pointer"
+                >
                   Remove
-                </a>
+                </div>
               </div>
               <p className="form-text">
                 Your Image should Below 4 MB, Accepted format jpg,png,svg

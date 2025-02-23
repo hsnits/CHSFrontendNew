@@ -2,8 +2,8 @@ import axios from "axios";
 import { getLocalStorage } from "../helpers/storage";
 
 const axiosInstance = axios.create({
-  // baseURL: "https://api.chshealthcare.in/" || process.env.NEXT_PUBLIC_API_BASE_URL,
-  baseURL:"http://localhost:5000/",
+  baseURL: "https://api.chshealthcare.in/" || process.env.NEXT_PUBLIC_API_BASE_URL,
+  // baseURL:"http://localhost:5000/",
   headers: {
     "Content-Type": "application/json",
   },

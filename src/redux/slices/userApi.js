@@ -19,6 +19,24 @@ export const loginUser = createAsyncThunk("loginUser", async (credentials) => {
   }
 });
 
+// MARK: verify API
+export const verifyUser = createAsyncThunk(
+  "verifyUser",
+  async (credentials) => {
+    try {
+      const response = await axiosInstance.put(
+        ENDPOINTS.USER.VERIFY,
+        credentials
+      );
+      toastMessage("success", "Phone number is verified successful!");
+      return response.data;
+    } catch (error) {
+      toastMessage("error", error.response?.data?.message);
+      console.log("Login Error:", error.response?.data?.message);
+    }
+  }
+);
+
 // MARK: Registration API
 export const registerUser = createAsyncThunk(
   "registerUser",
@@ -28,6 +46,7 @@ export const registerUser = createAsyncThunk(
         ENDPOINTS.USER.REGISTER,
         credentials
       );
+      setLocalStorage(STORAGE.USER_REGI_KEY, response.data?.data);
       toastMessage("success", "Registration successful!");
       return response.data;
     } catch (error) {
@@ -135,6 +154,7 @@ const initialState = {
   },
   loading: {
     user: {
+      verifyLoading: false,
       loginLoading: false,
       registerLoading: false,
       userProfileLoading: false,
@@ -143,6 +163,7 @@ const initialState = {
   },
   error: {
     user: {
+      verifyError: "",
       loinError: "",
       registerError: "",
       changeProfilePicError: "",
@@ -168,6 +189,19 @@ const userApiSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading.user.loginLoading = false;
         state.error.user.loinError = action.error.message || "Login failed!";
+      })
+      // MARK: Verify User
+      .addCase(verifyUser.pending, (state) => {
+        state.loading.user.verifyLoading = true;
+        state.error.user.verifyError = "";
+      })
+      .addCase(verifyUser.fulfilled, (state, action) => {
+        state.loading.user.verifyLoading = false;
+        state.data.user.verifyError = action.payload;
+      })
+      .addCase(verifyUser.rejected, (state, action) => {
+        state.loading.user.verifyLoading = false;
+        state.error.user.verifyError = action.error.message || "Verify failed!";
       })
       // MARK: Register User
       .addCase(registerUser.pending, (state) => {

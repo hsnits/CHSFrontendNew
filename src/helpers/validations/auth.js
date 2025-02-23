@@ -46,6 +46,13 @@ const loginSchema = yup.object().shape({
     .min(6, "Password must be at least 6 characters"),
 });
 
+const verifySchema = yup.object().shape({
+  otp: yup
+    .string()
+    .required("OTP is required")
+    .matches(/^[0-9]{4}$/, "OTP must be exactly 4 digits"),
+});
+
 const forgotSchema = yup.object().shape({
   phoneNumber: yup
     .string()
@@ -74,4 +81,10 @@ const resetSchema = yup.object().shape({
     ),
 });
 
-export { registrationSchema, loginSchema, forgotSchema, resetSchema };
+export {
+  registrationSchema,
+  loginSchema,
+  forgotSchema,
+  resetSchema,
+  verifySchema,
+};

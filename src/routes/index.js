@@ -29,6 +29,7 @@ import PrescriptionRefills from "../pages/services/PrescriptionRefills";
 import LabTest from "../pages/services/LabTest";
 import Diagnostics from "../pages/services/Diagnostics";
 import PublicRoute from "./PublicRoute";
+import VerifyOtp from "../pages/auth/verifyOtp";
 
 const Routes = () => {
   return (
@@ -49,6 +50,14 @@ const Routes = () => {
           element={
             <PublicRoute>
               <DoctorRegister />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/verifyOtp"
+          element={
+            <PublicRoute>
+              <VerifyOtp />
             </PublicRoute>
           }
         />

@@ -36,11 +36,11 @@ export default function DoctorRegister() {
       ...data,
       role: data.role.toLowerCase(),
     };
-    const result =await dispatch(registerUser(formattedData));
-    console.log(result,"jjjj")
+    const result = await dispatch(registerUser(formattedData));
+    console.log(result, "jjjj");
     if (result?.payload?.status) {
       reset();
-      navigate("/login");
+      navigate("/verifyOtp");
     }
   };
 

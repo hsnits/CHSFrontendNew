@@ -1,6 +1,7 @@
 export const ENDPOINTS = {
   USER: {
     LOGIN: "/user/login",
+    VERIFY: "/user/verify-otp",
     REGISTER: "/user/register",
     FORGOTUSER: "/user/forgot-password",
     RESETPASSWORD: "/user/reset-password",

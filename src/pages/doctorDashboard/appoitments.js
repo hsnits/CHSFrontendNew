@@ -8,6 +8,7 @@ import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import { callPutApi } from "../../_service";
 import { toastMessage } from "../../config/toast";
 import AppointmentDetails from "../../components/modals/appotmentDetails";
+import AppointmentReports from "../../components/modals/patientReports";
 
 const Appointments = () => {
   const [tab, setTab] = useState("Accepted");
@@ -55,10 +56,6 @@ const Appointments = () => {
       toastMessage("error", "Appointment update process failed!");
     }
   };
-
-  // useEffect(() => {
-  //   setQuery((pre) => ({ ...pre, status: tab }));
-  // }, [tab]);
 
   console.log(AppointmentsCount, Appointments, "Appointments");
 
@@ -126,6 +123,7 @@ const Appointments = () => {
           isData={Appointments?.length > 0}
           message="No Appointments Found."
         />
+
         {!loading &&
           Appointments?.length > 0 &&
           Appointments?.map((it, index) => {
@@ -188,7 +186,8 @@ const Appointments = () => {
                           </li>
                           <li>
                             <a
-                              onClick={() => handleUpdate(it?._id, "Completed")}
+                              onClick={() => openModelWithItem("reports", it)}
+                              // {/* onClick={() => handleUpdate(it?._id, "Completed")} */}
                             >
                               <i class="fa-solid fa-comments"></i>
                             </a>
@@ -223,6 +222,12 @@ const Appointments = () => {
         showModal={isOpen == "details"}
         handleModalClose={openModelWithItem}
         selectedAppointment={customData}
+      />
+      <AppointmentReports
+        showModal={isOpen == "reports"}
+        handleClose={openModelWithItem}
+        customData={customData}
+        handleUpdate={handleUpdate}
       />
     </div>
   );

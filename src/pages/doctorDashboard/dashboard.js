@@ -5,7 +5,11 @@ import { STORAGE } from "../../constants";
 import useGetMountData from "../../helpers/getDataHook";
 import { Button, Form } from "react-bootstrap";
 import NotFound from "../../components/common/notFound";
-import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
+import {
+  formatDate,
+  getDateFormate,
+  getIdLastDigits,
+} from "../../helpers/utils";
 
 const Dashboard = () => {
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
@@ -88,8 +92,8 @@ const Dashboard = () => {
                         : "fa-solid fa-arrow-up"
                     }
                   ></i>
-                  {/* {data?.percentageChange?.patients || 0}% From Yesterday */}
-                  {0}% From Yesterday
+                  {data?.percentageChange?.patients || 0}% From Yesterday
+                  {/* {0}% From Yesterday */}
                 </span>
               </div>
               <div className="dashboard-widget-icon">
@@ -116,8 +120,8 @@ const Dashboard = () => {
                         : "fa-solid fa-arrow-up"
                     }
                   ></i>{" "}
-                  {/* {data?.percentageChange?.appointments || 0}% From Yesterday */}
-                  {0}% From Yesterday
+                  {data?.percentageChange?.appointments || 0}% From Yesterday
+                  {/* {0}% From Yesterday */}
                 </span>
               </div>
               <div className="dashboard-widget-icon">
@@ -179,7 +183,7 @@ const Dashboard = () => {
                             </td>
                             <td>
                               <div className="appointment-date-created">
-                                <h6>{`${it?.date} ${it?.time}`}</h6>
+                                <h6>{`${formatDate(it?.date)} ${it?.time}`}</h6>
                                 <span className="badge table-badge">
                                   {it?.appointmentType || "General"}
                                 </span>

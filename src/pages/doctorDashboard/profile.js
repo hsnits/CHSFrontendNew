@@ -6,11 +6,13 @@ import { Controller, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
 import { LanguagesList } from "../../constants/common";
-import { callPutApi } from "../../_service";
+import { callDeleteApi, callPostApi, callPutApi } from "../../_service";
 import { toastMessage } from "../../config/toast";
 import { getLocalStorage, setLocalStorage } from "../../helpers/storage";
 import { Spinner } from "reactstrap";
 import { STORAGE } from "../../constants";
+import { useDispatch } from "react-redux";
+import { userProfile } from "../../redux/slices/userApi";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -29,8 +31,10 @@ const schema = yup.object().shape({
 });
 
 const Profile = ({ getAllData, doctorDetails }) => {
+  const dispatch = useDispatch();
   const [listOpen, setListOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const {
     control,
@@ -44,6 +48,69 @@ const Profile = ({ getAllData, doctorDetails }) => {
     resolver: yupResolver(schema),
     defaultValues: doctorDetails?.profile || {},
   });
+
+  const handlePhotoChange = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      alert("No file selected.");
+      return;
+    }
+
+    const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!validTypes.includes(file.type)) {
+      alert("Please upload a valid image file (JPEG or PNG).");
+      return;
+    }
+
+    if (file.size > 4 * 1024 * 1024) {
+      alert("File size exceeds the 4MB limit.");
+      return;
+    }
+
+    setSelectedFile(file);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await callPostApi("user/upload-file", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (!res?.data?.location) {
+        throw new Error("Invalid response from server.");
+      }
+
+      const updateRes = await callPutApi(`/user/update/${doctorDetails?._id}`, {
+        coverImage: res.data.location,
+        fileKey: res.data.key,
+      });
+      console.log(updateRes);
+      if (updateRes?.status) {
+        dispatch(userProfile());
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("File upload failed. Please try again.");
+    }
+  };
+
+  const handleProfileRemove = async (e) => {
+    setSelectedFile(null);
+
+    try {
+      const updateRes = await callDeleteApi(
+        `/user/delete-dp/${doctorDetails._id}`
+      );
+      if (updateRes?.status) {
+        dispatch(userProfile());
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("File upload failed. Please try again.");
+    }
+  };
 
   const onSubmit = async (value) => {
     try {
@@ -123,12 +190,17 @@ const Profile = ({ getAllData, doctorDetails }) => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="setting-card">
-          <div className="change-avatar img-upload">
+        <div className="change-avatar img-upload">
             <div className="profile-img">
               {doctorDetails?.coverImage ? (
-                <img src={doctorDetails?.coverImage} alt="User Image" />
+                <img src={doctorDetails?.coverImage} alt="Profile Preview" />
+              ) : selectedFile ? (
+                <img
+                  src={URL.createObjectURL(selectedFile)}
+                  alt="Profile Preview"
+                />
               ) : (
-                <Image />
+                <i className="fa-solid fa-file-image"></i>
               )}
             </div>
             <div className="upload-img">
@@ -136,11 +208,19 @@ const Profile = ({ getAllData, doctorDetails }) => {
               <div className="imgs-load d-flex align-items-center">
                 <div className="change-photo">
                   Upload New
-                  <input type="file" className="upload" />
+                  <input
+                    type="file"
+                    className="upload hover-pointer"
+                    accept="image/*"
+                    onChange={handlePhotoChange}
+                  />
                 </div>
-                <Link to="#" className="upload-remove">
+                <div
+                  onClick={handleProfileRemove}
+                  className="upload-remove hover-pointer"
+                >
                   Remove
-                </Link>
+                </div>
               </div>
               <p className="form-text">
                 Your Image should Below 4 MB, Accepted format jpg,png,svg

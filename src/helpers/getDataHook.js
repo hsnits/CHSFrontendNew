@@ -33,7 +33,7 @@ const useGetMountData = (baseUrl) => {
         setLoading(false);
       }
     },
-    [baseUrl]
+    [baseUrl,query]
   );
 
   useEffect(() => {

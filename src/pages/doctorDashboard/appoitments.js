@@ -32,7 +32,7 @@ const Appointments = () => {
 
   const getByFilter = async (filter) => {
     setTab(filter);
-    // setQuery((pre) => ({ ...pre, status: "Accepted" }));
+    setQuery((pre) => ({ ...pre, status: filter }));
     // await getAllData(`/doctor/appointment/${userProfileId}?status=${filter}`);
   };
 
@@ -56,6 +56,10 @@ const Appointments = () => {
       toastMessage("error", "Appointment update process failed!");
     }
   };
+
+  useEffect(() => {
+    setQuery((pre) => ({ ...pre, status: "Accepted" }));
+  }, []);
 
   console.log(AppointmentsCount, Appointments, "Appointments");
 

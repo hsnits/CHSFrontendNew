@@ -78,7 +78,7 @@ export default function ConsultationType({
               </div>
             </div>
             <div className="consultation-info">
-              <p>Home Visit</p>
+              {/* <p>Home Visit</p>
               <div
                 className={`consultation-types ${
                   formData.appointmentType === "home" ? "active" : ""
@@ -97,8 +97,8 @@ export default function ConsultationType({
                     </div>
                   </li>
                 </ul>
-              </div>
-              <ul>
+              </div> */}
+              {/* <ul>
                 <li>
                   <div
                     className={`consultation-types ${
@@ -114,7 +114,7 @@ export default function ConsultationType({
                     </span>
                   </div>
                 </li>
-              </ul>
+              </ul> */}
             </div>
           </div>
           {/* <div className="booking-btn">

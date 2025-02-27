@@ -41,11 +41,14 @@ export default function DoctorBooking() {
   const [step, setStep] = useState(1);
 
   const data = useSelector(
-    (state) => state.PATIENT.data?.user?.getAppointmentResult
+    (state) =>
+      state.PATIENT.data?.user?.getAppointmentResult ||
+      state.PATIENT.data?.user?.createAppointmentResult
   );
 
   useEffect(() => {
     dispatch(getAppointment(id));
+    console.log(id, "id Booking Summary");
   }, [dispatch, id]);
 
   const handleDateChange = (date) => {

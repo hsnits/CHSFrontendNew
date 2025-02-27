@@ -24,9 +24,8 @@ export default function BookingSummary({ data }) {
                   <h4>
                     <Link to="#">Dr.{data?.firstName}</Link>
                   </h4>
-                  <p>
-                    {data?.achievement}, {data?.designation}
-                  </p>
+                  <p>{data?.designation}</p>
+                  <p>{data?.languages && data?.languages?.join(",")}</p>
                 </div>
               </div>
               <div className="booking-doctor-right">

@@ -13,7 +13,7 @@ const HealthReport = ({ data }) => {
     isOpen,
     customData,
     openModelWithItem,
-  } = useGetMountData(`/patient/health-report/${data?._id}`);
+  } = useGetMountData(data?._id ? `/patient/health-report/${data?._id}` : null);
 
   return (
     <Tab.Pane eventKey="third">

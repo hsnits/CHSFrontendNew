@@ -34,7 +34,9 @@ function PatientDashboard() {
     data: isReports,
     loading,
     getAllData,
-  } = useGetMountData(`/patient/reports/${data?.profile?._id}`);
+  } = useGetMountData(
+    data?.profile?._id ? `/patient/reports/${data?.profile?._id}` : null
+  );
 
   const appointmentData = useSelector(
     (state) => state.PATIENT.data?.user?.getAllAppointmentResult

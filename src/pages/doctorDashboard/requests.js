@@ -15,7 +15,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const Requests = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [time, setTime] = useState("today");
+  const [time, setTime] = useState("");
 
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
@@ -24,17 +24,29 @@ const Requests = () => {
     loading,
     getAllData,
     setData,
-  } = useGetMountData(
-    `/doctor/appointment/${userProfileId}?status=Pending&time=today`
-  );
+    setQuery,
+  } = useGetMountData(`/doctor/appointment/${userProfileId}`);
 
   const getByFilter = async (time, startDate, endDate) => {
-    let url = `/doctor/appointment/${userProfileId}?status=Pending&time=${time}`;
-    if (startDate && endDate) {
-      url = `/doctor/appointment/${userProfileId}?status=Pending&time=${time}&startDate=${startDate}&endDate=${endDate}`;
+    if (time) {
+      setQuery((e) => ({ ...e, status: "Pending", time: time }));
     }
-    await getAllData(url);
+    // let url = `/doctor/appointment/${userProfileId}?status=Pending&time=${time}`;
+    if (startDate && endDate) {
+      setQuery((e) => ({
+        ...e,
+        status: "Pending",
+        startDate: startDate,
+        endDate: endDate,
+      }));
+      // url = `/doctor/appointment/${userProfileId}?status=Pending&time=${time}&startDate=${startDate}&endDate=${endDate}`;
+    }
+    // await getAllData(url);
   };
+
+  useEffect(() => {
+    setQuery((e) => ({ ...e, status: "Pending" }));
+  }, []);
 
   useEffect(() => {
     if (time || (startDate && endDate)) {
@@ -102,6 +114,7 @@ const Requests = () => {
                   setTime(e.target.value);
                 }}
               >
+                <option value="">All</option>
                 <option value="today">Today</option>
                 <option value="week">This Week</option>
                 <option value="month">This Month</option>

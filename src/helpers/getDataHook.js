@@ -20,7 +20,10 @@ const useGetMountData = (baseUrl) => {
       try {
         let url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}`;
         if (query) {
-          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}&status=${query?.status}`;
+          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}&status=${query?.status}&time=${query?.time}`;
+        }
+        if (query?.startDate && query?.endDate) {
+          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}&status=${query?.status}&time=${query?.time}&startDate=${query?.startDate}&endDate=${query?.endDate}`;
         }
         const response = await callGetApi(url);
         if (response?.status) {
@@ -33,7 +36,7 @@ const useGetMountData = (baseUrl) => {
         setLoading(false);
       }
     },
-    [baseUrl,query]
+    [baseUrl, query]
   );
 
   useEffect(() => {

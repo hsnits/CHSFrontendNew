@@ -140,7 +140,7 @@ export default function BookingSuccess() {
               </div>
               <div className="success-btn">
                 <Link
-                  to="javascript:void(0);"
+                  to="#"
                   className="btn btn-primary prime-btn"
                 >
                   Add to Google Calendar

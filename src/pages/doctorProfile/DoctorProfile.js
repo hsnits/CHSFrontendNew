@@ -28,7 +28,7 @@ function DoctorProfile() {
                                         <p class="doc-department"><img src="assets/img/specialities/specialities-05.png" class="img-fluid" alt="" />Dentist</p>
 
                                         <div class="clinic-details">
-                                            <p class="doc-location"><MapPin size={18} /> Newyork, USA - <a href="javascript:void(0);">Get Directions</a></p>
+                                            <p class="doc-location"><MapPin size={18} /> Newyork, USA - <a href="#">Get Directions</a></p>
 
                                         </div>
                                         <div class="clinic-services">
@@ -240,7 +240,7 @@ function DoctorProfile() {
                                                     <h4 class="clinic-name"><a href="#">Smile Cute Dental Care Center</a></h4>
                                                     <p class="doc-speciality">MDS - Periodontology and Oral Implantology, BDS</p>
                                                     <div class="clinic-details mb-0">
-                                                        <h5 class="clinic-direction"> <i class="fas fa-map-marker-alt"></i> 2286 Sundown Lane, Austin, Texas 78749, USA <br /><a href="javascript:void(0);">Get Directions</a></h5>
+                                                        <h5 class="clinic-direction"> <i class="fas fa-map-marker-alt"></i> 2286 Sundown Lane, Austin, Texas 78749, USA <br /><a href="#">Get Directions</a></h5>
 
                                                     </div>
                                                 </div>

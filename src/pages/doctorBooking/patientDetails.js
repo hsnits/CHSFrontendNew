@@ -47,7 +47,7 @@ export default function PatientDetails({
               <div className="forms-block">
                 <div className="form-group-flex">
                   <label className="form-group-title">Choose Dependent</label>
-                  <a href="javascript:void(0);" className="btn">
+                  <a href="#" className="btn">
                     <Plus /> Add
                   </a>
                 </div>
@@ -135,7 +135,7 @@ export default function PatientDetails({
                   </div> */}
                   <div className="attachment-close">
                     <a
-                      href="javascript:void(0);"
+                      href="#"
                       onClick={() => {
                         setFormData((prev) => ({
                           ...prev,

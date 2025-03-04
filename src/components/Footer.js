@@ -28,22 +28,22 @@ export default function Footer() {
                   <div className="social-icon">
                     <ul>
                       <li>
-                        <Link to="javascript:void(0);">
+                        <Link to="#">
                           <Facebook />{" "}
                         </Link>
                       </li>
                       <li>
-                        <Link to="javascript:void(0);">
+                        <Link to="#">
                           <Twitter />{" "}
                         </Link>
                       </li>
                       <li>
-                        <Link to="javascript:void(0);">
+                        <Link to="#">
                           <Linkedin />
                         </Link>
                       </li>
                       <li>
-                        <Link to="javascript:void(0);">
+                        <Link to="#">
                           <Instagram />
                         </Link>
                       </li>

@@ -67,10 +67,25 @@ const TruncatedText = (text) => {
   );
 };
 
+const formatName = (data, profile = "Dr") => {
+  if (!data?.firstName && !data?.lastName) return `${profile}.`;
+  if (!data?.firstName) return `${profile}. ${data.lastName}`;
+  if (!data?.lastName) return `${profile}. ${data.firstName}`;
+
+  return `${profile}. ${data.firstName} ${data.lastName}`;
+};
+
+const cpFirstName = (name) => {
+  if (!name) return "";
+  return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+};
+
 export {
   getMdHTMLValue,
   getDateFormate,
   getIdLastDigits,
   formatDate,
+  formatName,
   TruncatedText,
+  cpFirstName,
 };

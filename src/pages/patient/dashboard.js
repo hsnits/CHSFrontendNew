@@ -182,7 +182,7 @@ const Dashboard = ({
               <div className="header-title">
                 <h5>Reports</h5>
               </div>
-              <a href="javascript:void(0);">
+              <a href="#">
                 <img
                   src={data?.coverImage ?? user_img}
                   className="avatar dropdown-avatar"
@@ -271,7 +271,7 @@ const Dashboard = ({
                                   <tbody>
                                     <tr key={index}>
                                       <td>
-                                        <a href="javascript:void(0);">
+                                        <a href="#">
                                           <span className="text-blue">
                                             <p>
                                               {getIdLastDigits(el?._id, "AP-")}
@@ -344,11 +344,11 @@ const Dashboard = ({
                             <tbody>
                               <tr>
                                 <td className="text-blue-600">
-                                  <a href="javascript:void(0);">#MR-123</a>
+                                  <a href="#">#MR-123</a>
                                 </td>
                                 <td>
                                   <a
-                                    href="javascript:void(0);"
+                                    href="#"
                                     className="lab-icon"
                                   >
                                     <span>
@@ -361,13 +361,13 @@ const Dashboard = ({
                                 <td>Glucose Test V12</td>
                                 <td>
                                   <div className="action-item">
-                                    <a href="javascript:void(0);">
+                                    <a href="#">
                                       <i className="fa-solid fa-pen-to-square"></i>
                                     </a>
-                                    <a href="javascript:void(0);">
+                                    <a href="#">
                                       <i className="fa-solid fa-download"></i>
                                     </a>
-                                    <a href="javascript:void(0);">
+                                    <a href="#">
                                       <i className="fa-solid fa-trash-can"></i>
                                     </a>
                                   </div>
@@ -423,7 +423,7 @@ const Dashboard = ({
                                         </td>
                                         <td>
                                           <a
-                                            href="javascript:void(0);"
+                                            href="#"
                                             className="lab-icon prescription"
                                             title={el?.prescriptionFile}
                                           >

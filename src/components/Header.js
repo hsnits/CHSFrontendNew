@@ -34,7 +34,7 @@ function Header() {
       <Container>
         <Nav className="navbar navbar-expand-lg header-nav">
           <div className="navbar-header">
-            <Link id="mobile_btn" to="javascript:void(0);">
+            <Link id="mobile_btn" to="#">
               <span className="bar-icon">
                 <span></span>
                 <span></span>
@@ -53,7 +53,7 @@ function Header() {
               <Link
                 id="menu_close"
                 className="menu-close"
-                to="javascript:void(0);"
+                to="#"
               >
                 <i className="fas fa-times"></i>
               </Link>
@@ -69,7 +69,7 @@ function Header() {
                   {submenu ? (
                     <>
                       <a
-                        href="javascript:void(0);"
+                        href="#"
                         onClick={() => toggleSubmenu(menu_name)}
                       >
                         {menu_name} <i className="fas fa-chevron-down"></i>
@@ -113,7 +113,7 @@ function Header() {
                   {" "}
                   {/* \web menu */}
                   <li className="has-submenu megamenu d-none d-lg-block">
-                    <a href="javascript:void(0);">
+                    <a href="#">
                       Register Now <i className="fas fa-chevron-down"></i>
                     </a>
                     <ul className="submenu mega-submenu">
@@ -362,7 +362,7 @@ function Header() {
                   {/* \mobile menu */}
                   <li className="has-submenu megamenu d-lg-none">
                     <a
-                      href="javascript:void(0);"
+                      href="#"
                       onClick={() => toggleSubmenu("Register")}
                     >
                       Register Now <i className="fas fa-chevron-down"></i>

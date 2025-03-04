@@ -257,7 +257,7 @@ export default function DoctorBooking() {
                                       className={`timing ${
                                         formData.time === time ? "active" : ""
                                       }`}
-                                      href="javascript:void(0);"
+                                      href="#"
                                       onClick={() => handleTimeSelect(time)}
                                     >
                                       <span>
@@ -268,7 +268,7 @@ export default function DoctorBooking() {
                                 ))}
                                 {/* <li>
                               <div className="load-more-timings load-more-morning">
-                                <a href="javascript:void(0);">Load More</a>
+                                <a href="#">Load More</a>
                               </div>
                             </li> */}
                               </ul>
@@ -293,7 +293,7 @@ export default function DoctorBooking() {
                                       className={`timing ${
                                         formData.time === time ? "active" : ""
                                       }`}
-                                      href="javascript:void(0);"
+                                      href="#"
                                       onClick={() => handleTimeSelect(time)}
                                     >
                                       <span>
@@ -323,7 +323,7 @@ export default function DoctorBooking() {
                                       className={`timing ${
                                         formData.time === time ? "active" : ""
                                       }`}
-                                      href="javascript:void(0);"
+                                      href="#"
                                       onClick={() => handleTimeSelect(time)}
                                     >
                                       <span>

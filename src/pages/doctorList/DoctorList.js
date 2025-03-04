@@ -4,13 +4,15 @@ import Footer from "../../components/Footer";
 import Banner from "../../components/Banner";
 import { Container, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import user_img from "../../assets/img/profile-06.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 import { Award, Clock, Heart, MapPin } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
 import { getDoctors } from "../../redux/slices/doctorApi";
 import { getLocalStorage, setLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import { createAppointment } from "../../redux/slices/patientApi";
+import { cpFirstName, formatName } from "../../helpers/utils";
+import { toastMessage } from "../../config/toast";
 
 function DoctorList() {
   const dispatch = useDispatch();
@@ -24,6 +26,13 @@ function DoctorList() {
   }, []);
 
   const handleBookAppointment = async (data) => {
+    if (data?.role?.toLowerCase() == "doctor") {
+      toastMessage(
+        "error",
+        "You are not a patient user, so you are not eligible to create an appointment."
+      );
+      return;
+    }
     const formattedData = {
       refDoctor: data?.profile?._id,
       id: userProfileId,
@@ -36,6 +45,7 @@ function DoctorList() {
       navigate(`/doctorbooking/${res?.payload?._id}`);
     });
   };
+
   return (
     <>
       <Header />
@@ -235,7 +245,7 @@ function DoctorList() {
                         <div className="row">
                           <div className="col-6">
                             <a
-                              href="javascript:void(0);"
+                              href="#"
                               className="btn btn-primary"
                             >
                               Apply
@@ -243,7 +253,7 @@ function DoctorList() {
                           </div>
                           <div className="col-6">
                             <a
-                              href="javascript:void(0);"
+                              href="#"
                               className="btn btn-outline-primary"
                             >
                               Reset
@@ -298,44 +308,55 @@ function DoctorList() {
                       const data = el?.profile;
                       return (
                         <>
-                          <div className="card-body">
+                          <div key={index} className="card-body">
                             <div className="doctor-widget-one">
-                              <div key={index} className="doc-info-left">
+                              <div  className="doc-info-left">
                                 <div className="doctor-img">
                                   <a href="#">
                                     <img
-                                      src={user_img}
+                                      src={el?.coverImage || user_img}
                                       className="img-fluid"
-                                      alt="John Doe"
+                                      alt="Doctor Profile"
                                     />
                                   </a>
                                   <div className="favourite-btn">
-                                    <a
+                                    {/* <a
                                       href="javascript:void(0)"
                                       className="favourite-icon"
                                     >
                                       <Heart size={18} />
-                                    </a>
+                                    </a> */}
                                   </div>
                                 </div>
                                 <div className="doc-info-cont">
                                   <h4 className="doc-name">
-                                    <a href="#">Dr.{data?.firstName}</a>
+                                    <Link to="/doctorprofile">
+                                      {formatName(data)}
+                                    </Link>
                                     <i className="fas fa-circle-check"></i>
                                   </h4>
                                   <p className="doc-speciality">
-                                    {data?.achievement}, {data?.designation}
+                                    {`${data?.designation || ""}${
+                                      data?.achievement
+                                        ? `, ${data.achievement}`
+                                        : ""
+                                    }`}
                                   </p>
                                   <div className="clinic-details">
                                     <p className="doc-location">
                                       <MapPin size={18} />
-                                      <span> &nbsp;0.9</span> {data?.address}{" "}
-                                      <a href="javascript:void(0);">
+                                      <span>{/* &nbsp;0.9 */}</span>
+                                      {cpFirstName(data?.address)}{" "}
+                                      {/* <a href="#">
                                         Get Direction
-                                      </a>
+                                      </a> */}
                                     </p>
                                     <p className="doc-location">
-                                      <Award size={18} /> <span> &nbsp;20</span>{" "}
+                                      <Award size={18} />{" "}
+                                      <span>
+                                        {" "}
+                                        &nbsp;{data?.experience || 20}
+                                      </span>{" "}
                                       Years of Experience
                                     </p>
                                   </div>
@@ -344,9 +365,23 @@ function DoctorList() {
                               <div className="doc-info-right">
                                 <div className="clini-infos">
                                   <ul>
-                                    <li>
-                                      <Clock size={18} />
-                                      <span className="available-date available-today">
+                                    <li
+                                      style={{
+                                        display: "flex",
+                                        justifyContent: "space-around",
+                                      }}
+                                    >
+                                      <span>
+                                        <Clock size={18} />
+                                      </span>
+
+                                      <span
+                                        className={`available-date ${
+                                          data?.availability
+                                            ? "available-today"
+                                            : "notavailable-today"
+                                        }`}
+                                      >
                                         {data?.availability
                                           ? "Available Today"
                                           : "Not available today"}

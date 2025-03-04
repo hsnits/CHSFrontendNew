@@ -173,7 +173,7 @@ export const cardData = [
     imageSrc: video_call,
     alt: "video-call",
     title: "Video Consultation",
-    link: "javascript:void(0);",
+    link: "#",
     buttonText: "Call Now",
   },
   {
@@ -181,7 +181,7 @@ export const cardData = [
     imageSrc: cat_3,
     alt: "lab-image",
     title: "Find a Hospital",
-    link: "javascript:void(0);",
+    link: "#",
     buttonText: "Coming Soon",
   },
   {
@@ -189,7 +189,7 @@ export const cardData = [
     imageSrc: lab_test,
     alt: "lab-image",
     title: "Lab Test",
-    link: "javascript:void(0);",
+    link: "#",
     buttonText: "Coming Soon",
   },
 ];

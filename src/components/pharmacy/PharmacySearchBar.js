@@ -43,7 +43,7 @@ export default function PharmacySearchBar() {
               <div className="shopping-cart-list">
                 <ul className="nav">
                   <li>
-                    <Link href="javascript:void(0);">
+                    <Link href="#">
                       <img src={wishlist_img} alt="Img"/>
                     </Link>
                   </li>

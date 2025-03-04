@@ -59,7 +59,7 @@ export default function Cart() {
                                             <td>19</td>
                                             <td>
                                                 <div class="table-action">
-                                                    <a href="javascript:void(0);" class="btn btn-sm bg-danger-light">
+                                                    <a href="#" class="btn btn-sm bg-danger-light">
                                                         <i class="fas fa-times"></i>
                                                     </a>
                                                 </div>

@@ -36,7 +36,7 @@ export default function ConsultationType({
                       }`}
                       onClick={() => onConsultationTypeChange("video")}
                     >
-                      <a href="javascript:void(0);">
+                      <a href="#">
                         <Video /> &nbsp; Video Consulting
                       </a>
                       <span>
@@ -51,7 +51,7 @@ export default function ConsultationType({
                       }`}
                       onClick={() => onConsultationTypeChange("audio")}
                     >
-                      <a href="javascript:void(0);">
+                      <a href="#">
                         <Mic /> &nbsp; Audio Consulting
                       </a>
                       <span>
@@ -66,7 +66,7 @@ export default function ConsultationType({
                       }`}
                       onClick={() => onConsultationTypeChange("chat")}
                     >
-                      <a href="javascript:void(0);">
+                      <a href="#">
                         <MessageCircle /> &nbsp; Chat Consulting
                       </a>
                       <span>
@@ -88,7 +88,7 @@ export default function ConsultationType({
                 <ul>
                   <li>
                     <div className="consultation-types">
-                      <a href="javascript:void(0);">
+                      <a href="#">
                         <Home /> &nbsp; Home Visit
                       </a>
                       <span>
@@ -106,7 +106,7 @@ export default function ConsultationType({
                     }`}
                     onClick={() => onConsultationTypeChange("instant")}
                   >
-                    <a href="javascript:void(0);">
+                    <a href="#">
                       <User /> &nbsp; Consult Instantly
                     </a>
                     <span>

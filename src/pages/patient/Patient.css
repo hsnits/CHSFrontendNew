@@ -25064,6 +25064,12 @@ a.mute-video.stop {
     font-weight: 500
 }
 
+.doctor-widget-one .clini-infos ul li .notavailable-today {
+    background: #fcdcdc;
+    color: #c52222;
+    font-weight: 500
+}
+
 .doctor-widget-one .clini-infos ul li .available-tomorrow {
     background: #fff6d8;
     color: #f3db00

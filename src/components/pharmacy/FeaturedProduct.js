@@ -42,16 +42,16 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
                         ))}
                       </select>
                       {/* <div className="dropdown-menu">
-                        <a className="dropdown-item" href="javascript:void(0);">
+                        <a className="dropdown-item" href="#">
                           Ayush
                         </a>
-                        <a className="dropdown-item" href="javascript:void(0);">
+                        <a className="dropdown-item" href="#">
                           Covid Essentials
                         </a>
-                        <a className="dropdown-item" href="javascript:void(0);">
+                        <a className="dropdown-item" href="#">
                           Devices
                         </a>
-                        <a className="dropdown-item" href="javascript:void(0);">
+                        <a className="dropdown-item" href="#">
                           Glucometers
                         </a>
                       </div> */}

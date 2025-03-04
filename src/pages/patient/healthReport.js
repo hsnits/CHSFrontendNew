@@ -27,7 +27,7 @@ const HealthReport = ({ data }) => {
               <div className="header-title">
                 <h5>Health Records</h5>
               </div>
-              <a href="javascript:void(0);">
+              <a href="#">
                 <img
                   src={data?.coverImage ?? user_img}
                   className="avatar dropdown-avatar"

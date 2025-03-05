@@ -53,18 +53,18 @@ const Profile = ({ getAllData, doctorDetails }) => {
     const file = e.target.files[0];
 
     if (!file) {
-      alert("No file selected.");
+      toastMessage("error", "No file selected.");
       return;
     }
 
     const validTypes = ["image/jpeg", "image/png", "image/jpg"];
     if (!validTypes.includes(file.type)) {
-      alert("Please upload a valid image file (JPEG or PNG).");
+      toastMessage("error", "Please upload a valid image file (JPEG or PNG).");
       return;
     }
 
     if (file.size > 4 * 1024 * 1024) {
-      alert("File size exceeds the 4MB limit.");
+      toastMessage("error", "File size exceeds the 4MB limit.");
       return;
     }
 
@@ -92,7 +92,7 @@ const Profile = ({ getAllData, doctorDetails }) => {
       }
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("File upload failed. Please try again.");
+      toastMessage("error","File upload failed. Please try again.");
     }
   };
 
@@ -190,7 +190,7 @@ const Profile = ({ getAllData, doctorDetails }) => {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="setting-card">
-        <div className="change-avatar img-upload">
+          <div className="change-avatar img-upload">
             <div className="profile-img">
               {doctorDetails?.coverImage ? (
                 <img src={doctorDetails?.coverImage} alt="Profile Preview" />
@@ -206,18 +206,20 @@ const Profile = ({ getAllData, doctorDetails }) => {
             <div className="upload-img">
               <h5>Profile Image</h5>
               <div className="imgs-load d-flex align-items-center">
-                <div className="change-photo">
+                <div className="change-photo" style={{ cursor: "pointer" }}>
                   Upload New
                   <input
                     type="file"
-                    className="upload hover-pointer"
+                    className="upload cursor-pointer"
+                    style={{ cursor: "pointer" }}
                     accept="image/*"
                     onChange={handlePhotoChange}
                   />
                 </div>
                 <div
                   onClick={handleProfileRemove}
-                  className="upload-remove hover-pointer"
+                  className="upload-remove "
+                  style={{ cursor: "pointer" }}
                 >
                   Remove
                 </div>

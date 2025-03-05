@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import doctor_img from "../../assets/img/doctor-profile-img.jpg";
+import doctor_img from "../../assets/img/dr_profile.jpg";
 import { Link } from "react-router-dom";
 import { Calendar } from "react-feather";
 import { Nav } from "react-bootstrap";

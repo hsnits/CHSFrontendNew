@@ -180,17 +180,19 @@ const Requests = ({ activeKey }) => {
                     <li>
                       <span
                         onClick={() => handleUpdate(it?._id, "Accepted")}
-                        class="accept-link"
+                        class="accept-link "
+                        style={{ cursor: "pointer" }}
                       >
-                        <i class="fa-solid fa-check"></i>Accept
+                        <i class="fa-solid fa-check text-green"></i>Accept
                       </span>
                     </li>
                     <li>
                       <span
                         onClick={() => handleUpdate(it?._id, "Cancelled")}
                         class="reject-link"
+                        style={{ cursor: "pointer" }}
                       >
-                        <i class="fa-solid fa-xmark"></i>Reject
+                        <i class="fa-solid fa-xmark text-danger"></i>Reject
                       </span>
                     </li>
                   </ul>

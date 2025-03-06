@@ -51,6 +51,7 @@ const Appointments = ({ activeKey }) => {
       );
 
       const updatedData = Appointments?.filter((item) => item?._id !== id);
+      getCounts(`/doctor/appointment-count/${userProfileId}`);
       setData(updatedData || []);
     } catch (error) {
       toastMessage("error", "Appointment update process failed!");

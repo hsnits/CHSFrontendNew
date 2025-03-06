@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import user_img from "../../assets/img/profile-06.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import useGetMountData from "../../helpers/getDataHook";
 import NotFound from "../../components/common/notFound";

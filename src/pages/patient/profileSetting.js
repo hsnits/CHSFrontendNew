@@ -11,6 +11,7 @@ import {
 } from "../../redux/slices/userApi";
 import { useDispatch } from "react-redux";
 import { callDeleteApi, callPostApi, callPutApi } from "../../_service";
+import DeleteModal from "../../components/modals/delete-modal";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -31,6 +32,8 @@ const schema = yup.object().shape({
 
 const ProfileSetting = ({ data }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isOpen, setIsOpen] = useState({ is: false, id: null });
+
   const dispatch = useDispatch();
 
   const {
@@ -91,11 +94,12 @@ const ProfileSetting = ({ data }) => {
   };
 
   const handleRemove = async (e) => {
-    setSelectedFile(null);
-
     try {
       const updateRes = await callDeleteApi(`/user/delete-dp/${data._id}`);
+      console.log(updateRes, "updateRes");
       if (updateRes?.status) {
+        setIsOpen({ is: false, id: null });
+        setSelectedFile(null);
         dispatch(userProfile());
       }
     } catch (error) {
@@ -155,7 +159,7 @@ const ProfileSetting = ({ data }) => {
                 </div>
                 <div
                   style={{ cursor: "pointer" }}
-                  onClick={handleRemove}
+                  onClick={() => setIsOpen({ is: true })}
                   className="upload-remove hover-pointer"
                 >
                   Remove
@@ -359,6 +363,13 @@ const ProfileSetting = ({ data }) => {
           </button>
         </div>
       </form>
+      <DeleteModal
+        type="profile"
+        isOpen={isOpen?.is}
+        onClose={() => setIsOpen({ is: false, id: null })}
+        title="Are you sure you want to remove this profile picture ?"
+        onConfirm={handleRemove}
+      />
     </>
   );
 };

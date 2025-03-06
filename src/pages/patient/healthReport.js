@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Col, Row, Tab } from "react-bootstrap";
-import user_img from "../../assets/img/profile-06.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 import EditReport from "../../components/modals/edit-report";
 import useGetMountData from "../../helpers/getDataHook";
 import { getDateFormate } from "../../helpers/utils";

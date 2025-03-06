@@ -88,6 +88,7 @@ const Profile = ({ getAllData, doctorDetails }) => {
       });
       console.log(updateRes);
       if (updateRes?.status) {
+        getAllData("/user");
         dispatch(userProfile());
       }
     } catch (error) {
@@ -104,6 +105,7 @@ const Profile = ({ getAllData, doctorDetails }) => {
         `/user/delete-dp/${doctorDetails._id}`
       );
       if (updateRes?.status) {
+        getAllData("/user");
         dispatch(userProfile());
       }
     } catch (error) {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Tab } from "react-bootstrap";
-import user_img from "../../assets/img/profile-06.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 import { useDispatch } from "react-redux";
 import {
   getAllAppointment,
@@ -12,6 +12,7 @@ import moment from "moment/moment";
 import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
 import AppointmentDetails from "../../components/modals/appotmentDetails";
+import DeleteModal from "../../components/modals/delete-modal";
 
 const MyAppointTabView = ({ appointmentData }) => {
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
@@ -34,7 +35,10 @@ const MyAppointTabView = ({ appointmentData }) => {
   const handleUpdateStatus = async (id) => {
     await dispatch(
       updateAppointmentStatus({ data: { id: id, status: "Cancelled" } })
-    ).then(() => dispatch(getAllAppointment(userProfileId)));
+    ).then(() => {
+      openModelWithItem();
+      dispatch(getAllAppointment(userProfileId));
+    });
   };
 
   const openModelWithItem = (key, item) => {
@@ -171,7 +175,7 @@ const MyAppointTabView = ({ appointmentData }) => {
                           </a>
                         </li>
 
-                        <li onClick={() => handleUpdateStatus(el?._id)}>
+                        <li onClick={() => openModelWithItem("delete", el)}>
                           <a>
                             <i className="fa-solid fa-xmark"></i>
                           </a>
@@ -316,6 +320,13 @@ const MyAppointTabView = ({ appointmentData }) => {
         handleModalClose={openModelWithItem}
         selectedAppointment={customData}
         type="patient"
+      />
+      <DeleteModal
+        type="appointment"
+        isOpen={isOpen == "delete"}
+        onClose={openModelWithItem}
+        title="Are you sure you want to cancel this appointment ?"
+        onConfirm={() => handleUpdateStatus(customData?._id)}
       />
     </>
   );

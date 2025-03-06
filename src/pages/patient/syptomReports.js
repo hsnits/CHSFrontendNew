@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Col, Row, Tab, Accordion } from "react-bootstrap";
 import useGetMountData from "../../helpers/getDataHook";
 import { Trash2 } from "react-feather";
@@ -6,13 +6,17 @@ import { callDeleteApi } from "../../_service";
 import { toastMessage } from "../../config/toast";
 import { getMdHTMLValue } from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
+import DeleteModal from "../../components/modals/delete-modal";
 
 const SymptomReport = ({ userData, allReports, loading, getAllData }) => {
-  const handleDelete = async (id) => {
+  const [isOpen, setIsOpen] = useState({ is: false, id: null });
+
+  const handleDelete = async () => {
     try {
-      const response = await callDeleteApi(`/patient/report/${id}`);
+      const response = await callDeleteApi(`/patient/report/${isOpen?.id}`);
       if (response?.status) {
         toastMessage("success", "Symptom report deleted successfully!");
+        setIsOpen({ is: false, id: null });
         getAllData(`/patient/reports/${userData?.profile?._id}`);
       }
     } catch (error) {
@@ -60,7 +64,7 @@ const SymptomReport = ({ userData, allReports, loading, getAllData }) => {
                           <span
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleDelete(item?._id);
+                              setIsOpen({ is: true, id: item?._id });
                             }}
                             style={{ paddingRight: 10, cursor: "pointer" }}
                           >
@@ -96,6 +100,12 @@ const SymptomReport = ({ userData, allReports, loading, getAllData }) => {
           </div>
         </Col>
       </Row>
+      <DeleteModal
+        isOpen={isOpen?.is}
+        onClose={() => setIsOpen({ is: false, id: null })}
+        title="Are you sure you want to delete this report ?"
+        onConfirm={handleDelete}
+      />
     </>
   );
 };

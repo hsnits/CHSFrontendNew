@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Nav } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
-import user_img from "../../assets/img/profile-06.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 
 const SideBar = ({ data }) => {
   const location = useLocation(); // Get current URL location
@@ -22,8 +22,9 @@ const SideBar = ({ data }) => {
                 <h5 className="mb-0">Patient ID : {data?._id}</h5>
               </div>
               <span>
-                {data?.profile?.gender} <i className="fa-solid fa-circle"></i>{" "}
-                {data?.profile?.age}
+              <i className="fa-solid fa-circle"></i>{" "}
+                {data?.profile?.gender} 
+                /{data?.profile?.age || ""}
               </span>
             </div>
           </div>

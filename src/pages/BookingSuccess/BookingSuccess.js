@@ -139,14 +139,11 @@ export default function BookingSuccess() {
                 </div>
               </div>
               <div className="success-btn">
-                <Link
-                  to="#"
-                  className="btn btn-primary prime-btn"
-                >
+                <Link to="#" className="btn btn-primary prime-btn">
                   Add to Google Calendar
                 </Link>
                 <div
-                  onClick={() => navigate("/patient")}
+                  onClick={() => navigate("/patient?key=second")}
                   className="btn btn-light"
                 >
                   Appointment

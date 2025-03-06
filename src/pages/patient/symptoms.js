@@ -132,7 +132,7 @@ const PatSymptoms = () => {
   }, [summary]);
 
   return (
-    <Tab.Pane eventKey="six">
+    <>
       <div className="dashboard-header">
         <h3>Symptoms</h3>
       </div>
@@ -415,7 +415,7 @@ const PatSymptoms = () => {
           {/* </div> */}
         </div>
       </Col>
-    </Tab.Pane>
+    </>
   );
 };
 

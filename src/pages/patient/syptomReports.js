@@ -22,7 +22,7 @@ const SymptomReport = ({ userData, allReports, loading, getAllData }) => {
   };
 
   return (
-    <Tab.Pane eventKey="seven">
+    <>
       <Row>
         <div className="dashboard-header">
           <h3>Symptom Reports</h3>
@@ -96,7 +96,7 @@ const SymptomReport = ({ userData, allReports, loading, getAllData }) => {
           </div>
         </Col>
       </Row>
-    </Tab.Pane>
+    </>
   );
 };
 

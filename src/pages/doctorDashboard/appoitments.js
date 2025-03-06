@@ -10,11 +10,11 @@ import { toastMessage } from "../../config/toast";
 import AppointmentDetails from "../../components/modals/appotmentDetails";
 import AppointmentReports from "../../components/modals/patientReports";
 
-const Appointments = () => {
+const Appointments = ({ activeKey }) => {
   const [tab, setTab] = useState("Accepted");
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
-  const { data: AppointmentsCount } = useGetMountData(
+  const { data: AppointmentsCount, getAllData: getCounts } = useGetMountData(
     `/doctor/appointment-count/${userProfileId}`
   );
 
@@ -61,7 +61,14 @@ const Appointments = () => {
     setQuery((pre) => ({ ...pre, status: "Accepted" }));
   }, []);
 
-  console.log(AppointmentsCount, Appointments, "Appointments");
+  useEffect(() => {
+    if (activeKey && userProfileId) {
+      getAllData(`/doctor/appointment/${userProfileId}`);
+      getCounts(`/doctor/appointment-count/${userProfileId}`);
+    }
+  }, [activeKey, userProfileId]);
+
+  // console.log(AppointmentsCount, Appointments, "Appointments");
 
   return (
     <div>

@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Col, Row, Tab } from "react-bootstrap";
 import user_img from "../../assets/img/profile-06.jpg";
 import EditReport from "../../components/modals/edit-report";
 import useGetMountData from "../../helpers/getDataHook";
 import { getDateFormate } from "../../helpers/utils";
 
-const HealthReport = ({ data }) => {
+const HealthReport = ({ data, activeTab }) => {
   const {
     data: isReports,
     loading,
@@ -13,10 +13,16 @@ const HealthReport = ({ data }) => {
     isOpen,
     customData,
     openModelWithItem,
-  } = useGetMountData(data?._id ? `/patient/health-report/${data?._id}` : null);
+  } = useGetMountData(null);
+
+  useEffect(() => {
+    if (data?._id && activeTab == "third") {
+      getAllData(data?._id ? `/patient/health-report/${data?._id}` : null);
+    }
+  }, [data, activeTab]);
 
   return (
-    <Tab.Pane eventKey="third">
+    <>
       <Row>
         <div className="dashboard-header">
           <h3>Health </h3>
@@ -39,7 +45,7 @@ const HealthReport = ({ data }) => {
             <div className="dashboard-card-body">
               <Row>
                 <Col lg="12" md="12" sm="12">
-                  {!loading && isReports ? (
+                  {!loading && isReports && Object.keys(isReports) != 0 ? (
                     <Row>
                       <Col lg="4">
                         <div className="health-records icon-orange">
@@ -145,7 +151,7 @@ const HealthReport = ({ data }) => {
         reportData={isReports || customData}
         refreshData={() => getAllData(`/patient/health-report/${data?._id}`)}
       />
-    </Tab.Pane>
+    </>
   );
 };
 

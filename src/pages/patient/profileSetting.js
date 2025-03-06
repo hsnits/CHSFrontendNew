@@ -124,7 +124,7 @@ const ProfileSetting = ({ data }) => {
   };
 
   return (
-    <Tab.Pane eventKey="fourth">
+    <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="setting-card">
           <div className="change-avatar img-upload">
@@ -143,9 +143,10 @@ const ProfileSetting = ({ data }) => {
             <div className="upload-img">
               <h5>Profile Image</h5>
               <div className="imgs-load d-flex align-items-center">
-                <div className="change-photo">
+                <div className="change-photo" style={{ cursor: "pointer" }}>
                   Upload New
                   <input
+                    style={{ cursor: "pointer" }}
                     type="file"
                     className="upload hover-pointer"
                     accept="image/*"
@@ -153,6 +154,7 @@ const ProfileSetting = ({ data }) => {
                   />
                 </div>
                 <div
+                  style={{ cursor: "pointer" }}
                   onClick={handleRemove}
                   className="upload-remove hover-pointer"
                 >
@@ -357,7 +359,7 @@ const ProfileSetting = ({ data }) => {
           </button>
         </div>
       </form>
-    </Tab.Pane>
+    </>
   );
 };
 

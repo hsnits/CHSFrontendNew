@@ -12,7 +12,7 @@ import { callPutApi } from "../../_service";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const Requests = () => {
+const Requests = ({ activeKey }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [time, setTime] = useState("");
@@ -81,6 +81,12 @@ const Requests = () => {
       toastMessage("error", "Appointment update process failed!");
     }
   };
+
+  useEffect(() => {
+    if (activeKey && userProfileId) {
+      getAllData(`/doctor/appointment/${userProfileId}`);
+    }
+  }, [activeKey, userProfileId]);
 
   console.log(Appointments, "Appointments");
   return (

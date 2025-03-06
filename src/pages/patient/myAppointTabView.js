@@ -43,7 +43,8 @@ const MyAppointTabView = ({ appointmentData }) => {
   };
 
   return (
-    <Tab.Pane eventKey="second">
+    <>
+      {" "}
       <div className="dashboard-header">
         <h3>Appointments</h3>
       </div>
@@ -178,11 +179,11 @@ const MyAppointTabView = ({ appointmentData }) => {
                       </ul>
                     </li>
                     {/* <li className="appointment-detail-btn">
-                      <a className="start-link">
-                        <i className="fa-solid fa-calendar-check me-1"></i>
-                        Attend
-                      </a>
-                    </li> */}
+                  <a className="start-link">
+                    <i className="fa-solid fa-calendar-check me-1"></i>
+                    Attend
+                  </a>
+                </li> */}
                   </ul>
                 </div>
               );
@@ -316,7 +317,7 @@ const MyAppointTabView = ({ appointmentData }) => {
         selectedAppointment={customData}
         type="patient"
       />
-    </Tab.Pane>
+    </>
   );
 };
 

@@ -62,13 +62,11 @@ const Dashboard = ({
     resolver: yupResolver(validationSchema),
   });
 
-  const {
-    data: isReports,
-    loading: reportLoading,
-    getAllData: reportGetData,
-  } = useGetMountData(
-    `/doctor/appointment/${userProfileId}`
-  );
+  // const {
+  //   data: isReports,
+  //   loading: reportLoading,
+  //   getAllData: reportGetData,
+  // } = useGetMountData(`/doctor/appointment/${userProfileId}`);
 
   const {
     data: appointmentData,
@@ -123,7 +121,7 @@ const Dashboard = ({
 
       // Step 4: Notify success and refresh data
       toastMessage("success", "Report is added successfully.");
-      reportGetData(`/patient/reports/${userProfileId}`);
+      // reportGetData(`/patient/reports/${userProfileId}`);
 
       // Refresh the list or data
       console.log("getData", data);
@@ -171,7 +169,7 @@ const Dashboard = ({
 
   return (
     <>
-      <Tab.Pane eventKey="first">
+      <div>
         <div className="dashboard-header">
           <h3>Dashboard</h3>
         </div>
@@ -347,10 +345,7 @@ const Dashboard = ({
                                   <a href="#">#MR-123</a>
                                 </td>
                                 <td>
-                                  <a
-                                    href="#"
-                                    className="lab-icon"
-                                  >
+                                  <a href="#" className="lab-icon">
                                     <span>
                                       <i className="fa-solid fa-paperclip"></i>
                                     </span>
@@ -494,7 +489,8 @@ const Dashboard = ({
             </div>
           </div>
         </Col>
-      </Tab.Pane>
+      </div>
+
       {/* Modal for adding medical record */}
       <Modal
         show={showModal}

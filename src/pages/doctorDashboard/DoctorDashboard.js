@@ -1,6 +1,7 @@
 import React from "react";
-import Header from "../../components/Header";
+import { useLocation } from "react-router-dom";
 import { Container, Row, Tab, Col } from "react-bootstrap";
+import Header from "../../components/Header";
 import Breadcrumb from "../../components/Breadcrumb";
 import Footer from "../../components/Footer";
 import DoctorSidebar from "./sidebar";
@@ -15,7 +16,12 @@ import Clinic from "../doctorDashboard/clint";
 function DoctorDashboard() {
   const { data, getAllData } = useGetMountData(`/user`);
 
-  if (!data || data?.length == 0) return;
+  // Get the key from the URL
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const activeKey = searchParams.get("key") || "first"; // Default to "first"
+
+  if (!data || data?.length === 0) return null;
 
   return (
     <>
@@ -23,7 +29,7 @@ function DoctorDashboard() {
       <Breadcrumb />
       <div className="content">
         <Container>
-          <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+          <Tab.Container id="left-tabs-example" activeKey={activeKey}>
             <Row>
               <Col lg="4" xl="3" className="theiaStickySidebar">
                 <DoctorSidebar doctorDetails={data} />
@@ -33,23 +39,18 @@ function DoctorDashboard() {
                   <Tab.Pane eventKey="first">
                     <Dashboard />
                   </Tab.Pane>
-
                   <Tab.Pane eventKey="second">
-                    <Requests />
+                    <Requests activeKey={activeKey == "second"} />
                   </Tab.Pane>
-
                   <Tab.Pane eventKey="third">
                     <Patients />
                   </Tab.Pane>
-
                   <Tab.Pane eventKey="fourth">
-                    <Appointments />
+                    <Appointments activeKey={activeKey == "fourth"} />
                   </Tab.Pane>
-
                   <Tab.Pane eventKey="fifth">
                     <Clinic />
                   </Tab.Pane>
-
                   <Tab.Pane eventKey="sixth">
                     <Profile doctorDetails={data} getAllData={getAllData} />
                   </Tab.Pane>

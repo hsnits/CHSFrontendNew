@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Header from "../../components/Header";
 import Breadcrumb from "../../components/Breadcrumb";
 import { Col, Container, Row } from "react-bootstrap";
@@ -17,13 +18,16 @@ import SymptomReport from "./syptomReports";
 import useGetMountData from "../../helpers/getDataHook";
 import { STORAGE } from "../../constants";
 import { getLocalStorage } from "../../helpers/storage";
-import {
-  getAllAppointment,
-  getAppointment,
-} from "../../redux/slices/patientApi";
+import { getAllAppointment } from "../../redux/slices/patientApi";
 
 function PatientDashboard() {
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  // Get the "key" from the URL query parameter
+  const searchParams = new URLSearchParams(location.search);
+  const activeTab = searchParams.get("key") || "first"; // Default to "first" if no key is provided
+
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
   const data = useSelector(
@@ -47,40 +51,60 @@ function PatientDashboard() {
     dispatch(getAllAppointment(userProfileId));
   }, []);
 
+  useEffect(() => {
+    if (activeTab == "second" && userProfileId) {
+      dispatch(getAllAppointment(userProfileId));
+    } else if (userProfileId && activeTab == "seven") {
+      getAllData(`/patient/reports/${userProfileId}`);
+    }
+  }, [activeTab, userProfileId]);
+
   return (
     <>
       <Header />
       <Breadcrumb />
       <div className="content">
         <Container>
-          <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+          <Tab.Container id="left-tabs-example" activeKey={activeTab}>
             <Row>
               {/* Side Bar */}
               <SideBar data={data} />
               <Col lg="8" xl="9">
                 <Tab.Content>
                   {/* Dashboard view */}
-                  <Dashboard
-                    data={data}
-                    appointmentData={appointmentData}
-                    getAllData={getAllData}
-                    userProfileId={userProfileId}
-                  />
+                  <Tab.Pane eventKey="first">
+                    <Dashboard
+                      data={data}
+                      appointmentData={appointmentData}
+                      getAllData={getAllData}
+                      userProfileId={userProfileId}
+                    />
+                  </Tab.Pane>
                   {/* My Appointment tab view */}
-                  <MyAppointTabView appointmentData={appointmentData} />
-                  {/* Sayptoms view */}
-                  <PatSymptoms />
-                  {/* Sayptom Reports view */}
-                  <SymptomReport
-                    allReports={isReports}
-                    loading={loading}
-                    getAllData={getAllData}
-                    userData={data}
-                  />
+                  <Tab.Pane eventKey="second">
+                    <MyAppointTabView appointmentData={appointmentData} />
+                  </Tab.Pane>
                   {/* Health Report view */}
-                  <HealthReport data={data} />
+                  <Tab.Pane eventKey="third">
+                    <HealthReport data={data} activeTab={activeTab} />
+                  </Tab.Pane>
                   {/* Profile Setting */}
-                  <ProfileSetting data={data} />
+                  <Tab.Pane eventKey="fourth">
+                    <ProfileSetting data={data} />
+                  </Tab.Pane>
+                  {/* Symptoms view */}
+                  <Tab.Pane eventKey="six">
+                    <PatSymptoms />
+                  </Tab.Pane>
+                  {/* Symptom Reports view */}
+                  <Tab.Pane eventKey="seven">
+                    <SymptomReport
+                      allReports={isReports}
+                      loading={loading}
+                      getAllData={getAllData}
+                      userData={data}
+                    />
+                  </Tab.Pane>
                 </Tab.Content>
               </Col>
             </Row>

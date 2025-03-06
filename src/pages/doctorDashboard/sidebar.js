@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import doctor_img from "../../assets/img/dr_profile.jpg";
-import { Link } from "react-router-dom";
-import { Calendar } from "react-feather";
 import { Nav } from "react-bootstrap";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import doctor_img from "../../assets/img/dr_profile.jpg";
+import { Calendar } from "react-feather";
 import { callPutApi } from "../../_service";
 import { STORAGE } from "../../constants";
 import { getLocalStorage, setLocalStorage } from "../../helpers/storage";
@@ -22,7 +22,8 @@ const DoctorSidebar = ({ doctorDetails }) => {
       });
 
       if (!verifyResponse.status) throw new Error(verifyResponse.message);
-      toastMessage("success", "You availability is updated now");
+      toastMessage("success", "Your availability is updated now");
+
       const userProfile = getLocalStorage(STORAGE.USER_KEY);
       let profile = userProfile.profile;
 
@@ -39,6 +40,14 @@ const DoctorSidebar = ({ doctorDetails }) => {
       setAvailability(!isAvl);
       toastMessage("error", "Availability update process failed!");
     }
+  };
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Function to update the URL when clicking a tab
+  const handleTabClick = (key) => {
+    navigate(`${location.pathname}?key=${key}`);
   };
 
   return (
@@ -88,46 +97,35 @@ const DoctorSidebar = ({ doctorDetails }) => {
         <div className="dashboard-widget">
           <Nav variant="pills" className="flex-column dashboard-menu">
             <Nav.Item>
-              <Nav.Link eventKey="first">
-                {" "}
+              <Nav.Link eventKey="first" onClick={() => handleTabClick("first")}>
                 <i className="fa-solid fa-shapes"></i> Dashboard
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="second">
-                {" "}
+              <Nav.Link eventKey="second" onClick={() => handleTabClick("second")}>
                 <Calendar /> Requests
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="third">
-                {" "}
+              <Nav.Link eventKey="third" onClick={() => handleTabClick("third")}>
                 <i className="fa-solid fa-user-injured"></i> My Patients
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="fourth">
-                {" "}
+              <Nav.Link eventKey="fourth" onClick={() => handleTabClick("fourth")}>
                 <Calendar /> Appointments
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="fifth">
-                {" "}
+              <Nav.Link eventKey="fifth" onClick={() => handleTabClick("fifth")}>
                 <i className="fa-solid fa-calendar-check"></i> Clinic
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="sixth">
-                {" "}
-                <i className="fa-solid fa-user-pen"></i> Profile Settings{" "}
+              <Nav.Link eventKey="sixth"  onClick={() => handleTabClick("sixth")}>
+                <i className="fa-solid fa-user-pen"></i> Profile Settings
               </Nav.Link>
             </Nav.Item>
-            {/* <Nav.Item>
-              <Nav.Link eventKey="six">
-                <LogOut /> Logout{" "}
-              </Nav.Link>
-            </Nav.Item> */}
           </Nav>
         </div>
       </div>

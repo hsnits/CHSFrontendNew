@@ -1,9 +1,11 @@
 import React from "react";
 import { Col, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import user_img from "../../assets/img/profile-06.jpg";
 
 const SideBar = ({ data }) => {
+  const location = useLocation(); // Get current URL location
+
   return (
     <Col xl="3" lg="4" className="theiaStickySidebar">
       <div className="profile-sidebar patient-sidebar profile-sidebar-new">
@@ -14,7 +16,7 @@ const SideBar = ({ data }) => {
             </Link>
             <div className="profile-det-info">
               <h3>
-                <Link href="#">{data?.profile?.firstName}</Link>
+                <Link to="#">{data?.profile?.firstName}</Link>
               </h3>
               <div className="patient-details">
                 <h5 className="mb-0">Patient ID : {data?._id}</h5>
@@ -29,45 +31,35 @@ const SideBar = ({ data }) => {
         <div className="dashboard-widget">
           <Nav variant="pills" className="flex-column dashboard-menu">
             <Nav.Item>
-              <Nav.Link eventKey="first">
-                {" "}
+              <Nav.Link as={Link} to={`${location.pathname}?key=first`} eventKey="first">
                 <i className="fa-solid fa-shapes"></i> Dashboard
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="second">
-                {" "}
+              <Nav.Link as={Link} to={`${location.pathname}?key=second`} eventKey="second">
                 <i className="fa-solid fa-calendar-days"></i> My Appointments
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="six">
+              <Nav.Link as={Link} to={`${location.pathname}?key=six`} eventKey="six">
                 <i className="fa-solid fa-heart-pulse"></i> Symptoms
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="seven">
+              <Nav.Link as={Link} to={`${location.pathname}?key=seven`} eventKey="seven">
                 <i className="fa-solid fa-file-medical"></i> Symptom Reports
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="third">
-                {" "}
+              <Nav.Link as={Link} to={`${location.pathname}?key=third`} eventKey="third">
                 <i className="fa-solid fa-shield-halved"></i> Health Report
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="fourth">
-                {" "}
+              <Nav.Link as={Link} to={`${location.pathname}?key=fourth`} eventKey="fourth">
                 <i className="fa-solid fa-user-pen"></i> Profile Settings
               </Nav.Link>
             </Nav.Item>
-            {/* <Nav.Item>
-              <Nav.Link eventKey="fifth">
-                {" "}
-                <i className="fa-solid fa-calendar-check"></i> Logout
-              </Nav.Link>
-            </Nav.Item> */}
           </Nav>
         </div>
       </div>

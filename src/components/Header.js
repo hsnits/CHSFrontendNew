@@ -431,8 +431,8 @@ function Header() {
                       as={Link}
                       to={
                         isLoggedIn?.role == "Doctor"
-                          ? "/DoctorDashboard?key=profile"
-                          : "/patient?key=profile"
+                          ? "/DoctorDashboard?key=sixth"
+                          : "/patient?key=fourth"
                       }
                     >
                       Profile

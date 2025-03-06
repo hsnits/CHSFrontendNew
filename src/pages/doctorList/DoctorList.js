@@ -20,13 +20,14 @@ function DoctorList() {
   const doctorsList = useSelector(
     (state) => state.DOCTOR?.data?.user?.getDoctorsResult
   );
-  const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
+  const userProfileId = getLocalStorage(STORAGE.USER_KEY);
   useEffect(() => {
     dispatch(getDoctors());
   }, []);
 
   const handleBookAppointment = async (data) => {
-    if (data?.role?.toLowerCase() == "doctor") {
+    // console.log(userProfileId,"userProfileId")
+    if (userProfileId?.role?.toLowerCase() == "doctor") {
       toastMessage(
         "error",
         "You are not a patient user, so you are not eligible to create an appointment."
@@ -35,7 +36,7 @@ function DoctorList() {
     }
     const formattedData = {
       refDoctor: data?.profile?._id,
-      id: userProfileId,
+      id: userProfileId?.profile?._id,
     };
     dispatch(createAppointment(formattedData)).then((res) => {
       if (res?.meta?.requestStatus === "fulfilled")

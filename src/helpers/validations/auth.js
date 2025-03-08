@@ -15,7 +15,6 @@ const registrationSchema = yup.object().shape({
     .max(15, "Mobile Number must not exceed 15 digits"),
   email: yup
     .string()
-    .required("Email Address is required")
     .email("Email Address must be valid"),
   password: yup
     .string()

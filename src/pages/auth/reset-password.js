@@ -76,7 +76,9 @@ const ResetPassword = () => {
                           />
                         )}
                       />
-                      <label className="focus-label">One Time Password</label>
+                      <label className="focus-label">
+                        One Time Password <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.code?.message} />
 
@@ -103,7 +105,9 @@ const ResetPassword = () => {
                           <EyeOff onClick={() => setEyeOpen((pre) => !pre)} />
                         )}
                       </span>
-                      <label className="focus-label">Password</label>
+                      <label className="focus-label">
+                        Password <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.password?.message} />
 
@@ -130,7 +134,9 @@ const ResetPassword = () => {
                           <EyeOff onClick={() => setEyeCnOpen((pre) => !pre)} />
                         )}
                       </span>
-                      <label className="focus-label">Confirm Password</label>
+                      <label className="focus-label">
+                        Confirm Password <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.confirmPassword?.message} />
 

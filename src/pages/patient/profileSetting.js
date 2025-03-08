@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Tab } from "react-bootstrap";
+import { Spinner, Tab } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -12,6 +12,7 @@ import {
 import { useDispatch } from "react-redux";
 import { callDeleteApi, callPostApi, callPutApi } from "../../_service";
 import DeleteModal from "../../components/modals/delete-modal";
+import { toastMessage } from "../../config/toast";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -21,7 +22,8 @@ const schema = yup.object().shape({
     .string()
     .required("Phone Number is required")
     .matches(/^[0-9]+$/, "Phone Number must be numeric"),
-  email: yup.string().email("Invalid Email").required("Email is required"),
+  email: yup.string().email("Invalid Email"),
+  // required("Email is required"),
   bloodGroup: yup.string().required("Blood Group is required"),
   address: yup.string().required("Address is required"),
   city: yup.string().required("City is required"),
@@ -32,6 +34,7 @@ const schema = yup.object().shape({
 
 const ProfileSetting = ({ data }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState({ is: false, id: null });
 
   const dispatch = useDispatch();
@@ -95,16 +98,20 @@ const ProfileSetting = ({ data }) => {
 
   const handleRemove = async (e) => {
     try {
+      setLoading(true);
       const updateRes = await callDeleteApi(`/user/delete-dp/${data._id}`);
       console.log(updateRes, "updateRes");
       if (updateRes?.status) {
+        setLoading(false);
         setIsOpen({ is: false, id: null });
         setSelectedFile(null);
         dispatch(userProfile());
       }
     } catch (error) {
+      setLoading(false);
+
       console.error("Upload failed:", error);
-      alert("File upload failed. Please try again.");
+      toastMessage("error", "File upload failed. Please try again.");
     }
   };
 
@@ -122,8 +129,12 @@ const ProfileSetting = ({ data }) => {
         ? new Date(value.birthDate).toISOString().split("T")[0]
         : null,
     };
+    setLoading(true);
     await dispatch(updatePatientProfile(formattedData)).then((res) => {
-      if (res?.meta?.requestStatus === "fulfilled") dispatch(userProfile());
+      if (res?.meta?.requestStatus === "fulfilled") {
+        setLoading(false);
+        dispatch(userProfile());
+      }
     });
   };
 
@@ -242,9 +253,7 @@ const ProfileSetting = ({ data }) => {
             </div>
             <div className="col-lg-4 col-md-6">
               <div className="form-wrap">
-                <label className="col-form-label">
-                  Email Address <span className="text-danger">*</span>
-                </label>
+                <label className="col-form-label">Email Address</label>
                 <Controller
                   name="email"
                   control={control}
@@ -355,15 +364,16 @@ const ProfileSetting = ({ data }) => {
           </div>
         </div>
         <div className="modal-btn text-end">
-          <a href="#" className="btn btn-gray">
+          {/* <a href="#" className="btn btn-gray">
             Cancel
-          </a>
-          <button type="submit" className="btn btn-primary prime-btn">
-            Save Changes
+          </a> */}
+          <button disabled={loading} type="submit" className="btn btn-primary">
+            Save Changes {loading && <Spinner size={"sm"} />}
           </button>
         </div>
       </form>
       <DeleteModal
+        loading={loading}
         type="profile"
         isOpen={isOpen?.is}
         onClose={() => setIsOpen({ is: false, id: null })}

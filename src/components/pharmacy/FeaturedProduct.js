@@ -104,9 +104,51 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
                             <span>MRP {`${item.price}`} </span>
                           </h5>
                         </div>
-                        <Link to="/ProductDesc" className="cart-icon">
+                        {/* <Link to="/Cart" className="cart-icon">
                           <ShoppingBag />
-                        </Link>
+                        </Link> */}
+                      </div>
+                      {/* <div className="custom-increment pt-4">
+                        <div className="input-group1">
+                          <span className="input-group-btn float-start">
+                            <button
+                              type="button"
+                              className="quantity-left-minus btn btn-danger btn-number"
+                              data-type="minus"
+                              data-field
+                            >
+                              <span>
+                                <i className="fas fa-minus"></i>
+                              </span>
+                            </button>
+                          </span>
+                          <input
+                            type="text"
+                            id="quantity"
+                            name="quantity"
+                            className=" input-number"
+                            value="10"
+                          />
+                          <span className="input-group-btn float-end">
+                            <button
+                              type="button"
+                              className="quantity-right-plus btn btn-success btn-number"
+                              data-type="plus"
+                              data-field
+                            >
+                              <span>
+                                <i className="fas fa-plus"></i>
+                              </span>
+                            </button>
+                          </span>
+                        </div>
+                      </div> */}
+                      <div className="clinic-details mt-4">
+                        <div className="clinic-booking">
+                          <Link to="/Cart" className="btn btn-primary">
+                            Add To Cart
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
-import user_img from "../../assets/img/doctor-profile-img.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 import useGetMountData from "../../helpers/getDataHook";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
-import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
+import {
+  formatName,
+  getDateFormate,
+  getIdLastDigits,
+} from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
 import { ChevronDown, ChevronUp } from "react-feather";
 import { Dropdown, Form } from "react-bootstrap";
@@ -11,11 +15,13 @@ import { toastMessage } from "../../config/toast";
 import { callPutApi } from "../../_service";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import DeleteModal from "../../components/modals/delete-modal";
 
 const Requests = ({ activeKey }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [time, setTime] = useState("");
+  const [uploading, setUploading] = useState(false);
 
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
@@ -25,6 +31,9 @@ const Requests = ({ activeKey }) => {
     getAllData,
     setData,
     setQuery,
+    isOpen,
+    openModelWithItem,
+    customData,
   } = useGetMountData(`/doctor/appointment/${userProfileId}`);
 
   const getByFilter = async (time, startDate, endDate) => {
@@ -63,10 +72,13 @@ const Requests = ({ activeKey }) => {
 
   const handleUpdate = async (id, status) => {
     try {
+      setUploading(true);
       const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
         status,
       });
       if (!verifyResponse.status) throw new Error(verifyResponse.message);
+      openModelWithItem();
+      setUploading(false);
 
       toastMessage(
         "success",
@@ -78,6 +90,7 @@ const Requests = ({ activeKey }) => {
       const updatedData = Appointments?.filter((item) => item?._id !== id);
       setData(updatedData || []);
     } catch (error) {
+      setUploading(false);
       toastMessage("error", "Appointment update process failed!");
     }
   };
@@ -149,12 +162,12 @@ const Requests = ({ activeKey }) => {
                       />
                     </a>
                     <div class="patient-info">
-                      <p>#{getIdLastDigits(it?._id)}</p>
+                      <p>{getIdLastDigits(it?._id, "PT")}</p>
                       <h6>
                         <a href="#">
                           {" "}
                           {it?.appointmentPersonName ||
-                            it?.patientId?.firstName}
+                            formatName(it?.patientId, "Pt")}
                         </a>
                         {/* <span class="badge new-tag">New</span> */}
                       </h6>
@@ -183,16 +196,16 @@ const Requests = ({ activeKey }) => {
                         class="accept-link "
                         style={{ cursor: "pointer" }}
                       >
-                        <i class="fa-solid fa-check text-green"></i>Accept
+                        <i class="fa-solid fa-check text-green"></i> Accept
                       </span>
                     </li>
                     <li>
                       <span
-                        onClick={() => handleUpdate(it?._id, "Cancelled")}
+                        onClick={() => openModelWithItem("delete", it)}
                         class="reject-link"
                         style={{ cursor: "pointer" }}
                       >
-                        <i class="fa-solid fa-xmark text-danger"></i>Reject
+                        <i class="fa-solid fa-xmark text-danger"></i> Reject
                       </span>
                     </li>
                   </ul>
@@ -201,6 +214,14 @@ const Requests = ({ activeKey }) => {
             </div>
           );
         })}
+      <DeleteModal
+        loading={uploading}
+        type="request"
+        isOpen={isOpen == "delete"}
+        onClose={openModelWithItem}
+        title="Are you sure you want to cancel this appointment request ?"
+        onConfirm={() => handleUpdate(customData?._id, "Cancelled")}
+      />
     </div>
   );
 };

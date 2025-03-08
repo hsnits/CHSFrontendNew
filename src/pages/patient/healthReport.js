@@ -4,6 +4,7 @@ import user_img from "../../assets/img/dr_profile.jpg";
 import EditReport from "../../components/modals/edit-report";
 import useGetMountData from "../../helpers/getDataHook";
 import { getDateFormate } from "../../helpers/utils";
+import noDataImg from "../../assets/images/noDataFound.gif";
 
 const HealthReport = ({ data, activeTab }) => {
   const {
@@ -121,7 +122,7 @@ const HealthReport = ({ data, activeTab }) => {
                         <div className="modal-btn text-end">
                           <button
                             onClick={() => openModelWithItem("edit", isReports)}
-                            className="btn btn-primary prime-btn"
+                            className="btn btn-primary"
                           >
                             Edit Report
                           </button>
@@ -129,10 +130,19 @@ const HealthReport = ({ data, activeTab }) => {
                       </Col>
                     </Row>
                   ) : (
-                    <div className="modal-btn text-end">
+                    <div className="modal-btn text-center flex flex-col items-center">
+                      <div className="mb-2">
+                        <img
+                          height={200}
+                          width={400}
+                          className="w-20 h-20 object-contain mx-auto"
+                          src={noDataImg}
+                          alt="No Data"
+                        />
+                      </div>
                       <button
                         onClick={() => openModelWithItem("add")}
-                        className="btn btn-primary prime-btn"
+                        className="btn btn-primary"
                       >
                         Add Health Report
                       </button>

@@ -139,7 +139,7 @@ export default function BookingSuccess() {
                 </div>
               </div>
               <div className="success-btn">
-                <Link to="#" className="btn btn-primary prime-btn">
+                <Link to="#" className="btn btn-primary  ">
                   Add to Google Calendar
                 </Link>
                 <div

@@ -45,14 +45,14 @@ const AppointmentDetails = ({
                           <strong>Display Name:</strong>{" "}
                           {`Dr ${selectedAppointment?.refDoctor?.displayName}`}
                         </p>
-                        <p>
+                        {/* <p>
                           <strong>Email:</strong>{" "}
                           {selectedAppointment?.refDoctor?.email}
                         </p>
                         <p>
                           <strong>Phone:</strong>{" "}
                           {selectedAppointment?.refDoctor?.phoneNumber}
-                        </p>
+                        </p> */}
                         <p>
                           <strong>Address:</strong>{" "}
                           {selectedAppointment?.refDoctor?.address},

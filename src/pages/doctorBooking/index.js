@@ -5,7 +5,7 @@ import Footer from "../../components/Footer";
 
 import "react-datepicker/dist/react-datepicker.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Row, Col, Container, Card, CardBody } from "react-bootstrap";
+import { Row, Col, Container, Card, CardBody, Spinner } from "react-bootstrap";
 import BookingSummary from "../../components/doctorBooking/BookingSummary";
 import { ArrowDownRight } from "react-feather";
 import { useDispatch, useSelector } from "react-redux";
@@ -39,6 +39,7 @@ export default function DoctorBooking() {
   });
 
   const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   const data = useSelector(
     (state) =>
@@ -173,6 +174,8 @@ export default function DoctorBooking() {
     if (isValid) {
       console.log(formData);
       if (step === 3) {
+        setLoading(true);
+        toastMessage("success", "Symptom file uploading...");
         dispatch(uploadFile(formData?.attachment)).then((res) => {
           if (res?.meta?.requestStatus === "fulfilled") {
             const formattedData = {
@@ -184,6 +187,7 @@ export default function DoctorBooking() {
             };
             dispatch(updateAppointment(formattedData)).then((res) => {
               if (res?.meta?.requestStatus === "fulfilled") {
+                setLoading(false);
                 navigate("/BookingSuccess");
               }
             });
@@ -343,7 +347,7 @@ export default function DoctorBooking() {
                   <div className="booking-btn">
                     <button
                       onClick={handleSubmit}
-                      className="btn btn-primary prime-btn justify-content-center align-items-center"
+                      className="btn btn-primary   justify-content-center align-items-center"
                     >
                       Next <ArrowDownRight />
                     </button>
@@ -371,7 +375,7 @@ export default function DoctorBooking() {
                   <div className="booking-btn">
                     <button
                       onClick={handleSubmit}
-                      className="btn btn-primary prime-btn justify-content-center align-items-center"
+                      className="btn btn-primary   justify-content-center align-items-center"
                     >
                       Next <ArrowDownRight />
                     </button>
@@ -394,9 +398,11 @@ export default function DoctorBooking() {
                   <div className="booking-btn">
                     <button
                       onClick={handleSubmit}
-                      className="btn btn-primary prime-btn justify-content-center align-items-center"
+                      disabled={loading}
+                      className="btn btn-primary justify-content-center align-items-center"
                     >
-                      Next <ArrowDownRight />
+                      {loading ? <Spinner size="sm" /> : "Next"}{" "}
+                      <ArrowDownRight />
                     </button>
                   </div>
                 </Col>

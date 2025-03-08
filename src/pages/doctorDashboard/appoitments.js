@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import user_img from "../../assets/img/doctor-profile-img.jpg";
+import user_img from "../../assets/img/dr_profile.jpg";
 import useGetMountData from "../../helpers/getDataHook";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";

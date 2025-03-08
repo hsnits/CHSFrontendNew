@@ -505,7 +505,9 @@ const Dashboard = ({
           <Modal.Body>
             {/* Name Field */}
             <Form.Group className="mb-3" controlId="formRecordName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>
+                Name <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Enter record name"
@@ -519,7 +521,9 @@ const Dashboard = ({
 
             {/* Description Field */}
             <Form.Group className="mb-3" controlId="formRecordDescription">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>
+                Description <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
@@ -534,7 +538,9 @@ const Dashboard = ({
 
             {/* File Upload Field */}
             <Form.Group className="mb-3" controlId="formFile">
-              <Form.Label>Attach File</Form.Label>
+              <Form.Label>
+                Attach File <span className="text-danger">*</span>
+              </Form.Label>
               <Form.Control
                 type="file"
                 {...register("file")}

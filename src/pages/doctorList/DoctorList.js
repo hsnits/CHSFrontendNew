@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Banner from "../../components/Banner";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import user_img from "../../assets/img/dr_profile.jpg";
 import { Award, Clock, Heart, MapPin } from "react-feather";
@@ -19,6 +19,9 @@ function DoctorList() {
   const navigate = useNavigate();
   const doctorsList = useSelector(
     (state) => state.DOCTOR?.data?.user?.getDoctorsResult
+  );
+  const apLoading = useSelector(
+    (state) => state.DOCTOR?.loading?.user?.createAppointmentLoading
   );
   const userProfileId = getLocalStorage(STORAGE.USER_KEY);
   useEffect(() => {
@@ -37,6 +40,7 @@ function DoctorList() {
     const formattedData = {
       refDoctor: data?.profile?._id,
       id: userProfileId?.profile?._id,
+      status: "Created",
     };
     dispatch(createAppointment(formattedData)).then((res) => {
       if (res?.meta?.requestStatus === "fulfilled")
@@ -245,18 +249,12 @@ function DoctorList() {
                       <div className="filter-btn apply-btn">
                         <div className="row">
                           <div className="col-6">
-                            <a
-                              href="#"
-                              className="btn btn-primary"
-                            >
+                            <a href="#" className="btn btn-primary">
                               Apply
                             </a>
                           </div>
                           <div className="col-6">
-                            <a
-                              href="#"
-                              className="btn btn-outline-primary"
-                            >
+                            <a href="#" className="btn btn-outline-primary">
                               Reset
                             </a>
                           </div>
@@ -311,7 +309,7 @@ function DoctorList() {
                         <>
                           <div key={index} className="card-body">
                             <div className="doctor-widget-one">
-                              <div  className="doc-info-left">
+                              <div className="doc-info-left">
                                 <div className="doctor-img">
                                   <a href="#">
                                     <img
@@ -400,8 +398,10 @@ function DoctorList() {
                                   <div
                                     onClick={() => handleBookAppointment(el)}
                                     className="btn btn-primary-light"
+                                    aria-disabled={apLoading}
                                   >
-                                    Book Online Consultation
+                                    Book Online Consultation{" "}
+                                    {apLoading && <Spinner size="sm" />}
                                   </div>
                                 </div>
                               </div>

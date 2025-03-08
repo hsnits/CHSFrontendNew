@@ -13,6 +13,7 @@ import { Spinner } from "reactstrap";
 import { STORAGE } from "../../constants";
 import { useDispatch } from "react-redux";
 import { userProfile } from "../../redux/slices/userApi";
+import DeleteModal from "../../components/modals/delete-modal";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("First Name is required"),
@@ -22,7 +23,7 @@ const schema = yup.object().shape({
     .string()
     .required("Phone Number is required")
     .matches(/^[0-9]+$/, "Phone Number must be numeric"),
-  email: yup.string().email("Invalid Email").required("Email is required"),
+  email: yup.string().email("Invalid Email"),
   designation: yup.string().required("Designation is required"),
   languages: yup
     .array()
@@ -35,6 +36,7 @@ const Profile = ({ getAllData, doctorDetails }) => {
   const [listOpen, setListOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isOpen, setIsOpen] = useState({ is: false, id: null });
 
   const {
     control,
@@ -93,24 +95,28 @@ const Profile = ({ getAllData, doctorDetails }) => {
       }
     } catch (error) {
       console.error("Upload failed:", error);
-      toastMessage("error","File upload failed. Please try again.");
+      toastMessage("error", "File upload failed. Please try again.");
     }
   };
 
   const handleProfileRemove = async (e) => {
-    setSelectedFile(null);
-
     try {
+      setLoading(true);
       const updateRes = await callDeleteApi(
         `/user/delete-dp/${doctorDetails._id}`
       );
       if (updateRes?.status) {
+        setLoading(false);
+        setIsOpen({ is: false, id: null });
+        setSelectedFile(null);
         getAllData("/user");
         dispatch(userProfile());
       }
     } catch (error) {
+      setLoading(false);
+
       console.error("Upload failed:", error);
-      alert("File upload failed. Please try again.");
+      toastMessage("error", "File upload failed. Please try again.");
     }
   };
 
@@ -219,7 +225,7 @@ const Profile = ({ getAllData, doctorDetails }) => {
                   />
                 </div>
                 <div
-                  onClick={handleProfileRemove}
+                  onClick={() => setIsOpen({ is: true })}
                   className="upload-remove "
                   style={{ cursor: "pointer" }}
                 >
@@ -278,7 +284,8 @@ const Profile = ({ getAllData, doctorDetails }) => {
             <Col lg="4" md="6">
               <div className="form-wrap">
                 <label className="col-form-label">
-                  Display Name <span className="text-danger">*</span>
+                  Display Name
+                  {/* <span className="text-danger">*</span> */}
                 </label>
                 <Controller
                   name="displayName"
@@ -335,7 +342,8 @@ const Profile = ({ getAllData, doctorDetails }) => {
             <Col lg="4" md="6">
               <div className="form-wrap">
                 <label className="col-form-label">
-                  Email Address <span className="text-danger">*</span>
+                  Email Address
+                  {/* <span className="text-danger">*</span> */}
                 </label>
                 <Controller
                   name="email"
@@ -422,14 +430,25 @@ const Profile = ({ getAllData, doctorDetails }) => {
                 </div>
               </div>
               <div className="d-flex justify-content-end">
-                <button className="px-5 save-btn mt-3 btn btn-primary">
-                  Save {loading && <Spinner />}
+                <button
+                  disabled={loading}
+                  className="px-5 save-btn mt-3 btn btn-primary"
+                >
+                  Save Changes {loading && <Spinner size={"sm"} />}
                 </button>
               </div>
             </Col>
           </Row>
         </div>
       </form>
+      <DeleteModal
+        loading={loading}
+        type="profile"
+        isOpen={isOpen?.is}
+        onClose={() => setIsOpen({ is: false, id: null })}
+        title="Are you sure you want to remove this profile picture ?"
+        onConfirm={handleProfileRemove}
+      />
     </div>
   );
 };

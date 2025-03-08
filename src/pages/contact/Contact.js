@@ -91,7 +91,7 @@ const Contact = () => {
                                         </Col>
                                         <Col md='12'>
                                             <div className="form-group-btn mb-0">
-                                                <Button type="submit" className="btn btn-primary prime-btn">Send Message</Button>
+                                                <Button type="submit" className="btn btn-primary  ">Send Message</Button>
                                             </div>
                                         </Col>
                                     </Row>

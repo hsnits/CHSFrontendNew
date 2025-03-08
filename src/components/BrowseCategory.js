@@ -7,32 +7,37 @@ import "owl.carousel/dist/assets/owl.theme.default.css";
 import { Link } from "react-router-dom";
 import browsecategory_icon from "../assets/img/icons/browse-categorie.svg";
 
-export default function BrowseCategory() {
+export default function BrowseCategory({ query, setQuery }) {
   const heading = "Browse by Category";
   const content =
     "Schedule your appointment today and experience comprehensive, compassionate healthcare like never before";
 
+  const handleCategoryChange = (value) => {
+    console.log(value, "eeeeeeee");
+    setQuery((pre) => ({ ...pre, category: value }));
+  };
+
   return (
     <section className="clinic-features-section">
       <Container>
-        <div class="pharmacy-section-header">
+        <div className="pharmacy-section-header">
           <Row className="align-items-center">
             <Col md="6">
-              <div class="pharmacy-title">
+              <div className="pharmacy-title">
                 <h4>{heading}</h4>
               </div>
             </Col>
             <Col md="6">
-              {/* <div class="pharmacy-title-link"> */}
-               
-                {/* <Link to="#">View All <i class="fa-solid fa-arrow-right"></i></ Link> */}
+              {/* <div className="pharmacy-title-link"> */}
+
+              {/* <Link to="#">View All <i className="fa-solid fa-arrow-right"></i></ Link> */}
               {/* </div> */}
             </Col>
           </Row>
         </div>
         <Row>
-          <div class="deals-list">
-            <ul class="nav">
+          <div className="deals-list">
+            <ul className="nav">
               <OwlCarousel
                 className="owl-theme"
                 loop
@@ -44,15 +49,38 @@ export default function BrowseCategory() {
               >
                 {BrowseCategoryData.map((BrowseCategory) => (
                   <li key={BrowseCategory.id}>
-                    <div class="deals-grid">
-                      <div class="deals-box">
+                    {console.log(
+                      query,
+                      BrowseCategory.name,
+                      "BrowseCategory.name"
+                    )}
+                    <div
+                      className="deals-grid"
+                      onClick={() => handleCategoryChange(BrowseCategory.name)}
+                    >
+                      <div
+                        className={`deals-box `}
+                        style={{
+                          backgroundColor:
+                            query?.category == BrowseCategory.name && "#a5c7ff",
+                        }}
+                      >
                         <img
+                          style={{ cursor: "pointer" }}
                           src={BrowseCategory.img}
                           alt={BrowseCategory.name}
                         />
                       </div>
-                      <div class="deals-content">
-                        <Link to="#">{BrowseCategory.name}</Link>
+                      <div className="deals-content">
+                        <Link
+                          to="#"
+                          style={{
+                            color:
+                              query?.category == BrowseCategory.name && "blue",
+                          }}
+                        >
+                          {BrowseCategory.name}
+                        </Link>
                       </div>
                     </div>
                   </li>

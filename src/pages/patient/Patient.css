@@ -1762,10 +1762,10 @@ a.bg-danger:focus,a.bg-danger:hover,button.bg-danger:focus,button.bg-danger:hove
     color: #757575!important
 }
 
-.btn-primary {
+/* .btn-primary {
     background-color: #30af46;
     border: 1px solid #30af46
-}
+} */
 
 .btn-primary:focus,.btn-primary:hover,.btn-primary:active,.btn-primary.active {
     color: #fff;

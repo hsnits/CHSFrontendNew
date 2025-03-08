@@ -65,7 +65,9 @@ const ForgotPassword = () => {
                           />
                         )}
                       />
-                      <label className="focus-label">Phone Number</label>
+                      <label className="focus-label">
+                        Phone Number <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.phoneNumber?.message} />
 

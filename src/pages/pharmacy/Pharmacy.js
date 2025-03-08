@@ -56,7 +56,7 @@ export default function Pharmacy() {
           </Row>
         </Container>
       </section>
-      <BrowseCategory />
+      <BrowseCategory query={query} setQuery={setQuery} />
       <FeaturedProduct
         loading={loading}
         data={data}

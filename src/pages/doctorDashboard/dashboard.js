@@ -1,5 +1,5 @@
-import React from "react";
-import user_img from "../../assets/img/doctor-profile-img.jpg";
+import React, { useEffect } from "react";
+import user_img from "../../assets/img/dr_profile.jpg";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import useGetMountData from "../../helpers/getDataHook";
@@ -7,9 +7,11 @@ import { Button, Form } from "react-bootstrap";
 import NotFound from "../../components/common/notFound";
 import {
   formatDate,
+  formatName,
   getDateFormate,
   getIdLastDigits,
 } from "../../helpers/utils";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
@@ -22,16 +24,21 @@ const Dashboard = () => {
     data: Appointments,
     loading,
     getAllData: getAllAppointments,
-  } = useGetMountData(
-    `/doctor/appointment/${userProfileId}?status=Pending&time=today`
-  );
+    setQuery,
+  } = useGetMountData(`/doctor/appointment/${userProfileId}`);
 
   const getByFilter = async (filter) => {
-    await getAllAppointments(
-      `/doctor/appointment/${userProfileId}?status=Pending&time=${filter}`
-    );
+    setQuery((e) => ({ ...e, status: "Pending", time: filter }));
+    // await getAllAppointments(
+    //   `/doctor/appointment/${userProfileId}?status=Pending&time=${filter}`
+    // );
   };
 
+  useEffect(() => {
+    setQuery((e) => ({ ...e, status: "Pending" }));
+  }, []);
+
+  console.log(Appointments, "dtaa");
   return (
     <div>
       <div className="dashboard-header">
@@ -47,22 +54,21 @@ const Dashboard = () => {
                 <h4>{data?.totalPatients || 0}</h4>
                 <span
                   className={
-                    // data?.percentageChange?.totalPatients <= 0
-                    //   ? "text-danger"
-                    //   :
-                    "text-success"
+                    data?.percentageChange?.totalPatients <= 0
+                      ? "text-danger"
+                      : "text-success"
                   }
                 >
                   <i
                     className={
-                      // data?.percentageChange?.totalPatients <= 0
-                      //   ? "fa-solid fa-arrow-down"
-                      //   :
-                      "fa-solid fa-arrow-up"
+                      data?.percentageChange?.totalPatients <= 0
+                        ? "fa-solid fa-arrow-down"
+                        : "fa-solid fa-arrow-up"
                     }
                   ></i>
-                  {/* {data?.percentageChange?.totalPatients || 0}% From Last Week */}
-                  {1}% From Last Week
+                  {Math.trunc(data?.percentageChange?.totalPatients) || 0}% From
+                  Last Week
+                  {/* {1}% From Last Week */}
                 </span>
                 {/* <span className="text-success">
                   <i className="fa-solid fa-arrow-up"></i>15% From Last Week
@@ -92,7 +98,8 @@ const Dashboard = () => {
                         : "fa-solid fa-arrow-up"
                     }
                   ></i>
-                  {data?.percentageChange?.patients || 0}% From Yesterday
+                  {Math.trunc(data?.percentageChange?.patients) || 0}% From
+                  Yesterday
                   {/* {0}% From Yesterday */}
                 </span>
               </div>
@@ -120,7 +127,8 @@ const Dashboard = () => {
                         : "fa-solid fa-arrow-up"
                     }
                   ></i>{" "}
-                  {data?.percentageChange?.appointments || 0}% From Yesterday
+                  {Math.trunc(data?.percentageChange?.appointments) || 0}% From
+                  Yesterday
                   {/* {0}% From Yesterday */}
                 </span>
               </div>
@@ -144,6 +152,7 @@ const Dashboard = () => {
                     getByFilter(e.target.value);
                   }}
                 >
+                  <option value="">All</option>
                   <option value="today">Today</option>
                   <option value="week">This Week</option>
                   <option value="month">This Month</option>
@@ -167,15 +176,15 @@ const Dashboard = () => {
                           <tr>
                             <td>
                               <div className="patient-info-profile">
-                                <a href="#" className="table-avatar">
+                                <span className="table-avatar">
                                   <img src={user_img} alt="Img" />
-                                </a>
+                                </span>
                                 <div className="patient-name-info">
-                                  <span>#{it?._id}</span>
+                                  {getIdLastDigits(it?._id || "", "PT")}
                                   <h5>
                                     <a href="#">
                                       {it?.appointmentPersonName ||
-                                        it?.patientId?.firstName}
+                                        formatName(it?.patientId, "Pt")}
                                     </a>
                                   </h5>
                                 </div>
@@ -190,13 +199,16 @@ const Dashboard = () => {
                               </div>
                             </td>
                             <td>
-                              <div className="apponiment-actions d-flex align-items-center">
-                                <a href="#" className="text-success-icon me-2">
-                                  <i className="fa-solid fa-check"></i>
-                                </a>
-                                <a href="#" className="text-danger-icon">
-                                  <i className="fa-solid fa-xmark"></i>
-                                </a>
+                              <div className="appointment-actions d-flex align-items-center">
+                                <Link
+                                  to="/DoctorDashboard?key=second"
+                                  className="btn-view"
+                                >
+                                  <button className="btn btn-primary btn-sm">
+                                    View{" "}
+                                    <i className="fa-solid fa-arrow-right ms-1"></i>
+                                  </button>
+                                </Link>
                               </div>
                             </td>
                           </tr>
@@ -257,22 +269,22 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <div className="appointment-card-footer">
-                  {data?.lastUpcomingAppointment?.appointmentType?.toLowerCase() ==
-                    "video" && (
+                  {data?.lastUpcomingAppointment?.appointmentType && (
                     <h5>
-                      <i className="fa-solid fa-video"></i>Video Appointment
+                      <i className="fa-solid fa-video"></i>{" "}
+                      {data?.lastUpcomingAppointment?.appointmentType?.toLowerCase() ==
+                      "video"
+                        ? "Video Call Appointment"
+                        : data?.lastUpcomingAppointment?.appointmentType?.toLowerCase() ==
+                          "chat"
+                        ? "Chat Appointment"
+                        : "Audio Call Appointment"}
                     </h5>
                   )}
                   <div className="btn-appointments">
-                    {data?.lastUpcomingAppointment?.appointmentType?.toLowerCase() ==
-                      "chat" && (
-                      <a href="chat-doctor.html" className="btn">
-                        Chat Now
-                      </a>
-                    )}
-                    <a href="doctor-appointment-start.html" className="btn">
+                    <Link to="/DoctorDashboard?key=fourth" className="btn">
                       Start Appointment
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -68,7 +68,9 @@ const VerifyOtp = () => {
                           />
                         )}
                       />
-                      <label className="focus-label">Enter OTP</label>
+                      <label className="focus-label">
+                        Enter OTP <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.otp?.message} />
 

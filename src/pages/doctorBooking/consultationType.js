@@ -120,7 +120,7 @@ export default function ConsultationType({
           {/* <div className="booking-btn">
                 <Link
                   to="/BookingSuccess"
-                  className="btn btn-primary prime-btn justify-content-center align-items-center"
+                  className="btn btn-primary   justify-content-center align-items-center"
                 >
                   Next <i className="feather-arrow-right-circle"></i>
                 </Link>

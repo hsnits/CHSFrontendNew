@@ -44,7 +44,9 @@ const ClinicForm = () => {
           <Row>
             <Col lg="4" md="6">
               <div className="form-wrap">
-                <label className="font-medium">Clinic Name</label>
+                <label className="font-medium">
+                  Clinic Name <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
                   {...register("clinicName", {
@@ -57,7 +59,9 @@ const ClinicForm = () => {
             </Col>
             <Col lg="4" md="6">
               <div className="form-wrap">
-                <label className="block font-medium">Price</label>
+                <label className="block font-medium">
+                  Price <span className="text-danger">*</span>
+                </label>
                 <input
                   type="number"
                   {...register("price", {

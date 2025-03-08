@@ -82,7 +82,9 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <label className="focus-label">Name</label>
+                        <label className="focus-label">
+                          Name <span className="text-danger">*</span>{" "}
+                        </label>
                       </div>
                       <ErrorInput error={errors?.name?.message} />
 
@@ -102,7 +104,9 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <label className="focus-label">Mobile Number</label>
+                        <label className="focus-label">
+                          Mobile Number <span className="text-danger">*</span>
+                        </label>
                       </div>
                       <ErrorInput error={errors?.phoneNumber?.message} />
 
@@ -148,7 +152,9 @@ export default function DoctorRegister() {
                             <EyeOff onClick={() => setEyeOpen((pre) => !pre)} />
                           )}
                         </span>
-                        <label className="focus-label">Password</label>
+                        <label className="focus-label">
+                          Password <span className="text-danger">*</span>
+                        </label>
                       </div>
                       <ErrorInput error={errors?.password?.message} />
 
@@ -170,7 +176,9 @@ export default function DoctorRegister() {
                             />
                           )}
                         />
-                        <label className="focus-label">Address</label>
+                        <label className="focus-label">
+                          Address <span className="text-danger">*</span>
+                        </label>
                       </div>
                       <ErrorInput error={errors?.address?.message} />
 

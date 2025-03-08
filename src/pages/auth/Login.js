@@ -71,7 +71,9 @@ const Contact = () => {
                           />
                         )}
                       />
-                      <label className="focus-label">Phone Number</label>
+                      <label className="focus-label">
+                        Phone Number <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.phoneNumber?.message} />
 
@@ -98,7 +100,9 @@ const Contact = () => {
                           <EyeOff onClick={() => setEyeOpen((pre) => !pre)} />
                         )}
                       </span>
-                      <label className="focus-label">Password</label>
+                      <label className="focus-label">
+                        Password <span className="text-danger">*</span>
+                      </label>
                     </div>
                     <ErrorInput error={errors?.password?.message} />
 

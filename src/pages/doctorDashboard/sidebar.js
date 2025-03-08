@@ -103,7 +103,7 @@ const DoctorSidebar = ({ doctorDetails }) => {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="second" onClick={() => handleTabClick("second")}>
-                <Calendar /> Requests
+              <i className="fa-solid fa-calendar-days"></i> Requests
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -113,7 +113,7 @@ const DoctorSidebar = ({ doctorDetails }) => {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link eventKey="fourth" onClick={() => handleTabClick("fourth")}>
-                <Calendar /> Appointments
+              <i className="fa-solid fa-calendar-days"></i> Appointments
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

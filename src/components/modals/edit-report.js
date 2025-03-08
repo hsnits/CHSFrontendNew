@@ -63,7 +63,10 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit}>
           <Form.Group className="mb-3">
-            <Form.Label>Heart Rate (Bpm)</Form.Label>
+            <Form.Label>
+              Heart Rate (Bpm)
+              <span className="text-danger font-semibold">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               name="heartRate"
@@ -78,7 +81,10 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Body Temperature (°C)</Form.Label>
+            <Form.Label>
+              Body Temperature (°C)
+              <span className="text-danger font-semibold">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               step="0.1"
@@ -97,7 +103,10 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Glucose Level</Form.Label>
+            <Form.Label>
+              Glucose Level
+              <span className="text-danger font-semibold">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               name="glucoseLevel"
@@ -114,7 +123,10 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>SpO2 (%)</Form.Label>
+            <Form.Label>
+              SpO2 (%)
+              <span className="text-danger font-semibold">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               name="spo2"
@@ -129,7 +141,10 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Blood Pressure (SYS/DIA)</Form.Label>
+            <Form.Label>
+              Blood Pressure (SYS/DIA)
+              <span className="text-danger font-semibold">*</span>
+            </Form.Label>
             <Form.Control
               type="text"
               name="bloodPressure"
@@ -146,7 +161,10 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>BMI</Form.Label>
+            <Form.Label>
+              BMI
+              <span className="text-danger font-semibold">*</span>
+            </Form.Label>
             <Form.Control
               type="number"
               name="bmi"

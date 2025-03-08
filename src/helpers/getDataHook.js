@@ -19,11 +19,20 @@ const useGetMountData = (baseUrl) => {
       setLoading(loadText || true);
       try {
         let url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}`;
-        if (query) {
-          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}&status=${query?.status}&time=${query?.time}`;
-        }
-        if (query?.startDate && query?.endDate) {
-          url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}&category=${query?.category}&status=${query?.status}&time=${query?.time}&startDate=${query?.startDate}&endDate=${query?.endDate}`;
+
+        if (query && Object.keys(query).length > 0) {
+          const params = new URLSearchParams();
+
+          params.append("limit", pageLimit);
+          params.append("currentPage", currentPage);
+
+          if (query.category) params.append("category", query.category);
+          if (query.status) params.append("status", query.status);
+          if (query.time) params.append("time", query.time);
+          if (query.startDate) params.append("startDate", query.startDate);
+          if (query.endDate) params.append("endDate", query.endDate);
+
+          url = `${baseUrl}?${params.toString()}`;
         }
         const response = await callGetApi(url);
         if (response?.status) {

@@ -26,6 +26,24 @@ const schema = yup.object().shape({
     .string("Weight must be numeric")
     .required("Weight is required")
     .matches(/^[0-9]+$/, "Weight must be numeric"),
+  gender: yup.string("Gender must be numeric").required("Gender is required"),
+  bloodPressure: yup
+    .string("Blood Pressure must be numeric")
+    .matches(/^[1-9]+$/, "Blood Pressure must be numeric"),
+  heartRate: yup
+    .number()
+    .min(30, "Heart rate should be at least 30 bpm")
+    .max(200, "Heart rate should not exceed 200 bpm"),
+
+  bodyTemperature: yup
+    .number()
+    .min(30, "Body temperature should be at least 30°C")
+    .max(45, "Body temperature should not exceed 45°C"),
+
+  spo2: yup
+    .number()
+    .min(50, "SpO2 should be at least 50%")
+    .max(100, "SpO2 should not exceed 100%"),
   symptoms: yup.string().required("Symptoms is required"),
 });
 
@@ -61,6 +79,11 @@ const PatSymptoms = () => {
         age: watch("age"),
         height: watch("height"),
         weight: watch("weight"),
+        gender: watch("gender"),
+        bloodPressure: watch("bloodPressure"),
+        heartRate: watch("heartRate"),
+        bodyTemperature: watch("bodyTemperature"),
+        spo2: watch("spo2"),
       });
       if (!response) throw new Error(response?.message);
       setLoading(false);
@@ -173,6 +196,7 @@ const PatSymptoms = () => {
                                         render={({ field }) => (
                                           <input
                                             {...field}
+                                            type="number"
                                             class="form-control"
                                             placeholder="Enter age"
                                           />
@@ -195,6 +219,7 @@ const PatSymptoms = () => {
                                         render={({ field }) => (
                                           <input
                                             {...field}
+                                            type="number"
                                             class="form-control"
                                             placeholder="Enter height in (cm)"
                                           />
@@ -205,7 +230,7 @@ const PatSymptoms = () => {
                                       </p>
                                     </div>
                                   </div>
-                                  <div class="col-lg-12 col-md-6">
+                                  <div class="col-lg-6 col-md-6">
                                     <div class="form-wrap">
                                       <label class="col-form-label">
                                         Weight (kg){" "}
@@ -217,6 +242,7 @@ const PatSymptoms = () => {
                                         render={({ field }) => (
                                           <input
                                             {...field}
+                                            type="number"
                                             class="form-control"
                                             placeholder="Enter weight in (kg)"
                                           />
@@ -224,6 +250,122 @@ const PatSymptoms = () => {
                                       />
                                       <p className="text-danger">
                                         {errors.weight?.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6 col-md-6">
+                                    <div className="form-wrap">
+                                      <label className="col-form-label">
+                                        Gender{" "}
+                                        <span className="text-danger">*</span>
+                                      </label>
+                                      <Controller
+                                        name="gender"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <select
+                                            {...field}
+                                            className="form-control"
+                                          >
+                                            <option value="">
+                                              Select Gender
+                                            </option>
+                                            <option value="male">Male</option>
+                                            <option value="female">
+                                              Female
+                                            </option>
+                                            <option value="other">Other</option>
+                                          </select>
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.gender?.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6 col-md-6">
+                                    <div class="form-wrap">
+                                      <label class="col-form-label">
+                                        Blood Pressure (mg/dl)
+                                      </label>
+                                      <Controller
+                                        name="bloodPressure"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            type="number"
+                                            class="form-control"
+                                            placeholder="Enter Blood Pressure (mg/dl)"
+                                          />
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.bloodPressure?.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6 col-md-6">
+                                    <div class="form-wrap">
+                                      <label class="col-form-label">
+                                        Body Temperature (c)
+                                      </label>
+                                      <Controller
+                                        name="bodyTemperature"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            type="number"
+                                            class="form-control"
+                                            placeholder="Enter Body Temperature (c)"
+                                          />
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.bodyTemperature?.message}
+                                      </p>
+                                    </div>
+                                  </div>{" "}
+                                  <div class="col-lg-6 col-md-6">
+                                    <div class="form-wrap">
+                                      <label class="col-form-label">
+                                        Heart Rate (Bpm)
+                                      </label>
+                                      <Controller
+                                        name="heartRate"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            type="number"
+                                            class="form-control"
+                                            placeholder="Enter Heart Rate (Bpm)"
+                                          />
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.heartRate?.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6 col-md-6">
+                                    <div class="form-wrap">
+                                      <label class="col-form-label">SPo2</label>
+                                      <Controller
+                                        name="spo2"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            type="number"
+                                            class="form-control"
+                                            placeholder="Enter SPo2 "
+                                          />
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.spo2?.message}
                                       </p>
                                     </div>
                                   </div>
@@ -239,7 +381,7 @@ const PatSymptoms = () => {
                                     <textarea
                                       {...field}
                                       className="form-control "
-                                      rows="12"
+                                      rows="6"
                                       placeholder="Type your symptoms in detail's here"
                                     ></textarea>
                                   )}
@@ -282,15 +424,41 @@ const PatSymptoms = () => {
                                 ) : summary ? (
                                   <>
                                     <div>
-                                      <label class="col-lg-4 col-form-label">
+                                      <label class="col-lg-3 col-form-label">
                                         Age : {watch("age")}
                                       </label>
-                                      <label class="col-lg-4 col-form-label">
+                                      <label class="col-lg-3 col-form-label">
                                         Height : {`${watch("height")}cm`}
                                       </label>
-                                      <label class=" col-lg-4 col-form-label">
+                                      <label class=" col-lg-3 col-form-label">
                                         Weight : {`${watch("weight")}kg`}
                                       </label>
+                                      <label class="col-lg-3 col-form-label">
+                                        Gender : {watch("gender")}
+                                      </label>
+                                      {watch("bloodPressure") && (
+                                        <label class="col-lg-3 col-form-label">
+                                          Blood Pressure :{" "}
+                                          {`${watch("bloodPressure")}mg/dl`}
+                                        </label>
+                                      )}
+                                      {watch("heartRate") && (
+                                        <label class=" col-lg-3 col-form-label">
+                                          Heart Rate :{" "}
+                                          {`${watch("heartRate")}Bpm`}
+                                        </label>
+                                      )}
+                                      {watch("bodyTemperature") && (
+                                        <label class=" col-lg-3 col-form-label">
+                                          Body Temperature :{" "}
+                                          {`${watch("bodyTemperature")}c`}
+                                        </label>
+                                      )}
+                                      {watch("spo2") && (
+                                        <label class=" col-lg-3 col-form-label">
+                                          SPo2 : {`${watch("spo2")}`}
+                                        </label>
+                                      )}
                                       <div>
                                         <label class=" col-lg-12  col-form-label">
                                           Symptom :{" "}
@@ -358,26 +526,46 @@ const PatSymptoms = () => {
                                       />
                                     </div>
                                     {summary && !loading && (
-                                      <div className="d-flex justify-content-end">
-                                        {/* <button
-                                          type="button"
-                                          disabled={loading}
-                                          onClick={handleReset}
-                                          className="btn btn-primary me-1"
-                                        >
-                                          Reset
-                                        </button> */}
-                                        <button
-                                          type="button"
-                                          disabled={loading}
-                                          onClick={handleSave}
-                                          className="btn btn-primary me-1"
-                                        >
-                                          {loading == "save"
-                                            ? "Saving..."
-                                            : "Save & Continue"}
-                                        </button>
-                                      </div>
+                                      <>
+                                        {" "}
+                                        <label className="col-form-label">
+                                          Disclaimer :
+                                        </label>
+                                        <div className="form-control mb-4 disclaimer-container">
+                                          <span className="badge note-badge blinking">
+                                            ⚠️ Note
+                                          </span>
+                                          <p className="disclaimer-text">
+                                            The advice provided above is
+                                            generated by our artificial
+                                            intelligence technology and is
+                                            intended to be as accurate as
+                                            possible. However, please consult a
+                                            doctor before implementing any
+                                            recommendations.
+                                          </p>
+                                        </div>
+                                        <div className="d-flex justify-content-end">
+                                          <button
+                                            type="button"
+                                            disabled={loading}
+                                            onClick={handleReset}
+                                            className="btn btn-secondary me-1"
+                                          >
+                                            Cancel
+                                          </button>
+                                          <button
+                                            type="button"
+                                            disabled={loading}
+                                            onClick={handleSave}
+                                            className="btn btn-primary me-1"
+                                          >
+                                            {loading == "save"
+                                              ? "Saving..."
+                                              : "Save & Continue"}
+                                          </button>
+                                        </div>
+                                      </>
                                     )}
                                   </>
                                 ) : (

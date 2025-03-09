@@ -140,12 +140,12 @@ export const Navbar = [
     path: "/contact", // Update with correct path
   },
   {
-    id: 5,
+    id: 8,
     menu_name: "Career",
     path: "/career", // Update with correct path
   },
   {
-    id: 5,
+    id: 9,
     menu_name: "Investor",
     path: "/InvestorRegistration", // Update with correct path
   },

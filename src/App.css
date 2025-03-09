@@ -3435,6 +3435,7 @@ th.table-head-days {
 @media (max-width: 575.98px) {
   .header .header-nav {
     padding: 0 15px;
+    height: 95px;
   }
 }
 @media (max-width: 991.98px) {

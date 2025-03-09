@@ -98,7 +98,7 @@ function Header() {
 
               {isLoggedIn ? (
                 <li className="login">
-                  <Link
+                  {/* <Link
                     id="menu_close"
                     to="/login"
                     onClick={() => {
@@ -106,7 +106,7 @@ function Header() {
                     }}
                   >
                     Logout
-                  </Link>
+                  </Link> */}
                 </li>
               ) : (
                 <>
@@ -398,7 +398,7 @@ function Header() {
               )}
             </ul>
           </div>
-          <ul className="nav header-navbar-rht">
+          <ul className="nav header-navbar-rht  d-lg-flex">
             <li className="nav-item">
               {isLoggedIn ? (
                 <Dropdown>

@@ -50,15 +50,25 @@ function Header() {
               <Link to="/" className="menu-logo">
                 <img src={ChsLogo} className="img-fluid" alt="Logo" />
               </Link>
-              <Link
-                id="menu_close"
-                className="menu-close"
-                to="#"
-              >
+              <Link id="menu_close" className="menu-close" to="#">
                 <i className="fas fa-times"></i>
               </Link>
             </div>
             <ul className="main-nav">
+              {isLoggedIn && (
+                <li className="has-submenu megamenu d-lg-none">
+                  <Link
+                    id="menu_close"
+                    to={
+                      isLoggedIn?.role == "Doctor"
+                        ? "/DoctorDashboard"
+                        : "/patient"
+                    }
+                  >
+                    Dashboard
+                  </Link>
+                </li>
+              )}
               {Navbar.map(({ menu_name, path, submenu }, nav_item) => (
                 <li
                   className={`${location.pathname === path ? "active" : ""} ${
@@ -68,10 +78,7 @@ function Header() {
                 >
                   {submenu ? (
                     <>
-                      <a
-                        href="#"
-                        onClick={() => toggleSubmenu(menu_name)}
-                      >
+                      <a href="#" onClick={() => toggleSubmenu(menu_name)}>
                         {menu_name} <i className="fas fa-chevron-down"></i>
                       </a>
                       <ul
@@ -96,9 +103,9 @@ function Header() {
                 </li>
               ))}
 
-              {isLoggedIn ? (
-                <li className="login">
-                  {/* <Link
+              {isLoggedIn && (
+                <li className="has-submenu megamenu d-lg-none">
+                  <Link
                     id="menu_close"
                     to="/login"
                     onClick={() => {
@@ -106,9 +113,10 @@ function Header() {
                     }}
                   >
                     Logout
-                  </Link> */}
+                  </Link>
                 </li>
-              ) : (
+              )}
+              {!isLoggedIn && (
                 <>
                   {" "}
                   {/* \web menu */}
@@ -361,10 +369,7 @@ function Header() {
                   </li>
                   {/* \mobile menu */}
                   <li className="has-submenu megamenu d-lg-none">
-                    <a
-                      href="#"
-                      onClick={() => toggleSubmenu("Register")}
-                    >
+                    <a href="#" onClick={() => toggleSubmenu("Register")}>
                       Register Now <i className="fas fa-chevron-down"></i>
                     </a>
                     <ul

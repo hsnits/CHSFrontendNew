@@ -28,7 +28,10 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
                   onChange={handleCategoryChange}
                 >
                   {allCategories.map((category, index) => (
-                    <option key={index} value={category}>
+                    <option
+                      key={index}
+                      value={category == "Select Category" ? "" : category}
+                    >
                       {category}
                     </option>
                   ))}
@@ -51,15 +54,17 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
                 <div className="products-card">
                   <div className="product-card-img">
                     <Link to="/ProductDesc">
-                      <img src={item.image} alt={item.name} className="img-fluid" />
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="img-fluid"
+                      />
                     </Link>
                   </div>
                   <div className="product-content text-center">
                     <h6>{item.companyName}</h6>
                     <h4>
-                      <Link to="/ProductDesc">
-                        {TruncatedText(item.name)}
-                      </Link>
+                      <Link to="/ProductDesc">{TruncatedText(item.name)}</Link>
                     </h4>
                     <span className="badge">{`${item.quantity} ml`}</span>
                     <div className="product-cart">

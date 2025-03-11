@@ -86,14 +86,14 @@ const AppointmentDetails = ({
                           {selectedAppointment?.appointmentPersonName ||
                             `${selectedAppointment?.patientId?.firstName} ${selectedAppointment?.patientId?.lastName}`}
                         </p>
-                        <p>
+                        {/* <p>
                           <strong>Email:</strong>{" "}
                           {selectedAppointment?.patientId?.email}
                         </p>
                         <p>
                           <strong>Phone:</strong>{" "}
                           {selectedAppointment?.patientId?.phoneNumber}
-                        </p>
+                        </p> */}
                         <p>
                           <strong>Address:</strong>{" "}
                           {selectedAppointment?.patientId?.address},
@@ -151,18 +151,21 @@ const AppointmentDetails = ({
               <section>
                 <h5>Attachments & Symptoms</h5>
                 <p>
+                  {console.log(selectedAppointment, "selectedAppointment")}
                   <strong>Symptoms:</strong>{" "}
                   {selectedAppointment?.symptoms || "N/A"}
                 </p>
                 {selectedAppointment?.attachment && (
                   <div>
                     <strong>Attachment:</strong>
-                    <Image
-                      src={selectedAppointment?.attachment}
-                      alt="Attachment"
-                      className="mt-2"
-                      fluid
-                    />
+                    <button
+                      className="btn btn-link mt-2"
+                      onClick={() =>
+                        window.open(selectedAppointment.attachment, "_blank")
+                      }
+                    >
+                      View Attachment
+                    </button>
                   </div>
                 )}
               </section>

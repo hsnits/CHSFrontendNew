@@ -131,15 +131,15 @@ export default function DoctorBooking() {
       return false;
     }
 
-    if (!formData.symptoms) {
-      toastMessage("error", "Please describe your symptoms.");
-      return false;
-    }
+    // if (!formData.symptoms) {
+    //   toastMessage("error", "Please describe your symptoms.");
+    //   return false;
+    // }
 
-    if (!formData.attachment) {
-      toastMessage("error", "Please upload attachment.");
-      return false;
-    }
+    // if (!formData.attachment) {
+    //   toastMessage("error", "Please upload attachment.");
+    //   return false;
+    // }
 
     return true;
   };
@@ -175,28 +175,49 @@ export default function DoctorBooking() {
       console.log(formData);
       if (step === 3) {
         setLoading(true);
-        toastMessage("success", "Symptom file uploading...");
-        dispatch(uploadFile(formData?.attachment)).then((res) => {
-          if (res?.meta?.requestStatus === "fulfilled") {
-            const formattedData = {
-              ...formData,
-              refDoctor: data?.refDoctor?._id,
-              id: getAppointmentId?.appointment_id,
-              appointmentFor: formData?.isMySelf ? "" : formData?.dependent,
-              attachment: res?.payload?.file,
-            };
-            dispatch(updateAppointment(formattedData)).then((res) => {
-              if (res?.meta?.requestStatus === "fulfilled") {
-                setLoading(false);
-                navigate("/BookingSuccess");
-              }
-            });
-          }
-        });
+        toastMessage("success", "Processing appointment...");
+
+        if (formData?.attachment) {
+          // If there is an attachment, upload it first
+          toastMessage("success", "Symptom file uploading...");
+          dispatch(uploadFile(formData.attachment)).then((res) => {
+            if (res?.meta?.requestStatus === "fulfilled") {
+              handleUpdateAppointment(res.payload);
+            } else {
+              setLoading(false);
+              toastMessage("error", "File upload failed. Please try again.");
+            }
+          });
+        } else {
+          // If no attachment, proceed without uploading a file
+          handleUpdateAppointment(null);
+        }
       } else {
         setStep(step + 1);
       }
     }
+  };
+
+  // Function to update appointment
+  const handleUpdateAppointment = (uploadedFile) => {
+    const formattedData = {
+      ...formData,
+      refDoctor: data?.refDoctor?._id,
+      id: getAppointmentId?.appointment_id,
+      appointmentFor: formData?.isMySelf ? "" : formData?.dependent,
+      attachment: uploadedFile?.location || null,
+      fileKey: uploadedFile?.key || null,
+    };
+
+    dispatch(updateAppointment(formattedData)).then((res) => {
+      if (res?.meta?.requestStatus === "fulfilled") {
+        setLoading(false);
+        navigate("/BookingSuccess");
+      } else {
+        setLoading(false);
+        toastMessage("error", "Appointment update failed.");
+      }
+    });
   };
 
   const handleBack = () => {
@@ -207,7 +228,7 @@ export default function DoctorBooking() {
   return (
     <>
       <Header />
-      <Breadcrumb />
+      <Breadcrumb type="apId" />
       <div className="content content-space">
         <Container>
           <Row>

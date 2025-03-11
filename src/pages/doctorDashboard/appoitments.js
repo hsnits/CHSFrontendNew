@@ -180,12 +180,12 @@ const Appointments = ({ activeKey }) => {
                       <ul>
                         <li>
                           <i class="fa-solid fa-envelope"></i>
-                          {it?.patientId?.email}
+                          {getIdLastDigits(it?._id, "Ap")}
                         </li>
-                        <li>
+                        {/* <li>
                           <i class="fa-solid fa-phone"></i>{" "}
                           {it?.patientId?.phoneNumber}
-                        </li>
+                        </li> */}
                       </ul>
                     </li>
                     {tab == "Accepted" ? (

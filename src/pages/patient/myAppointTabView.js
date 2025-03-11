@@ -155,12 +155,12 @@ const MyAppointTabView = ({ appointmentData }) => {
                       <ul>
                         <li>
                           <i className="fa-solid fa-envelope"></i>
-                          {el?.refDoctor?.email}
+                          {getIdLastDigits(el?._id, "AP")}
                         </li>
-                        <li>
+                        {/* <li>
                           <i className="fa-solid fa-phone"></i>
                           {el?.refDoctor?.phoneNumber}
-                        </li>
+                        </li> */}
                       </ul>
                     </li>
                     <li className="appointment-action">

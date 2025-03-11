@@ -101,7 +101,9 @@ export default function BookingSuccess() {
                 <div className="success-icon">
                   <i className="fas fa-circle-check"></i>
                 </div>
-                <h4>Your Appointment Booked Succesfully</h4>
+                <h4 className="text-bold" style={{ color: "#00bf49" }}>
+                  Your Appointment Booked Succesfully
+                </h4>
               </div>
               <div className="card booking-card">
                 <div className="card-body booking-card-body booking-list-body">
@@ -139,14 +141,14 @@ export default function BookingSuccess() {
                 </div>
               </div>
               <div className="success-btn">
-                <Link to="#" className="btn btn-primary  ">
-                  Add to Google Calendar
+                <Link to="/doctorList" className="btn btn-primary  ">
+                  Back to Doctors
                 </Link>
                 <div
                   onClick={() => navigate("/patient?key=second")}
-                  className="btn btn-light"
+                  className="btn btn-secondary"
                 >
-                  Appointment
+                  Go to Appointment
                 </div>
               </div>
               <div className="success-dashboard-link">

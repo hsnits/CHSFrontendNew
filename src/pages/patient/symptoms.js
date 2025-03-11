@@ -27,23 +27,23 @@ const schema = yup.object().shape({
     .required("Weight is required")
     .matches(/^[0-9]+$/, "Weight must be numeric"),
   gender: yup.string("Gender must be numeric").required("Gender is required"),
-  bloodPressure: yup
-    .string("Blood Pressure must be numeric")
-    .matches(/^[1-9]+$/, "Blood Pressure must be numeric"),
-  heartRate: yup
-    .number()
-    .min(30, "Heart rate should be at least 30 bpm")
-    .max(200, "Heart rate should not exceed 200 bpm"),
+  // bloodPressure: yup
+  // .string("Blood Pressure must be numeric")
+  // .matches(/^[0-9]+$/, "Blood Pressure must be numeric"),
+  // heartRate: yup
+  //   .number()
+  //   .min(30, "Heart rate should be at least 30 bpm")
+  //   .max(200, "Heart rate should not exceed 200 bpm"),
 
-  bodyTemperature: yup
-    .number()
-    .min(30, "Body temperature should be at least 30°C")
-    .max(45, "Body temperature should not exceed 45°C"),
+  // bodyTemperature: yup
+  //   .number()
+  //   .min(30, "Body temperature should be at least 30°C")
+  //   .max(45, "Body temperature should not exceed 45°C"),
 
-  spo2: yup
-    .number()
-    .min(50, "SpO2 should be at least 50%")
-    .max(100, "SpO2 should not exceed 100%"),
+  // spo2: yup
+  //   .number()
+  //   .min(50, "SpO2 should be at least 50%")
+  //   .max(100, "SpO2 should not exceed 100%"),
   symptoms: yup.string().required("Symptoms is required"),
 });
 
@@ -220,6 +220,7 @@ const PatSymptoms = () => {
                                           <input
                                             {...field}
                                             type="number"
+                                            step="0.1"
                                             class="form-control"
                                             placeholder="Enter height in (cm)"
                                           />
@@ -243,6 +244,7 @@ const PatSymptoms = () => {
                                           <input
                                             {...field}
                                             type="number"
+                                            step="0.1"
                                             class="form-control"
                                             placeholder="Enter weight in (kg)"
                                           />
@@ -295,6 +297,7 @@ const PatSymptoms = () => {
                                           <input
                                             {...field}
                                             type="number"
+                                            step="0.1"
                                             class="form-control"
                                             placeholder="Enter Blood Pressure (mg/dl)"
                                           />
@@ -317,6 +320,7 @@ const PatSymptoms = () => {
                                           <input
                                             {...field}
                                             type="number"
+                                            step="0.1"
                                             class="form-control"
                                             placeholder="Enter Body Temperature (c)"
                                           />
@@ -339,6 +343,7 @@ const PatSymptoms = () => {
                                           <input
                                             {...field}
                                             type="number"
+                                            step="0.1"
                                             class="form-control"
                                             placeholder="Enter Heart Rate (Bpm)"
                                           />
@@ -359,6 +364,7 @@ const PatSymptoms = () => {
                                           <input
                                             {...field}
                                             type="number"
+                                            step="0.1"
                                             class="form-control"
                                             placeholder="Enter SPo2 "
                                           />
@@ -366,6 +372,50 @@ const PatSymptoms = () => {
                                       />
                                       <p className="text-danger">
                                         {errors.spo2?.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6 col-md-6">
+                                    <div class="form-wrap">
+                                      <label class="col-form-label">
+                                        Glucose level
+                                      </label>
+                                      <Controller
+                                        name="glucoseLevel"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            type="number"
+                                            step="0.1"
+                                            class="form-control"
+                                            placeholder="Enter Glucose level "
+                                          />
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.glucoseLevel?.message}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div class="col-lg-6 col-md-6">
+                                    <div class="form-wrap">
+                                      <label class="col-form-label">BMP</label>
+                                      <Controller
+                                        name="bmp"
+                                        control={control}
+                                        render={({ field }) => (
+                                          <input
+                                            {...field}
+                                            type="number"
+                                            step="0.1"
+                                            class="form-control"
+                                            placeholder="Enter BMP "
+                                          />
+                                        )}
+                                      />
+                                      <p className="text-danger">
+                                        {errors.bmp?.message}
                                       </p>
                                     </div>
                                   </div>
@@ -457,6 +507,17 @@ const PatSymptoms = () => {
                                       {watch("spo2") && (
                                         <label class=" col-lg-3 col-form-label">
                                           SPo2 : {`${watch("spo2")}`}
+                                        </label>
+                                      )}
+                                      {watch("glucoseLevel") && (
+                                        <label class=" col-lg-3 col-form-label">
+                                          Glucose Level :{" "}
+                                          {`${watch("glucoseLevel")}c`}
+                                        </label>
+                                      )}
+                                      {watch("bmp") && (
+                                        <label class=" col-lg-3 col-form-label">
+                                          BMP : {`${watch("bmp")}`}
                                         </label>
                                       )}
                                       <div>

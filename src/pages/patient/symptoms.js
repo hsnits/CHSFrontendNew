@@ -285,10 +285,10 @@ const PatSymptoms = () => {
                                       </p>
                                     </div>
                                   </div>
-                                  <div class="col-lg-6 col-md-6">
-                                    <div class="form-wrap">
-                                      <label class="col-form-label">
-                                        Blood Pressure (mg/dl)
+                                  <div className="col-lg-6 col-md-6">
+                                    <div className="form-wrap">
+                                      <label className="col-form-label">
+                                        Blood Pressure (mm/hg)
                                       </label>
                                       <Controller
                                         name="bloodPressure"
@@ -296,10 +296,10 @@ const PatSymptoms = () => {
                                         render={({ field }) => (
                                           <input
                                             {...field}
-                                            type="number"
-                                            step="0.1"
-                                            class="form-control"
-                                            placeholder="Enter Blood Pressure (mg/dl)"
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Blood Pressure 45/80"
+                                            pattern="\d+\/\d+"
                                           />
                                         )}
                                       />
@@ -489,7 +489,7 @@ const PatSymptoms = () => {
                                       {watch("bloodPressure") && (
                                         <label class="col-lg-3 col-form-label">
                                           Blood Pressure :{" "}
-                                          {`${watch("bloodPressure")}mg/dl`}
+                                          {`${watch("bloodPressure")}`}
                                         </label>
                                       )}
                                       {watch("heartRate") && (

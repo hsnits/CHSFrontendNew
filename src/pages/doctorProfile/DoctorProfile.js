@@ -57,7 +57,7 @@ function DoctorProfile() {
                                         </Link>
                                     </div>
                                     <div class="clinic-booking">
-                                        <Link class="apt-btn" to="/DoctorBooking">Book Appointment</Link>
+                                        <Link class="apt-btn" to="/doctorList">Book Appointment</Link>
                                     </div>
                                 </div>
                             </div>

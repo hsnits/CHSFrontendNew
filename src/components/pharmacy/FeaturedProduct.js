@@ -1,13 +1,50 @@
 import React from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Button, Col, Container, Row } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import NotFound from "../common/notFound";
 import { allCategories } from "../../constants/common";
 import { TruncatedText } from "../../helpers/utils";
+import "./FeaturedProduct.css"; // Custom CSS file
+import { toastMessage } from "../../config/toast";
+import { getLocalStorage } from "../../helpers/storage";
+import { STORAGE } from "../../constants";
+import { callPostApi } from "../../_service";
 
-export default function FeaturedProduct({ loading, data, query, setQuery }) {
+export default function FeaturedProduct({
+  loading,
+  data,
+  query,
+  setQuery,
+  isWholesaler,
+}) {
+  const navigate = useNavigate();
+  const userData = getLocalStorage(STORAGE.USER_KEY);
+
   const handleCategoryChange = (e) => {
     setQuery((prev) => ({ ...prev, category: e.target.value }));
+  };
+
+  const getDiscountedPrice = (item) => {
+    const discount = isWholesaler
+      ? item.sellerDiscount || 25
+      : item.discount || 0;
+
+    return (item.price - (item.price * discount) / 100).toFixed(2);
+  };
+
+  const handleAddToCart = async (item) => {
+    if (!userData) {
+      toastMessage("error", "login your account for add to cart");
+      navigate("/login");
+      return;
+    }
+    const response = await callPostApi(`/user/cart/${userData?._id}`, {
+      productId: item?._id,
+      quantity: 1,
+    });
+    if (response?.status) {
+      navigate(`/Cart${isWholesaler ? "?key=Wholesale" : ""}`);
+    }
   };
 
   return (
@@ -23,14 +60,14 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
             <Col xs="12" md="6">
               <div className="pharmacy-title-link text-md-end text-start mt-2 mt-md-0">
                 <select
-                  className="form-select w-50 w-md-auto"
+                  className="form-select custom-select"
                   value={query?.category}
                   onChange={handleCategoryChange}
                 >
                   {allCategories.map((category, index) => (
                     <option
                       key={index}
-                      value={category == "Select Category" ? "" : category}
+                      value={category === "Select Category" ? "" : category}
                     >
                       {category}
                     </option>
@@ -49,11 +86,23 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
           />
           {!loading &&
             data?.length > 0 &&
-            data?.map((item, index) => (
-              <Col lg="3" md="4" sm="6" xs="6" key={index} className="mb-4">
+            data.map((item, index) => (
+              <Col
+                xl="3"
+                lg="4"
+                md="4"
+                sm="6"
+                xs="6"
+                key={index}
+                className="mb-4"
+              >
                 <div className="products-card">
                   <div className="product-card-img">
-                    <Link to="/ProductDesc">
+                    <Link
+                      to={`/ProductDesc?id=${item?._id}${
+                        isWholesaler ? "&key=Wholesale" : ""
+                      }`}
+                    >
                       <img
                         src={item.image}
                         alt={item.name}
@@ -62,32 +111,49 @@ export default function FeaturedProduct({ loading, data, query, setQuery }) {
                     </Link>
                   </div>
                   <div className="product-content text-center">
-                    <h6>{item.companyName}</h6>
-                    <h4>
-                      <Link to="/ProductDesc">{TruncatedText(item.name)}</Link>
+                    <h6 className="company-name">{item.companyName}</h6>
+
+                    <h4 className="product-name">
+                      <Link
+                        to={`/ProductDesc?id=${item?._id}${
+                          isWholesaler ? "&key=Wholesale" : ""
+                        }`}
+                      >
+                        {TruncatedText(item.name)}
+                      </Link>
                     </h4>
-                    <span className="badge">{`${item.quantity} ml`}</span>
-                    <div className="product-cart">
-                      <div className="cart-price d-flex flex-column align-items-center">
-                        <h5 className="mb-1">
-                          Rs{" "}
-                          {(
-                            item.price -
-                            item.price * (item.discount / 100)
-                          ).toFixed(2)}
-                        </h5>
-                        <h6 className="badge bg-success px-2 py-1">
-                          {item?.discount}% OFF
-                        </h6>
-                        <h5 className="text-muted">
-                          <span>MRP {`${item.price}`} </span>
-                        </h5>
+
+                    <div className="product-details">
+                      <span className="badge product-quantity">{`${item.quantity} ml`}</span>
+
+                      <div className="product-cart">
+                        <div className="cart-price d-flex flex-column align-items-center">
+                          <h5 className="price">
+                            Rs {getDiscountedPrice(item)}
+                          </h5>
+
+                          <div className="discount-section">
+                            <span className="discount-badge">
+                              {isWholesaler
+                                ? item.sellerDiscount || 25
+                                : item.discount}
+                              % OFF
+                            </span>
+                            <h5 className="text-muted original-price">
+                              <span>MRP: ₹{item.price}</span>
+                            </h5>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="clinic-details mt-3">
-                      <Link to="/Cart" className="btn btn-primary w-100">
-                        Add To Cart
-                      </Link>
+
+                    <div className="clinic-details mt-3 ">
+                      <Button
+                        onClick={() => handleAddToCart(item)}
+                        className="btn btn-cart bg-blue text-white"
+                      >
+                        🛒 Add to Cart
+                      </Button>
                     </div>
                   </div>
                 </div>

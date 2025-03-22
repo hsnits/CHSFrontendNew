@@ -1,230 +1,196 @@
 import React from "react";
-import '../../pages/pharmacy/Pharmacy.css';
-import PharmacyTopBar from "./PharmacyTopBar";
+import "../../pages/pharmacy/Pharmacy.css";
 import Breadcrumb from "../Breadcrumb";
-import PharmacySearchBar from "./PharmacySearchBar";
-import { Button, Card, CardBody, Col, Container, Row } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Row,
+  Image,
+  ListGroup,
+} from "react-bootstrap";
 import PharmacyMenu from "../../pages/pharmacy/PharmacyMenu";
-import product_img from '../../assets/img/1.png';
 import Footer from "../Footer";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { STORAGE } from "../../constants";
+import { getLocalStorage } from "../../helpers/storage";
+import PharmacyHeader from "./PharmacyHeader";
+import useGetMountData from "../../helpers/getDataHook";
+import product_img from "../../assets/img/1.png";
+import { toastMessage } from "../../config/toast";
+import { callPostApi } from "../../_service";
 
 export default function ProductDesc() {
-    return (
-        <>
-            <PharmacyTopBar />
-            <PharmacySearchBar />
-            <PharmacyMenu/>
-            <Breadcrumb />
-            <div className="content">
-                <Container>
-                    <Row>
-                        <Col md='7' lg='9' xl='9'>
-                           <Card>
-                                <CardBody className="product-description">
-                                    <div className="doctor-widget">
-                                        <div className="doc-info-left">
-                                            <div className="doctor-img1">
-                                                <img src={product_img} style={{height:100}} className="img-fluid" alt="User Image"/>
-                                            </div>
-                                            <div className="doc-info-cont product-cont">
-                                                <h4 className="doc-name mb-2">Benzaxapine Croplex</h4>
-                                                <p><span className="text-muted">Manufactured By </span> Hamdard (Wakf) Laboratories</p>
-                                                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled</p>
-                                               
-                                            </div>
-                                        </div>
-                                    </div>
-                                </CardBody>
-                            </Card>
+  const userData = getLocalStorage(STORAGE.USER_KEY);
 
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const productId = searchParams.get("id");
+  const key = searchParams.get("key");
 
-                            <Card>
-                                <CardBody className="pt-0">
-                                    <h3 className="pt-4">Product Details</h3>
-                                    <hr/>
-                                        <div className="tab-content pt-3">
+  const { data, loading } = useGetMountData(`/admin/product/${productId}`);
 
-                                            <div role="tabpanel" id="doc_overview" className="tab-pane fade show active">
-                                                <div className="row">
-                                                    <div className="col-md-9">
+  const getDiscountedPrice = (item) => {
+    const discount = key=="Wholesale" ? item.sellerDiscount || 25 : item.discount || 0;
+    return (item.price - (item.price * discount) / 100).toFixed(2);
+  };
 
-                                                        <div className="widget about-widget">
-                                                            <h4 className="widget-title">Description</h4>
-                                                            <p>Safi syrup is best for purifying the blood. As it contains herbal extracts it can cure indigestion, constipation, nose bleeds and acne boils. It helps in the removal of the toxins from the blood. It improves the complexion and gives you a healthy life</p>
-                                                        </div>
+  const handleAddToCart = async (item) => {
+    if (!userData) {
+      toastMessage("error", "login your account for add to cart");
+      navigate("/login");
+      return;
+    }
+    const response = await callPostApi(`/user/cart/${userData?._id}`, {
+      productId: item?._id,
+      quantity: 1,
+    });
+    if (response?.status) {
+      navigate(`/Cart${key=="Wholesale" ? "?key=Wholesale" : ""}`);
+    }
+  };
 
+  const InfoSection = ({ title, content }) => (
+    <Card className="mb-4">
+      <Card.Body>
+        <h4>{title}</h4>
+        <p>{content}</p>
+      </Card.Body>
+    </Card>
+  );
 
-                                                        <div className="widget awards-widget">
-                                                            <h4 className="widget-title">Highlights</h4>
-                                                            <div className="experience-box">
-                                                                <ul className="experience-list">
-                                                                    <li>
-                                                                        <div className="experience-user">
-                                                                            <div className="before-circle"></div>
-                                                                        </div>
-                                                                        <div className="experience-content">
-                                                                            <div className="timeline-content">
-                                                                                <p>Safi syrup is known for its best purifying syrup for blood.</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                    <li>
-                                                                        <div className="experience-user">
-                                                                            <div className="before-circle"></div>
-                                                                        </div>
-                                                                        <div className="experience-content">
-                                                                            <div className="timeline-content">
-                                                                                <p>It helps in eliminating the toxins from the bloodstream.</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                    <li>
-                                                                        <div className="experience-user">
-                                                                            <div className="before-circle"></div>
-                                                                        </div>
-                                                                        <div className="experience-content">
-                                                                            <div className="timeline-content">
-                                                                                <p>It improves digestion.</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                    <li>
-                                                                        <div className="experience-user">
-                                                                            <div className="before-circle"></div>
-                                                                        </div>
-                                                                        <div className="experience-content">
-                                                                            <div className="timeline-content">
-                                                                                <p>It also helps in indigestion and constipation.</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
+  const ProductDetails = () => (
+    <Card className="mb-4">
+      <Card.Body>
+        <h4>Product Details</h4>
+        <ListGroup variant="flush">
+          <ListGroup.Item>SKU: {data?.SKUnumber}</ListGroup.Item>
+          <ListGroup.Item>Pack Size: {data?.quantity} ml</ListGroup.Item>
+          <ListGroup.Item>Stock Quantity: {data?.stockQuantity}</ListGroup.Item>
+          <ListGroup.Item>Discount: {data?.discount || 0}%</ListGroup.Item>
+        </ListGroup>
+      </Card.Body>
+    </Card>
+  );
 
+  if (loading) return <div>Loading...</div>;
 
-                                                        <div className="widget about-widget">
-                                                            <h4 className="widget-title">Directions for use</h4>
-                                                            <p>Adults: Take 2 tablespoons once a day in a glass full of water.</p>
-                                                        </div>
+  return (
+    <>
+      <PharmacyHeader userData={userData} />
+      <PharmacyMenu />
+      <Breadcrumb />
 
+      <Container className="py-5">
+        {data && (
+          <Row>
+            {/* Product Image & Details */}
+            <Col lg={9}>
+              <Card className="mb-4">
+                <Card.Body>
+                  <Row>
+                    {/* Image Section */}
+                    <Col md={5} className="text-center">
+                      <Image
+                        src={data?.image || product_img}
+                        alt={data?.name}
+                        fluid
+                        style={{ maxHeight: "350px", objectFit: "cover" }}
+                      />
+                    </Col>
 
-                                                        <div className="widget about-widget">
-                                                            <h4 className="widget-title">Storage</h4>
-                                                            <p>Store this syrup at room temperature protected from sunlight, heat, and moisture. Keep away from reaching out of children and pets. Ensure that the unused medicine is disposed of properly.</p>
-                                                        </div>
+                    {/* Product Information */}
+                    <Col md={7}>
+                      <h2>{data?.name}</h2>
+                      <p className="text-muted">By {data?.companyName}</p>
+                      <p>{data?.shortDescription || data?.description}</p>
 
+                      <div className="price-section">
+                        <h3 className="text-success">
+                          ₹ {getDiscountedPrice(data)}
+                        </h3>
+                        <p className="text-muted">
+                          <del>₹ {data?.price}</del>
+                          <span className="ms-2 badge bg-warning">
+                            {key=="Wholesale" ? data.sellerDiscount || 25 : data.discount}%
+                            OFF
+                          </span>
+                        </p>
+                      </div>
 
-                                                        <div className="widget about-widget">
-                                                            <h4 className="widget-title">Administration Instructions</h4>
-                                                            <p>Shake the bottle before its use. This syrup can be taken with or without food. The quantity consumed should not be lesser or greater than the prescribed one.</p>
-                                                        </div>
+                      <Button
+                        onClick={() => handleAddToCart(data)}
+                        className="btn btn-primary mt-3"
+                      >
+                        🛒 Add to Cart
+                      </Button>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
 
+              {/* Product Description */}
+              <InfoSection title="Description" content={data?.description} />
+              <InfoSection
+                title="Directions for Use"
+                content="Adults: Take 2 tablespoons once a day in a glass full of water."
+              />
+              <InfoSection
+                title="Storage"
+                content="Store at room temperature protected from sunlight, heat, and moisture. Keep away from children and pets."
+              />
+              <InfoSection
+                title="Administration Instructions"
+                content="Shake the bottle before use. Can be taken with or without food."
+              />
+              <InfoSection
+                title="Warning"
+                content="Not recommended for pregnant or lactating women."
+              />
+              <InfoSection
+                title="Precaution"
+                content="Dispose of properly after 3 years from manufacturing date."
+              />
+            </Col>
 
-                                                        <div className="widget about-widget">
-                                                            <h4 className="widget-title">Warning</h4>
-                                                            <p>This is not recommended for the pregnant women and lactating mothers.</p>
-                                                        </div>
+            {/* Sidebar */}
+            <Col lg={3}>
+              <ProductDetails />
 
+              <Card className="mb-4">
+                <Card.Body>
+                  <h4>Benefits</h4>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>
+                      <i className="fas fa-shipping-fast me-2"></i> Free
+                      Shipping
+                      <br />
+                      <small>For orders above ₹50</small>
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <i className="far fa-question-circle me-2"></i> 24/7
+                      Support
+                      <br />
+                      <small>Call us anytime</small>
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <i className="fas fa-hands me-2"></i> 100% Secure Payments
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <i className="fas fa-tag me-2"></i> Hot Offers
+                      <br />
+                      <small>Discounts up to 90%</small>
+                    </ListGroup.Item>
+                  </ListGroup>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        )}
+      </Container>
 
-                                                        <div className="widget about-widget mb-3">
-                                                            <h4 className="widget-title">Precaution</h4>
-                                                            <p className="mb-0">Syrup has to be disposed of properly after 3 years from manufactured date and it is not recommended to use after the date.</p>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                </CardBody>
-                            </Card>
-
-                        </Col>
-                        <Col md='5' lg='3' xl='3' className="theiaStickySidebar">
-
-                            <Card className="search-filter">
-                                <CardBody>
-                                    <div className="clini-infos mt-0">
-                                        <h2>19 <b className="text-lg strike">45</b> <span className="text-lg text-success"><b>10% off</b></span></h2>
-                                    </div>
-                                    <span className="badge badge-primary">In stock</span>
-                                    <div className="custom-increment pt-4">
-                                        <div className="input-group1">
-                                            <span className="input-group-btn float-start">
-                                                <button type="button" className="quantity-left-minus btn btn-danger btn-number" data-type="minus" data-field>
-                                                    <span><i className="fas fa-minus"></i></span>
-                                                </button>
-                                            </span>
-                                            <input type="text" id="quantity" name="quantity" className=" input-number" value="10"/>
-                                                <span className="input-group-btn float-end">
-                                                    <button type="button" className="quantity-right-plus btn btn-success btn-number" data-type="plus" data-field>
-                                                        <span><i className="fas fa-plus"></i></span>
-                                                    </button>
-                                                </span>
-                                        </div>
-                                    </div>
-                                    <div className="clinic-details mt-4">
-                                    <div className="clinic-booking">
-                                        <Link to='/Cart' className="btn btn-primary">Add To Cart</Link>
-                                    </div>
-                                    </div>
-                                    <div className="card flex-fill mt-4 mb-0">
-                                        <ul className="list-group list-group-flush">
-                                            <li className="list-group-item">SKU <span className="float-end">2023-02-0057</span></li>
-                                            <li className="list-group-item">Pack Size <span className="float-end">100g</span></li>
-                                            <li className="list-group-item">Unit Count <span className="float-end">200ml</span></li>
-                                            <li className="list-group-item">Country <span className="float-end">Japan</span></li>
-                                        </ul>
-                                    </div>
-                                </CardBody>
-                            </Card>
-                            <Card className="search-filter">
-                                <CardBody>
-                                    <Card className="flex-fill mt-0 mb-0">
-                                        <ul className="list-group list-group-flush benifits-col">
-                                            <li className="list-group-item d-flex align-items-center">
-                                                <div>
-                                                    <i className="fas fa-shipping-fast"></i>
-                                                </div>
-                                                <div>
-                                                    Free Shipping<br/><span className="text-sm">For orders from $50</span>
-                                                </div>
-                                            </li>
-                                            <li className="list-group-item d-flex align-items-center">
-                                                <div>
-                                                    <i className="far fa-question-circle"></i>
-                                                </div>
-                                                <div>
-                                                    Support 24/7<br/><span className="text-sm">Call us anytime</span>
-                                                </div>
-                                            </li>
-                                            <li className="list-group-item d-flex align-items-center">
-                                                <div>
-                                                    <i className="fas fa-hands"></i>
-                                                </div>
-                                                <div>
-                                                    100% Safety<br/><span className="text-sm">Only secure payments</span>
-                                                </div>
-                                            </li>
-                                            <li className="list-group-item d-flex align-items-center">
-                                                <div>
-                                                    <i className="fas fa-tag"></i>
-                                                </div>
-                                                <div>
-                                                    Hot Offers<br/><span className="text-sm">Discounts up to 90%</span>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </Card>
-                                </CardBody>
-                            </Card>
-                        </Col>
-                    </Row>
-                </Container>
-            </div>
-            <Footer/>
-        </>
-    );
+      <Footer />
+    </>
+  );
 }

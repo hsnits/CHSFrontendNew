@@ -1,0 +1,246 @@
+/* --------- Section Styling --------- */
+.products-sec {
+  padding: 60px 0;
+  background-color: #f9f9f9;
+}
+
+.pharmacy-section-header {
+  margin-bottom: 30px;
+}
+
+.pharmacy-title h4 {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* --------- Dropdown Styling --------- */
+.custom-select {
+  width: 100%;
+  max-width: 250px;
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: all 0.3s ease;
+}
+
+.custom-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* --------- Product Card --------- */
+.products-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  height: 100%;
+}
+
+.products-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* --------- Product Image --------- */
+.product-card-img img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.product-card-img img:hover {
+  transform: scale(1.05);
+}
+
+/* --------- Product Content --------- */
+.product-content {
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.product-content:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+/* --------- Company Name --------- */
+.company-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+/* --------- Product Name --------- */
+.product-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+  transition: color 0.3s ease;
+}
+
+.product-name a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-name:hover a {
+  color: #007bff;
+}
+
+/* --------- Product Details --------- */
+.product-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+/* --------- Quantity Badge --------- */
+.product-quantity {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 5px 10px;
+  background: #17a2b8;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --------- Pricing and Discounts --------- */
+.cart-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-price h5.price {
+  font-size: 22px;
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* Discount Price */
+.price {
+  font-size: 22px;
+  color: #28a745;
+  font-weight: bold;
+}
+
+/* MRP Price */
+.original-price {
+  font-size: 16px;
+  color: #888;
+  text-decoration: line-through;
+}
+
+/* --------- Discount Section --------- */
+.discount-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.discount-badge {
+  background: #ff4d4d;
+  color: #fff;
+  font-size: 14px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --------- Add to Cart Button --------- */
+.btn-primary {
+  background: #007bff;
+  border: none;
+  padding: 10px 20px;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+/* Add to Cart Button */
+.btn-cart {
+  display: inline-block;
+  background: #007bff;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 8px;
+  text-align: center;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+.btn-cart:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+/* --------- Responsive Design --------- */
+@media (max-width: 768px) {
+  .products-card {
+    margin-bottom: 20px;
+  }
+
+  .pharmacy-title h4 {
+    font-size: 24px;
+  }
+
+  .custom-select {
+    max-width: 100%;
+  }
+
+  .product-content {
+    padding: 15px;
+  }
+
+  .product-name {
+    font-size: 18px;
+  }
+
+  .price {
+    font-size: 20px;
+  }
+
+  .btn-cart {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+}
+
+/* .summary-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+} */
+
+.checkout-btn:hover {
+  animation: bubble 0.5s;
+}
+
+@keyframes bubble {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}

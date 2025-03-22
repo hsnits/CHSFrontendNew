@@ -88,7 +88,7 @@ export const Navbar = [
       {
         id: 2,
         menu_name: "Wholesale",
-        path: "/pharmacy",
+        path: "/pharmacy?key=Wholesale",
       },
     ],
   },

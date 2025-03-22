@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import login_img from "../../assets/img/login_img.png";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import { Input } from "reactstrap";
 import Header from "../../components/Header";
@@ -18,6 +18,8 @@ import { Eye, EyeOff } from "react-feather";
 export default function DoctorRegister() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const key = searchParams.get("key");
 
   const [eyeOpen, setEyeOpen] = useState(false);
 
@@ -27,6 +29,7 @@ export default function DoctorRegister() {
     formState: { errors },
     watch,
     reset,
+    setValue,
   } = useForm({
     resolver: yupResolver(registrationSchema),
   });
@@ -37,12 +40,18 @@ export default function DoctorRegister() {
       role: data.role.toLowerCase(),
     };
     const result = await dispatch(registerUser(formattedData));
-    console.log(result, "jjjj");
+
     if (result?.payload?.status) {
       reset();
       navigate("/verifyOtp");
     }
   };
+
+  useEffect(() => {
+    if (key && userRoles.includes(key)) {
+      setValue("role", key);
+    }
+  }, [key, setValue]);
 
   return (
     <>
@@ -191,6 +200,7 @@ export default function DoctorRegister() {
                               id="exampleSelect"
                               className="form-control floating"
                               {...field}
+                              disabled={key && userRoles.includes(key)} // Disable if key is valid
                             >
                               {userRoles.map((role) => (
                                 <option key={role} value={role}>

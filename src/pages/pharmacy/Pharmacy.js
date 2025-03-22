@@ -1,6 +1,6 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { PharmacyBanner } from "../../Data";
 import BrowseCategory from "../../components/BrowseCategory";
 import Footer from "../../components/Footer";
@@ -14,6 +14,9 @@ import { STORAGE } from "../../constants";
 import useGetMountData from "../../helpers/getDataHook";
 
 export default function Pharmacy() {
+  const [searchParams] = useSearchParams();
+  const key = searchParams.get("key");
+
   const userData = getLocalStorage(STORAGE.USER_KEY);
 
   const { data, loading, getAllData, query, setQuery } =
@@ -62,6 +65,7 @@ export default function Pharmacy() {
         data={data}
         query={query}
         setQuery={setQuery}
+        isWholesaler={key == "Wholesale" ? true : false}
       />
       <Footer />
     </>

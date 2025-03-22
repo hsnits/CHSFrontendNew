@@ -14,8 +14,12 @@ import biomedical_img from "../assets/img/icons/biomedical.png";
 import hospital_img from "../assets/img/icons/hospital.png";
 import { STORAGE } from "../constants/index";
 import { getLocalStorage, removeLocalStorage } from "../helpers/storage";
+import { toastMessage } from "../config/toast";
+import DrugLicenseModal from "./modals/drug-model";
 
 function Header() {
+  const [show, setShow] = useState(false);
+
   const location = useLocation();
   const navigate = useNavigate();
   const [isSubmenuVisible, setIsSubmenuVisible] = useState(null);
@@ -26,6 +30,12 @@ function Header() {
       setIsSubmenuVisible(null);
     } else {
       setIsSubmenuVisible(menu_name);
+    }
+  };
+
+  const handlePharma = (type) => {
+    if (type === "Wholesale") {
+      setShow(true);
     }
   };
 
@@ -88,7 +98,16 @@ function Header() {
                       >
                         {submenu.map((subItem, subIndex) => (
                           <li key={subIndex}>
-                            <Link id="menu_close" to={subItem.path}>
+                            <Link
+                              id="menu_close"
+                              // to={subItem.path}
+                              onClick={() => handlePharma(subItem.menu_name)}
+                              to={
+                                subItem.menu_name === "Wholesale"
+                                  ? "#"
+                                  : subItem.path
+                              }
+                            >
                               {subItem.menu_name}
                             </Link>
                           </li>
@@ -147,7 +166,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Patient"
                                   >
                                     Register
                                   </Link>
@@ -173,7 +192,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Doctor"
                                   >
                                     Register
                                   </Link>
@@ -199,7 +218,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Pharmacy Retailers"
                                   >
                                     Register
                                   </Link>
@@ -225,7 +244,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Pathology"
                                   >
                                     Register
                                   </Link>
@@ -251,7 +270,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Diagnosis"
                                   >
                                     Register
                                   </Link>
@@ -277,7 +296,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Ambulance"
                                   >
                                     Register
                                   </Link>
@@ -303,7 +322,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Nursing"
                                   >
                                     Register
                                   </Link>
@@ -329,7 +348,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Biomedical"
                                   >
                                     Register
                                   </Link>
@@ -355,7 +374,7 @@ function Header() {
                                 <div className="demo-info">
                                   <Link
                                     className="btn btn-primary text-white"
-                                    to="/register"
+                                    to="/register?key=Hospital"
                                   >
                                     Register
                                   </Link>
@@ -380,17 +399,33 @@ function Header() {
                       <li>
                         <div className="megamenu-wrapper">
                           <div className="row" id="menu_close">
-                            <Link to="/register">Patient Register</Link>
-                            <Link to="/register">Doctor Register</Link>
-                            <Link to="/register">
+                            <Link to="/register?key=Patient">
+                              Patient Register
+                            </Link>
+                            <Link to="/register?key=Doctor">
+                              Doctor Register
+                            </Link>
+                            <Link to="/register?key=Pharmacy Retailers">
                               Pharmacy Retailers Register
                             </Link>
-                            <Link to="/register">Pathology Register</Link>
-                            <Link to="/register">Diagnosis Register</Link>
-                            <Link to="/register">Ambulance Register</Link>
-                            <Link to="/register">Nursing Register</Link>
-                            <Link to="/register">Biomedical Register</Link>
-                            <Link to="/register">Hospital Register</Link>
+                            <Link to="/register?key=Pathology">
+                              Pathology Register
+                            </Link>
+                            <Link to="/register?key=Diagnosis">
+                              Diagnosis Register
+                            </Link>
+                            <Link to="/register?key=Ambulance">
+                              Ambulance Register
+                            </Link>
+                            <Link to="/register?key=Nursing">
+                              Nursing Register
+                            </Link>
+                            <Link to="/register?key=Biomedical">
+                              Biomedical Register
+                            </Link>
+                            <Link to="/register?key=Hospital">
+                              Hospital Register
+                            </Link>
                           </div>
                         </div>
                       </li>
@@ -461,6 +496,7 @@ function Header() {
             </li>
           </ul>
         </Nav>
+        <DrugLicenseModal show={show} setShow={setShow} />
       </Container>
     </header>
   );

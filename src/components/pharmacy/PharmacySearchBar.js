@@ -22,12 +22,12 @@ export default function PharmacySearchBar() {
             <Col md='6'>
               <div className="cart-search">
                <Form>
-                  <div className="d-flex enter-pincode">
+                  {/* <div className="d-flex enter-pincode">
                    <MapPin/>
                     <div className="enter-pincode-input">
                     <Form.Control type="text" placeholder="Enter Pincode" />
                     </div>
-                  </div>
+                  </div> */}
                   <div className="cart-search-input">
                     <input type="text" className="form-control" placeholder="Search for medicines, health products and more"/>
                   </div>
@@ -42,11 +42,11 @@ export default function PharmacySearchBar() {
             <Col md='3'>
               <div className="shopping-cart-list">
                 <ul className="nav">
-                  <li>
+                  {/* <li>
                     <Link href="#">
                       <img src={wishlist_img} alt="Img"/>
                     </Link>
-                  </li>
+                  </li> */}
                   <li>
                     <div className="shopping-cart-amount">
                       <div className="shopping-cart-icon">
@@ -55,7 +55,7 @@ export default function PharmacySearchBar() {
                       </div>
                       <div className="shopping-cart-content">
                         <p>Shopping cart</p>
-                        <h6>57.00</h6>
+                        <h6>  52 items</h6>
                       </div>
                     </div>
                   </li>

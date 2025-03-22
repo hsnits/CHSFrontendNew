@@ -8,12 +8,7 @@ import { Link } from "react-router-dom";
 import browsecategory_icon from "../assets/img/icons/browse-categorie.svg";
 
 export default function BrowseCategory({ query, setQuery }) {
-  const heading = "Browse by Category";
-  const content =
-    "Schedule your appointment today and experience comprehensive, compassionate healthcare like never before";
-
   const handleCategoryChange = (value) => {
-    console.log(value, "eeeeeeee");
     setQuery((pre) => ({ ...pre, category: value }));
   };
 
@@ -24,7 +19,7 @@ export default function BrowseCategory({ query, setQuery }) {
           <Row className="align-items-center">
             <Col md="6">
               <div className="pharmacy-title">
-                <h4>{heading}</h4>
+                <h4>Browse by Category</h4>
               </div>
             </Col>
             <Col md="6">

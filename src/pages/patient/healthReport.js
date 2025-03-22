@@ -113,7 +113,7 @@ const HealthReport = ({ data, activeTab }) => {
             <div className="dashboard-card-body">
               <Row>
                 <Col lg="12" md="12" sm="12">
-                  {!loading && isReports ? (
+                  {!loading && isReports?.healthFile ? (
                     <Row>
                       <Col lg="12" md="12">
                         <div className="report-gen-date">
@@ -169,6 +169,7 @@ const HealthReport = ({ data, activeTab }) => {
                           type="file"
                           className="d-none"
                           accept=".pdf,.doc,.docx"
+                          disabled={loading}
                           readOnly={loading}
                           onChange={handleFileChange}
                         />

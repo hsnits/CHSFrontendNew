@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Row,
@@ -13,20 +13,28 @@ import {
 } from "react-bootstrap";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import PharmacyHeader from "./PharmacyHeader";
 import PharmacyMenu from "../../pages/pharmacy/PharmacyMenu";
 import Footer from "../Footer";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import useGetMountData from "../../helpers/getDataHook";
+import { callPostApi } from "../../_service";
+import { toastMessage } from "../../config/toast";
 
 export default function Checkout() {
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const navigate = useNavigate();
+
   const userData = getLocalStorage(STORAGE.USER_KEY);
   const [searchParams] = useSearchParams();
   const key = searchParams.get("key");
 
   const { data } = useGetMountData(`/user/cart/${userData?._id}`);
+  const { data: addresses, getAllData: getAllAddresses } = useGetMountData(
+    `/user/address/${userData?._id}`
+  );
 
   const getDiscountedPrice = (item) => {
     const discount =
@@ -62,47 +70,144 @@ export default function Checkout() {
 
   const totals = calculateTotal();
 
-  const personalFormik = useFormik({
+  const addressFormik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
+      name: "",
+      mobileNo: "",
       email: "",
-      phone: "",
-      address: "",
+      city: "",
+      pincode: "",
+      state: "",
+      houseNumber: "",
+      landmark: "",
+      type: "home",
     },
     validationSchema: Yup.object({
-      firstName: Yup.string().required("Required"),
-      lastName: Yup.string().required("Required"),
-      email: Yup.string().email("Invalid email").required("Required"),
-      phone: Yup.string().required("Required"),
-      address: Yup.string().required("Required"),
+      name: Yup.string().required("Name is required"),
+      mobileNo: Yup.string()
+        .required("Mobile number is required")
+        .matches(/^[0-9]{10}$/, "Invalid mobile number"),
+      email: Yup.string().email("Invalid email format"),
+      city: Yup.string().required("City is required"),
+      pincode: Yup.string()
+        .required("Pincode is required")
+        .matches(/^[0-9]{6}$/, "Invalid pincode"),
+      state: Yup.string().required("State is required"),
+      houseNumber: Yup.string().required("House number is required"),
+      landmark: Yup.string(),
+      type: Yup.string().required("Address type is required"),
     }),
-    onSubmit: (values) => {
-      console.log("Personal Details:", values);
-      // Here you can call the API for personal details
+    onSubmit: async (values) => {
+      try {
+        const response = await callPostApi(`/user/address`, {
+          userId: userData?._id,
+          ...values,
+        });
+        if (response?.status) {
+          toastMessage("success", "Address saved successfully!");
+          await getAllAddresses(`/user/address/${userData?._id}`);
+          addressFormik.resetForm();
+        }
+      } catch (error) {
+        console.error("Failed to save address", error);
+        toastMessage("error", "Failed to save address");
+      }
     },
   });
 
-  const paymentFormik = useFormik({
-    initialValues: {
-      cardName: "",
-      cardNumber: "",
-      expiryMonth: "",
-      expiryYear: "",
-      cvv: "",
-    },
-    validationSchema: Yup.object({
-      cardName: Yup.string().required("Required"),
-      cardNumber: Yup.string().required("Required"),
-      expiryMonth: Yup.string().required("Required"),
-      expiryYear: Yup.string().required("Required"),
-      cvv: Yup.string().required("Required"),
-    }),
-    onSubmit: (values) => {
-      console.log("Payment Info:", values);
-      // Here you can call the API for payment details
-    },
-  });
+  const handleCheckout = async () => {
+    try {
+      if (!selectedAddress || !totals.total.toFixed(2)) {
+        return;
+      }
+
+      const orderResponse = await callPostApi("/payment/create-order", {
+        amount: totals.total.toFixed(2),
+        currency: "INR",
+      });
+
+      if (!orderResponse.status) {
+        window.location.reload();
+        return;
+      }
+
+      const { id, amount } = orderResponse.data;
+
+      if (!window.Razorpay) {
+        console.error("Razorpay SDK not loaded");
+        toastMessage(
+          "error",
+          "Failed to load Razorpay SDK. Please refresh and try again."
+        );
+        window.location.reload();
+        return;
+      }
+
+      const options = {
+        key: "rzp_test_m7Sk7RENHjMHdW",
+        amount: amount,
+        currency: "INR",
+        name: "CHS Healthcare App",
+        description: "Ecommerce Checkout",
+        order_id: id,
+        handler: async function (response) {
+          console.log("Payment Response:", response);
+
+          // Verify payment on the server
+          try {
+            const verifyResponse = await callPostApi(
+              "/payment/verify-payment",
+              {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }
+            );
+
+            if (verifyResponse.status) {
+              toastMessage("success", "Payment Successful!");
+              navigate("/payment-status", {
+                state: {
+                  status: "success",
+                  orderId: id,
+                  amount: totals.total.toFixed(2),
+                },
+                replace: true, // ✅ This ensures the current URL is replaced
+              });
+            } else {
+              toastMessage("error", "Payment Verification Failed!");
+              navigate("/payment-status", {
+                state: {
+                  status: "failed",
+                  orderId: id,
+                  amount: totals.total.toFixed(2),
+                },
+                replace: true, // ✅ Replace the current URL
+              });
+            }
+          } catch (error) {
+            console.error("Verification API call failed:", error);
+            toastMessage("error", "Verification failed. Please try again.");
+          }
+        },
+        prefill: {
+          name: selectedAddress?.name || "User",
+          email: selectedAddress?.email || "",
+          contact: selectedAddress?.mobileNo,
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+
+      // Initialize Razorpay checkout
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Checkout failed", error);
+      toastMessage("error", "Checkout failed. Please try again.");
+    }
+  };
 
   return (
     <>
@@ -111,157 +216,254 @@ export default function Checkout() {
       <Container className="py-5">
         <Row>
           {/* Personal Details Section */}
-          <Col md={6} className="mb-4">
+          <Col md={7} className="mb-4">
             <Card>
               <Card.Body>
-                <h4>Personal Details</h4>
-                <Form onSubmit={personalFormik.handleSubmit}>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      name="firstName"
-                      placeholder="First Name"
-                      onChange={personalFormik.handleChange}
-                      value={personalFormik.values.firstName}
-                      isInvalid={
-                        personalFormik.touched.firstName &&
-                        personalFormik.errors.firstName
-                      }
-                    />
-                  </InputGroup>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      name="lastName"
-                      placeholder="Last Name"
-                      onChange={personalFormik.handleChange}
-                      value={personalFormik.values.lastName}
-                      isInvalid={
-                        personalFormik.touched.lastName &&
-                        personalFormik.errors.lastName
-                      }
-                    />
-                  </InputGroup>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      placeholder="Email"
-                      onChange={personalFormik.handleChange}
-                      value={personalFormik.values.email}
-                      isInvalid={
-                        personalFormik.touched.email &&
-                        personalFormik.errors.email
-                      }
-                    />
-                  </InputGroup>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      type="text"
-                      name="phone"
-                      placeholder="Phone"
-                      onChange={personalFormik.handleChange}
-                      value={personalFormik.values.phone}
-                      isInvalid={
-                        personalFormik.touched.phone &&
-                        personalFormik.errors.phone
-                      }
-                    />
-                  </InputGroup>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      as="textarea"
-                      name="address"
-                      placeholder="Address"
-                      rows={3}
-                      onChange={personalFormik.handleChange}
-                      value={personalFormik.values.address}
-                      isInvalid={
-                        personalFormik.touched.address &&
-                        personalFormik.errors.address
-                      }
-                    />
-                  </InputGroup>
+                <h4>Address Details</h4>
+                <Form onSubmit={addressFormik.handleSubmit}>
+                  <Row>
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="name"
+                          placeholder="Full Name *"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.name}
+                          isInvalid={
+                            addressFormik.touched.name &&
+                            addressFormik.errors.name
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.name}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="mobileNo"
+                          placeholder="Mobile No *"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.mobileNo}
+                          isInvalid={
+                            addressFormik.touched.mobileNo &&
+                            addressFormik.errors.mobileNo
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.mobileNo}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="email"
+                          type="email"
+                          placeholder="Email (optional)"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.email}
+                          isInvalid={
+                            addressFormik.touched.email &&
+                            addressFormik.errors.email
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.email}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="city"
+                          placeholder="City *"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.city}
+                          isInvalid={
+                            addressFormik.touched.city &&
+                            addressFormik.errors.city
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.city}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="pincode"
+                          placeholder="Pincode *"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.pincode}
+                          isInvalid={
+                            addressFormik.touched.pincode &&
+                            addressFormik.errors.pincode
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.pincode}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="state"
+                          placeholder="State *"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.state}
+                          isInvalid={
+                            addressFormik.touched.state &&
+                            addressFormik.errors.state
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.state}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+
+                  <Row>
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="houseNumber"
+                          placeholder="House/ Floor/ Flat Number *"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.houseNumber}
+                          isInvalid={
+                            addressFormik.touched.houseNumber &&
+                            addressFormik.errors.houseNumber
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.houseNumber}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Control
+                          name="landmark"
+                          placeholder="Landmark (optional)"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.landmark}
+                          isInvalid={
+                            addressFormik.touched.landmark &&
+                            addressFormik.errors.landmark
+                          }
+                        />
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.landmark}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+
+                  {/* Address Type Selection */}
+                  <Row>
+                    <Col md={6}>
+                      <InputGroup className="mb-3">
+                        <Form.Select
+                          name="type"
+                          onChange={addressFormik.handleChange}
+                          value={addressFormik.values.type}
+                          isInvalid={
+                            addressFormik.touched.type &&
+                            addressFormik.errors.type
+                          }
+                        >
+                          <option value="home">Home</option>
+                          <option value="office">Office</option>
+                          <option value="friendhome">Friend's Home</option>
+                          <option value="other">Other</option>
+                        </Form.Select>
+                        <Form.Control.Feedback type="invalid">
+                          {addressFormik.errors.type}
+                        </Form.Control.Feedback>
+                      </InputGroup>
+                    </Col>
+                  </Row>
+
                   <Button type="submit" variant="primary">
-                    Save Personal Info
+                    Save & Continue
                   </Button>
                 </Form>
               </Card.Body>
             </Card>
 
-            <Card>
-              <Card.Body>
-                <h4>Payment Information</h4>
-                <Form onSubmit={paymentFormik.handleSubmit}>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      name="cardName"
-                      placeholder="Name on Card"
-                      onChange={paymentFormik.handleChange}
-                      value={paymentFormik.values.cardName}
-                      isInvalid={
-                        paymentFormik.touched.cardName &&
-                        paymentFormik.errors.cardName
-                      }
-                    />
-                  </InputGroup>
-                  <InputGroup className="mb-3">
-                    <Form.Control
-                      name="cardNumber"
-                      placeholder="Card Number"
-                      onChange={paymentFormik.handleChange}
-                      value={paymentFormik.values.cardNumber}
-                      isInvalid={
-                        paymentFormik.touched.cardNumber &&
-                        paymentFormik.errors.cardNumber
-                      }
-                    />
-                  </InputGroup>
-                  <Row>
-                    <Col>
-                      <Form.Control
-                        name="expiryMonth"
-                        placeholder="MM"
-                        onChange={paymentFormik.handleChange}
-                        value={paymentFormik.values.expiryMonth}
-                        isInvalid={
-                          paymentFormik.touched.expiryMonth &&
-                          paymentFormik.errors.expiryMonth
+            <Card className="shadow-sm border-0">
+              {addresses && addresses.length > 0 && (
+                <Card.Body>
+                  <h4 className="mt-4 mb-3">Select Address</h4>
+
+                  {addresses.map((addr) => (
+                    <Card
+                      key={addr._id}
+                      className="mb-3 p-3 border rounded shadow-sm"
+                    >
+                      <Form.Check
+                        type="radio"
+                        name="address"
+                        onChange={() => setSelectedAddress(addr)}
+                        id={`address-${addr._id}`}
+                        label={
+                          <div>
+                            <strong>{addr.name}</strong>
+                            <span className="text-muted"> ({addr.type})</span>
+                            <div className="mt-1">
+                              <i className="fas fa-home"></i> {addr.houseNumber}
+                              , {addr.city}, {addr.state}
+                            </div>
+                            <div className="text-muted">
+                              <i className="fas fa-map-marker-alt"></i>{" "}
+                              {addr.landmark ? addr.landmark + ", " : ""}
+                              {addr.pincode}
+                            </div>
+                            <div>
+                              <i className="fas fa-phone"></i> {addr.mobileNo}
+                            </div>
+                            {addr.email && (
+                              <div>
+                                <i className="fas fa-envelope"></i> {addr.email}
+                              </div>
+                            )}
+                          </div>
                         }
                       />
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        name="expiryYear"
-                        placeholder="YY"
-                        onChange={paymentFormik.handleChange}
-                        value={paymentFormik.values.expiryYear}
-                        isInvalid={
-                          paymentFormik.touched.expiryYear &&
-                          paymentFormik.errors.expiryYear
-                        }
-                      />
-                    </Col>
-                    <Col>
-                      <Form.Control
-                        name="cvv"
-                        placeholder="CVV"
-                        onChange={paymentFormik.handleChange}
-                        value={paymentFormik.values.cvv}
-                        isInvalid={
-                          paymentFormik.touched.cvv && paymentFormik.errors.cvv
-                        }
-                      />
-                    </Col>
-                  </Row>
-                  <Button type="submit" variant="success" className="mt-3">
+                    </Card>
+                  ))}
+
+                  <Button
+                    type="submit"
+                    variant="success"
+                    className="mt-3 w-100"
+                    disabled={selectedAddress ? false : true}
+                    onClick={handleCheckout}
+                  >
                     Confirm and Pay
                   </Button>
-                </Form>
-              </Card.Body>
+                </Card.Body>
+              )}
             </Card>
           </Col>
 
           {/* Payment Info Section */}
-          <Col md={6} className="mb-4 theiaStickySidebar">
+          <Col md={5} className="mb-4">
             <Card className="booking-card">
               <CardHeader>
                 <h3 className="card-title">Your Order</h3>

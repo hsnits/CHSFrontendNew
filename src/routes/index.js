@@ -115,7 +115,7 @@ const Routes = () => {
           }
         />
 
-        <Route path="/OrderSuccess" element={<OrderSuccess />} />
+        <Route path="/payment-status" element={<OrderSuccess />} />
         <Route
           path="/BookingSuccess"
           element={

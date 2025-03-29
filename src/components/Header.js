@@ -28,7 +28,8 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen((prev) => !prev);
+    setIsMenuOpen(false);
+    // setIsMenuOpen((prev) => !prev);
 
     // Add or remove class from <html> tag
     if (!isMenuOpen) {

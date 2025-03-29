@@ -1,0 +1,47 @@
+/* General Styles */
+.contact-section {
+    background: #f9f9f9;
+    min-height: 100vh;
+    padding: 60px 0;
+  }
+  
+  .contact-card {
+    border: none;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+  }
+  
+  .contact-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Colorful Icons */
+  .colorful-icon {
+    color: #ff4d4d;
+    transition: 0.3s;
+  }
+  
+  .colorful-icon:hover {
+    color: #007bff;
+    transform: scale(1.1);
+  }
+  
+  /* Medium Button with Hover Effect */
+  .btn-medium {
+    background: #007bff;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-medium:hover {
+    background: #0056b3;
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.5);
+  }
+  

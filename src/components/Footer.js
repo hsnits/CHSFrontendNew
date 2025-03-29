@@ -1,6 +1,6 @@
 import React from "react";
 import ChsLogo from "../assets/img/chs_logo.png";
-import { company_name, email_address, phone_no, address } from "./CompanyName";
+import { company_name, email_address, address, admin_info } from "./static";
 import { Col, Container, Row } from "react-bootstrap";
 import {
   Facebook,
@@ -10,6 +10,7 @@ import {
   MapPin,
   PhoneCall,
   Twitter,
+  UserCheck,
 } from "react-feather";
 import { Link } from "react-router-dom";
 
@@ -54,7 +55,7 @@ export default function Footer() {
             </Col>
             <Col lg="3" md="6" xs="6">
               <div className="footer-widget footer-menu">
-                <h2 className="footer-title">About Us</h2>
+                <h2 className="footer-title">Our Services</h2>
                 <ul>
                   <li>
                     <Link to="/">Home</Link>
@@ -63,29 +64,39 @@ export default function Footer() {
                     <Link to="/about">About Us</Link>
                   </li>
                   <li>
-                    <Link to="/register">Register</Link>
+                    <Link to="/pharmacy">Products</Link>
                   </li>
                   <li>
-                    <Link to="/contact">Contact Us</Link>
+                    <Link to="/career">Career</Link>
+                  </li>
+                  <li>
+                    <Link to="/doctorlist">Doctors</Link>
                   </li>
                 </ul>
               </div>
             </Col>
             <Col lg="3" md="6" xs="6">
               <div className="footer-widget footer-menu">
-                <h2 className="footer-title">For Doctors</h2>
+                <h2 className="footer-title">Our policies</h2>
                 <ul>
                   <li>
-                    <Link to="/doctorlist">Appointments</Link>
+                    <Link to="/terms-conditions">Terms & Conditions</Link>
                   </li>
                   <li>
-                    <Link to="#">Chat</Link>
+                    <Link to="/privacy-policy">Privacy Policy </Link>
                   </li>
                   <li>
-                    <Link to="/login">Login</Link>
+                    <Link to="/refund-policy">
+                      Refund and Cancellation Policy
+                    </Link>
                   </li>
                   <li>
-                    <Link to="/register">Register</Link>
+                    <Link to="/shipping-policy">
+                      Shipping & Delivery Policy
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/contact">Contact Us</Link>
                   </li>
                 </ul>
               </div>
@@ -102,9 +113,9 @@ export default function Footer() {
                   </div>
                   <div className="footer-address">
                     <span>
-                      <PhoneCall />
+                      <UserCheck />
                     </span>
-                    <p> {phone_no}</p>
+                    <p> {admin_info}</p>
                   </div>
                   <div className="footer-address">
                     <span>
@@ -142,10 +153,22 @@ export default function Footer() {
                 <div className="copyright-menu">
                   <ul className="policy-menu">
                     <li>
-                      <Link to="#">Terms and Conditions</Link>
+                      <Link
+                        to="/terms-conditions"
+                        style={{ color: "white" }}
+                        className="policy-link"
+                      >
+                        Terms & Conditions
+                      </Link>
                     </li>
                     <li>
-                      <Link to="#">Policy</Link>
+                      <Link
+                        to="/privacy-policy"
+                        style={{ color: "white" }}
+                        className="policy-link"
+                      >
+                        Privacy Policy
+                      </Link>
                     </li>
                   </ul>
                 </div>

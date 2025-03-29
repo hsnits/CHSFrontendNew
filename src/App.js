@@ -6,7 +6,6 @@ function App() {
     <>
       <div className="main-wrapper">
         <Routes />
-        
       </div>
     </>
   );

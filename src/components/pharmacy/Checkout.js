@@ -25,6 +25,10 @@ import { toastMessage } from "../../config/toast";
 
 export default function Checkout() {
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [selected, setSelected] = useState({
+    shipping: false,
+    refund: false,
+  });
   const navigate = useNavigate();
 
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -448,11 +452,68 @@ export default function Checkout() {
                     </Card>
                   ))}
 
+                  <div className="policy-item">
+                    <Form.Check
+                      type="checkbox"
+                      name="policy"
+                      checked={selected.shipping}
+                      onChange={() =>
+                        setSelected((prev) => ({
+                          ...prev,
+                          shipping: !prev.shipping,
+                        }))
+                      }
+                      label={
+                        <>
+                          <strong>Shipping & Delivery Policy</strong>{" "}
+                          <a
+                            href="/shipping-policy"
+                            className="policy-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (See more...)
+                          </a>
+                        </>
+                      }
+                    />
+                  </div>
+
+                  <div className="policy-item">
+                    <Form.Check
+                      type="checkbox"
+                      name="policy"
+                      checked={selected.refund}
+                      onChange={() =>
+                        setSelected((prev) => ({
+                          ...prev,
+                          refund: !prev.refund,
+                        }))
+                      }
+                      label={
+                        <>
+                          <strong>Cancellation & Refund Policy</strong>{" "}
+                          <a
+                            href="/refund-policy"
+                            className="policy-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            (See more...)
+                          </a>
+                        </>
+                      }
+                    />
+                  </div>
                   <Button
                     type="submit"
                     variant="success"
                     className="mt-3 w-100"
-                    disabled={selectedAddress ? false : true}
+                    disabled={
+                      !selected.shipping ||
+                      !selected.refund ||
+                      selectedAddress == null
+                    }
                     onClick={handleCheckout}
                   >
                     Confirm and Pay

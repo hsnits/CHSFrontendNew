@@ -30,10 +30,16 @@ import LabTest from "../pages/services/LabTest";
 import Diagnostics from "../pages/services/Diagnostics";
 import PublicRoute from "./PublicRoute";
 import VerifyOtp from "../pages/auth/verifyOtp";
+import PrivacyPolicy from "../components/static/privacyPolicy";
+import TermsAndConditions from "../components/static/TermsAndConditions";
+import CancellationRefundPolicy from "../components/static/CancellationRefundPolicy";
+import ShippingDeliveryPolicy from "../components/static/ShippingDeliveryPolicy";
+import ScrollToTop from "../components/common/scrolltoTop";
 
 const Routes = () => {
   return (
     <BrowserRouter>
+       <ScrollToTop />
       <Routing>
         {/* auth routes */}
 
@@ -77,11 +83,16 @@ const Routes = () => {
             </PublicRoute>
           }
         />
+        {/* static routes */}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-conditions" element={<TermsAndConditions />} />
+        <Route path="/refund-policy" element={<CancellationRefundPolicy />} />
+        <Route path="/shipping-policy" element={<ShippingDeliveryPolicy />} />
+        <Route path="/contact" element={<Contact />} />
 
         {/* </PublicRoute> */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
         <Route path="/VirtualConsultation" element={<VirtualConsultation />} />
         <Route
           path="/patient"

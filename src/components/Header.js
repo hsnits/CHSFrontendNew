@@ -25,6 +25,19 @@ function Header() {
   const [isSubmenuVisible, setIsSubmenuVisible] = useState(null);
   const isLoggedIn = getLocalStorage(STORAGE.USER_KEY);
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen((prev) => !prev);
+
+    // Add or remove class from <html> tag
+    if (!isMenuOpen) {
+      document.documentElement.classList.add("menu-opened");
+    } else {
+      document.documentElement.classList.remove("menu-opened");
+    }
+  };
+
   const toggleSubmenu = (menu_name) => {
     if (isSubmenuVisible == menu_name) {
       setIsSubmenuVisible(null);
@@ -44,7 +57,7 @@ function Header() {
       <Container>
         <Nav className="navbar navbar-expand-lg header-nav">
           <div className="navbar-header">
-            <Link id="mobile_btn" to="#">
+            <Link id="mobile_btn" to="#" onClick={toggleMenu}>
               <span className="bar-icon">
                 <span></span>
                 <span></span>
@@ -55,12 +68,12 @@ function Header() {
               <img src={ChsLogo} className="img-fluid" alt="Logo" />
             </Link>
           </div>
-          <div className="main-menu-wrapper">
+          <div className={`main-menu-wrapper ${isMenuOpen ? "menu-open" : ""}`}>
             <div className="menu-header">
               <Link to="/" className="menu-logo">
                 <img src={ChsLogo} className="img-fluid" alt="Logo" />
               </Link>
-              <Link id="menu_close" className="menu-close" to="#">
+              <Link id="menu_close" className="menu-close" to="#" onClick={toggleMenu}>
                 <i className="fas fa-times"></i>
               </Link>
             </div>

@@ -5,11 +5,12 @@ import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import { Link } from "react-router-dom";
-import browsecategory_icon from "../assets/img/icons/browse-categorie.svg";
 
-export default function BrowseCategory({ query, setQuery }) {
+export default function BrowseCategory({ query = null, setQuery }) {
   const handleCategoryChange = (value) => {
-    setQuery((pre) => ({ ...pre, category: value }));
+    if (setQuery) {
+      setQuery((pre) => ({ ...pre, category: value }));
+    }
   };
 
   return (

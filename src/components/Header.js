@@ -73,7 +73,12 @@ function Header() {
               <Link to="/" className="menu-logo">
                 <img src={ChsLogo} className="img-fluid" alt="Logo" />
               </Link>
-              <Link id="menu_close" className="menu-close" to="#" onClick={toggleMenu}>
+              <Link
+                id="menu_close"
+                className="menu-close"
+                to="#"
+                onClick={toggleMenu}
+              >
                 <i className="fas fa-times"></i>
               </Link>
             </div>
@@ -82,6 +87,7 @@ function Header() {
                 <li className="has-submenu megamenu d-lg-none">
                   <Link
                     id="menu_close"
+                    onClick={toggleMenu}
                     to={
                       isLoggedIn?.role == "Doctor"
                         ? "/DoctorDashboard"
@@ -114,7 +120,10 @@ function Header() {
                             <Link
                               id="menu_close"
                               // to={subItem.path}
-                              onClick={() => handlePharma(subItem.menu_name)}
+                              onClick={() => {
+                                handlePharma(subItem.menu_name);
+                                toggleMenu();
+                              }}
                               to={
                                 subItem.menu_name === "Wholesale"
                                   ? "#"
@@ -128,7 +137,7 @@ function Header() {
                       </ul>
                     </>
                   ) : (
-                    <Link id="menu_close" to={path}>
+                    <Link id="menu_close" onClick={toggleMenu} to={path}>
                       {menu_name}
                     </Link>
                   )}
@@ -142,6 +151,7 @@ function Header() {
                     to="/login"
                     onClick={() => {
                       removeLocalStorage(STORAGE.USER_KEY);
+                      toggleMenu();
                     }}
                   >
                     Logout
@@ -159,7 +169,11 @@ function Header() {
                     <ul className="submenu mega-submenu">
                       <li>
                         <div className="megamenu-wrapper">
-                          <div className="row" id="menu_close">
+                          <div
+                            className="row"
+                            id="menu_close"
+                            onClick={toggleMenu}
+                          >
                             <div className="col-lg-2">
                               <div className="single-demo active">
                                 <div className="demo-info mb-2">
@@ -411,7 +425,11 @@ function Header() {
                     >
                       <li>
                         <div className="megamenu-wrapper">
-                          <div className="row" id="menu_close">
+                          <div
+                            className="row"
+                            id="menu_close"
+                            onClick={toggleMenu}
+                          >
                             <Link to="/register?key=Patient">
                               Patient Register
                             </Link>

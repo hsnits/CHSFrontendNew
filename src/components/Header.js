@@ -28,10 +28,13 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
-    setIsMenuOpen(false);
-    // setIsMenuOpen((prev) => !prev);
+    const isMobile = window.innerWidth <= 990;
 
-    // Add or remove class from <html> tag
+    if (!isMobile) {
+      return;
+    }
+    setIsMenuOpen((prev) => !prev);
+
     if (!isMenuOpen) {
       document.documentElement.classList.add("menu-opened");
     } else {

@@ -2,6 +2,8 @@ import markdownit from "markdown-it";
 import DOMPurify from "dompurify";
 import moment from "moment/moment";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { toastMessage } from "../config/toast";
+import { callPostApi } from "../_service";
 
 const md = markdownit({
   html: false,
@@ -80,6 +82,24 @@ const cpFirstName = (name) => {
   return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 };
 
+const uploadFile = async (file, message) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  toastMessage("success", message || "file is uploading...");
+
+  // ✅ Upload File
+  const res = await callPostApi("user/upload-file", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+  if (!res?.data?.location) {
+    throw new Error("File Uploading Error.");
+  }
+
+  return res?.data;
+};
+
 export {
   getMdHTMLValue,
   getDateFormate,
@@ -88,4 +108,5 @@ export {
   formatName,
   TruncatedText,
   cpFirstName,
+  uploadFile,
 };

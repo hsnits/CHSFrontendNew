@@ -36,6 +36,7 @@ export default function ConsultationType({
                       }`}
                       onClick={() => onConsultationTypeChange("video")}
                     >
+                      <div>RS : 0 </div>{" "}
                       <a href="#">
                         <Video /> &nbsp; Video Consulting
                       </a>
@@ -51,6 +52,7 @@ export default function ConsultationType({
                       }`}
                       onClick={() => onConsultationTypeChange("audio")}
                     >
+                      <div>RS : 0 </div>{" "}
                       <a href="#">
                         <Mic /> &nbsp; Audio Consulting
                       </a>
@@ -66,6 +68,7 @@ export default function ConsultationType({
                       }`}
                       onClick={() => onConsultationTypeChange("chat")}
                     >
+                      <div>RS : 0 </div>{" "}
                       <a href="#">
                         <MessageCircle /> &nbsp; Chat Consulting
                       </a>

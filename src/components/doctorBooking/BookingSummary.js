@@ -28,12 +28,12 @@ export default function BookingSummary({ data }) {
                   <p>{data?.languages && data?.languages?.join(",")}</p>
                 </div>
               </div>
-              <div className="booking-doctor-right">
+              {/* <div className="booking-doctor-right">
                 <p>
                   <i className="fas fa-check-circle"></i>
                   <Link to="#">Edit</Link>
                 </p>
-              </div>
+              </div> */}
             </div>
           </CardBody>
         </Card>
@@ -47,11 +47,11 @@ export default function BookingSummary({ data }) {
                 <div className="booking-doctor-info">
                   <h3>We can help you</h3>
                   <p className="device-text">
-                    Call us +1 888-888-8888 (or) chat with our customer support
+                    Contact us in <b>info@chshealthcare.in</b> (or) chat with our customer support
                     team.
                   </p>
-                  <Link to="#" className="btn">
-                    Chat With Us
+                  <Link to="/contact" className="btn">
+                  Contact us
                   </Link>
                 </div>
               </div>

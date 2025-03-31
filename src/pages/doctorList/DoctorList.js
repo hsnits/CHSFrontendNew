@@ -266,7 +266,7 @@ function DoctorList() {
                 <Col xl="9" lg="9">
                   <div className="doctor-filter-info">
                     <div className="doctor-filter-inner">
-                      <div>
+                      {/* <div>
                         <div className="doctors-found">
                           <p>
                             <span>10 Doctors found for:</span> Dentist in India
@@ -285,17 +285,16 @@ function DoctorList() {
                             </label>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
+                      <div></div>
                       <div className="doctor-filter-option">
                         <div className="doctor-filter-sort">
                           <p>Sort</p>
                           <div className="doctor-filter-select">
                             <select className="select">
                               <option>A to Z</option>
-                              <option>B to Z</option>
-                              <option>C to Z</option>
-                              <option>D to Z</option>
-                              <option>E to Z</option>
+                              <option>Z to A</option>
+                              <option>Availability</option>
                             </select>
                           </div>
                         </div>

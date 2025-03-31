@@ -12,10 +12,10 @@ const Banner = () => {
             </div>
             <div className="search-box">
            <Form>
-            <div className="mb-3 search-location aos aos-init aos-animate" data-aos="fade-up">
+            {/* <div className="mb-3 search-location aos aos-init aos-animate" data-aos="fade-up">
             <input type="text" className="form-control" placeholder="Search Location"/>
             <span className="form-text text-white">Based on your Location</span>
-            </div>
+            </div> */}
             <div className="mb-3 search-info aos aos-init aos-animate" data-aos="fade-up">
             <input type="text" className="form-control" placeholder="Search Doctors, Clinics, Hospitals, Diseases Etc"/>
             <span className="form-text text-white">Ex : Dental or Sugar Check up etc</span>

@@ -102,6 +102,10 @@ const PatSymptoms = () => {
           age: watch("age"),
           height: watch("height"),
           weight: watch("weight"),
+          bloodPressure: watch("bloodPressure"),
+          heartRate: watch("heartRate"),
+          bodyTemperature: watch("bodyTemperature"),
+          spo2: watch("spo2"),
           symptoms: watch("symptoms"),
           symptomReport: JSON.stringify(summary),
         }
@@ -334,7 +338,7 @@ const PatSymptoms = () => {
                                   <div class="col-lg-6 col-md-6">
                                     <div class="form-wrap">
                                       <label class="col-form-label">
-                                        Heart Rate (Bpm)
+                                        Heart Rate (BMI)
                                       </label>
                                       <Controller
                                         name="heartRate"
@@ -345,7 +349,7 @@ const PatSymptoms = () => {
                                             type="number"
                                             step="0.1"
                                             class="form-control"
-                                            placeholder="Enter Heart Rate (Bpm)"
+                                            placeholder="Enter Heart Rate (BMI)"
                                           />
                                         )}
                                       />
@@ -495,7 +499,7 @@ const PatSymptoms = () => {
                                       {watch("heartRate") && (
                                         <label class=" col-lg-3 col-form-label">
                                           Heart Rate :{" "}
-                                          {`${watch("heartRate")}Bpm`}
+                                          {`${watch("heartRate")}BMI`}
                                         </label>
                                       )}
                                       {watch("bodyTemperature") && (

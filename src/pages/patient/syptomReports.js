@@ -73,15 +73,62 @@ const SymptomReport = ({ userData, allReports, loading, getAllData }) => {
                         </div>
                       </Accordion.Header>
                       <Accordion.Body>
-                        <p>
-                          <strong>Age:</strong> {item?.age}
-                        </p>
-                        <p>
+                        {/* Basic Info */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div className="flex justify-between">
+                            <strong>Age:</strong>{" "}
+                            <span>{item?.age || "-"}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <strong>Height:</strong>{" "}
+                            <span>
+                              {item?.height ? `${item.height} cm` : "-"}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <strong>Weight:</strong>{" "}
+                            <span>
+                              {item?.weight ? `${item.weight} kg` : "-"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Vitals */}
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          {item?.bloodPressure && (
+                            <div className="flex justify-between">
+                              <strong>Blood Pressure:</strong>
+                              <span>{item?.bloodPressure}</span>
+                            </div>
+                          )}
+                          {item?.bodyTemperature && (
+                            <div className="flex justify-between">
+                              <strong>Body Temperature:</strong>
+                              <span>{item?.bodyTemperature}°C</span>
+                            </div>
+                          )}
+                          {item?.spo2 && (
+                            <div className="flex justify-between">
+                              <strong>SpO2:</strong>
+                              <span>{item?.spo2}%</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* <p>
                           <strong>Height:</strong> {item?.height} cm
+                        </p> */}
+                        {/* <p>
+                          <strong>Weight:</strong> {item?.weight} kg
+                        </p> */}
+
+                        {/* <p>
+                          <strong>Body Temperature:</strong> {item?.bodyTemperature}
                         </p>
                         <p>
-                          <strong>Weight:</strong> {item?.weight} kg
-                        </p>
+                          <strong>Heart Rate:</strong> {item?.heartRate} 
+                        </p> */}
+
                         <p>
                           <strong>Summary:</strong>{" "}
                           <p

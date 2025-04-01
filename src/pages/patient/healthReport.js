@@ -250,7 +250,7 @@ export default HealthReport;
 //                             Heart Rate
 //                           </span>
 //                           <h3>
-//                             {isReports?.heartRate} Bpm <sup> 2%</sup>
+//                             {isReports?.heartRate} BMI <sup> 2%</sup>
 //                           </h3>
 //                         </div>
 //                       </Col>

@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { toastMessage } from "../../config/toast";
 import { callPostApi } from "../../_service";
+// import PatientCall from "../../components/twillio/PatientCall";
 
 // Validation schema with Yup
 const validationSchema = yup.object().shape({
@@ -124,7 +125,7 @@ const Dashboard = ({
       // reportGetData(`/patient/reports/${userProfileId}`);
 
       // Refresh the list or data
-      console.log("getData", data);
+     
 
       setShowModal(false);
     } catch (error) {

@@ -1,0 +1,285 @@
+/* === GLOBAL & BASE === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.6;
+  background-color: #f4f7f9;
+  color: #333;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* === APP === */
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+/* === HEADER & FOOTER === */
+header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+main {
+  flex: 1;
+  padding: 1rem;
+}
+
+footer {
+  background-color: #2c3e50;
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+}
+
+/* === LOBBY === */
+.lobby {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.lobby h2 {
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* === VIDEO ROOM CUSTOM LAYOUT === */
+/* .video-room {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  overflow: hidden;
+} */
+
+/* Fullscreen remote video */
+/* .remote-participants {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  z-index: 1;
+} */
+
+/* .remote-participants video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+} */
+
+/* Local video top-right */
+/* .local-participant {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 220px;
+  height: 140px;
+  border: 3px solid limegreen;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: black;
+  z-index: 2;
+}
+
+.local-participant video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+} */
+
+/* Timer top-left */
+.timer {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  color: white;
+  font-size: 20px;
+  z-index: 4;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* Button controls bottom-center */
+.controls {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  display: flex;
+  gap: 20px;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 12px 24px;
+  border-radius: 12px;
+}
+
+.controls button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.controls button:hover {
+  transform: scale(1.2);
+}
+
+/* === PARTICIPANT STYLE REUSE === */
+.participant {
+  background-color: #eee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.video-container {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background-color: #000;
+}
+
+.video-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.participant-name {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.local-indicator {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #3498db;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.video-room {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+}
+
+.local-participant, 
+.remote-participants {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.local-participant video, 
+.remote-participants video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Responsive grid fallback */
+@media (min-width: 768px) {
+  .participants {
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+/* Logo spin */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

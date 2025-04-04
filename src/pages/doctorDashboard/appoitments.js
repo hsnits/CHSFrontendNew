@@ -36,26 +36,24 @@ const Appointments = ({ activeKey }) => {
     // await getAllData(`/doctor/appointment/${userProfileId}?status=${filter}`);
   };
 
-  const handleUpdate = async (id, status) => {
-    try {
-      const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
-        status,
-      });
-      if (!verifyResponse.status) throw new Error(verifyResponse.message);
-
-      toastMessage(
-        "success",
-        status == "Rejected"
-          ? "The appointment has been rejected."
-          : "The appointment has been completed."
-      );
-
-      const updatedData = Appointments?.filter((item) => item?._id !== id);
-      getCounts(`/doctor/appointment-count/${userProfileId}`);
-      setData(updatedData || []);
-    } catch (error) {
-      toastMessage("error", "Appointment update process failed!");
-    }
+  const handleUpdate = async (id, status, docId) => {
+    // try {
+    //   const verifyResponse = await callPutApi(`/patient/appointment/${id}`, {
+    //     status,
+    //   });
+    //   if (!verifyResponse.status) throw new Error(verifyResponse.message);
+    //   toastMessage(
+    //     "success",
+    //     status == "Rejected"
+    //       ? "The appointment has been rejected."
+    //       : "The appointment has been completed."
+    //   );
+    //   const updatedData = Appointments?.filter((item) => item?._id !== id);
+    //   getCounts(`/doctor/appointment-count/${userProfileId}`);
+    //   setData(updatedData || []);
+    // } catch (error) {
+    //   toastMessage("error", "Appointment update process failed!");
+    // }
   };
 
   useEffect(() => {

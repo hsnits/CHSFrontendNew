@@ -11,7 +11,7 @@ import OrderSuccess from "../components/pharmacy/OrderSuccess";
 import Login from "../pages/auth/Login";
 import DoctorRegister from "../pages/auth/DoctorRegister";
 import Home from "../pages/home/Home";
-import { ROLES } from "../constants";
+import { ROLES, STORAGE } from "../constants";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFoundPage from "../components/common/notFoundPage";
 import ForgotPassword from "../pages/auth/forgot-password";
@@ -35,12 +35,27 @@ import TermsAndConditions from "../components/static/TermsAndConditions";
 import CancellationRefundPolicy from "../components/static/CancellationRefundPolicy";
 import ShippingDeliveryPolicy from "../components/static/ShippingDeliveryPolicy";
 import ScrollToTop from "../components/common/scrolltoTop";
+import CallHandler from "../components/twillio/CallHandler";
+import VideoCall from "../components/twillio/VideoCall";
+import { getLocalStorage } from "../helpers/storage";
+import TwillioCall from "../components/twillio/components/App";
 
 const Routes = () => {
+  const userData = getLocalStorage(STORAGE.USER_KEY);
+
   return (
     <BrowserRouter>
-       <ScrollToTop />
+      {userData?.profile && (
+        <CallHandler currentUserId={userData?.profile?._id} />
+      )}
+      <ScrollToTop />
       <Routing>
+        {/* twillio  */}
+
+        <Route path="/video-call" element={<TwillioCall />} />
+        {/* <Route path="/audio-call" element={<VideoCall />} /> */}
+        {/* <Route path="/chat-call" element={<ChatRoom />} /> */}
+
         {/* auth routes */}
 
         <Route

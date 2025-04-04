@@ -5,6 +5,7 @@ import useGetMountData from "../../helpers/getDataHook";
 import { getMdHTMLValue } from "../../helpers/utils";
 import { callPostApi } from "../../_service";
 import { toastMessage } from "../../config/toast";
+import { useNavigate } from "react-router-dom";
 
 const AppointmentReports = ({
   customData,
@@ -14,6 +15,7 @@ const AppointmentReports = ({
 }) => {
   const [reportTreatment, setReportTreatment] = useState({});
   const [anzLoading, setAnzLoading] = useState(null);
+  const navigate = useNavigate();
 
   const { data: isReports, loading } = useGetMountData(
     `/patient/reports/${customData?.patientId?._id}`
@@ -43,8 +45,42 @@ const AppointmentReports = ({
 
   const handleStart = async () => {
     console.log(customData, "customData");
-    await handleUpdate(customData?._id, "Completed");
-    handleClose();
+
+    let patientId = customData?.patientId?._id;
+    let doctorId = customData?.refDoctor;
+    let appointmentId = customData?._id;
+     
+    navigate(`/${customData?.appointmentType}-call`, {
+      state: {
+        patientId,
+        doctorId,
+        appointmentId,
+        mode: customData?.appointmentType,
+      },
+    });
+
+    // if (customData?.appointmentType == "audio") {
+    //   navigate("/audio-call", {
+    //     state: {
+    //       patientId,
+    //       doctorId,
+    //       appointmentId,
+    //     },
+    //   });
+    // } else if (customData?.appointmentType == "video") {
+
+    // } else {
+    //   navigate("/chat-call", {
+    //     state: {
+    //       patientId,
+    //       doctorId,
+    //       appointmentId,
+    //     },
+    //   });
+    // }
+
+    // handleClose();
+    // await handleUpdate(customData?._id, "Completed", customData?.refDoctor);
   };
 
   return (
@@ -80,47 +116,42 @@ const AppointmentReports = ({
                         <strong>Weight:</strong> {item?.weight} kg
                       </p>
                     </div> */}
-                     {/* Basic Info */}
-                     <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="flex justify-between">
-                            <strong>Age:</strong>{" "}
-                            <span>{item?.age || "-"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <strong>Height:</strong>{" "}
-                            <span>
-                              {item?.height ? `${item.height} cm` : "-"}
-                            </span>
-                          </div>
-                          <div className="flex justify-between">
-                            <strong>Weight:</strong>{" "}
-                            <span>
-                              {item?.weight ? `${item.weight} kg` : "-"}
-                            </span>
-                          </div>
-                        </div>
+                    {/* Basic Info */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="flex justify-between">
+                        <strong>Age:</strong> <span>{item?.age || "-"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <strong>Height:</strong>{" "}
+                        <span>{item?.height ? `${item.height} cm` : "-"}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <strong>Weight:</strong>{" "}
+                        <span>{item?.weight ? `${item.weight} kg` : "-"}</span>
+                      </div>
+                    </div>
 
-                        {/* Vitals */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          {item?.bloodPressure && (
-                            <div className="flex justify-between">
-                              <strong>Blood Pressure:</strong>
-                              <span>{item?.bloodPressure}</span>
-                            </div>
-                          )}
-                          {item?.bodyTemperature && (
-                            <div className="flex justify-between">
-                              <strong>Body Temperature:</strong>
-                              <span>{item?.bodyTemperature}°C</span>
-                            </div>
-                          )}
-                          {item?.spo2 && (
-                            <div className="flex justify-between">
-                              <strong>SpO2:</strong>
-                              <span>{item?.spo2}%</span>
-                            </div>
-                          )}
+                    {/* Vitals */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      {item?.bloodPressure && (
+                        <div className="flex justify-between">
+                          <strong>Blood Pressure:</strong>
+                          <span>{item?.bloodPressure}</span>
                         </div>
+                      )}
+                      {item?.bodyTemperature && (
+                        <div className="flex justify-between">
+                          <strong>Body Temperature:</strong>
+                          <span>{item?.bodyTemperature}°C</span>
+                        </div>
+                      )}
+                      {item?.spo2 && (
+                        <div className="flex justify-between">
+                          <strong>SpO2:</strong>
+                          <span>{item?.spo2}%</span>
+                        </div>
+                      )}
+                    </div>
 
                     <h4 className="mt-3">
                       <strong>Summary:</strong>
@@ -172,7 +203,7 @@ const AppointmentReports = ({
       <Modal.Footer>
         <Button
           variant="primary"
-          disabled={Object.keys(reportTreatment)?.length == 0}
+          // disabled={Object.keys(reportTreatment)?.length == 0}
           onClick={handleStart}
         >
           Start Appointment

@@ -38,7 +38,7 @@ import ScrollToTop from "../components/common/scrolltoTop";
 import CallHandler from "../components/twillio/CallHandler";
 import VideoCall from "../components/twillio/VideoCall";
 import { getLocalStorage } from "../helpers/storage";
-import TwillioCall from "../components/twillio/components/App";
+import TwillioCall from "../components/twillio/video";
 
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -53,7 +53,7 @@ const Routes = () => {
         {/* twillio  */}
 
         <Route path="/video-call" element={<TwillioCall />} />
-        {/* <Route path="/audio-call" element={<VideoCall />} /> */}
+        <Route path="/audio-call" element={<TwillioCall />} />
         {/* <Route path="/chat-call" element={<ChatRoom />} /> */}
 
         {/* auth routes */}

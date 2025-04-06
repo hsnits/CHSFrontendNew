@@ -4,10 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { MessageBox, Input, Button } from 'react-chat-elements';
 import 'react-chat-elements/dist/main.css';
 
-const ChatRoom = () => {
-  const [params] = useSearchParams();
-  const token = params.get("token");
-  const roomName = params.get("room");
+const ChatRoom = ({token,roomName}) => {
 
   const [client, setClient] = useState(null);
   const [channel, setChannel] = useState(null);

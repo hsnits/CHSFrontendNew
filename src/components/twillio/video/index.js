@@ -1,11 +1,13 @@
 import React, { useState, useCallback, useEffect } from "react";
-import "./App.css";
+import "./index.css";
 import VideoRoom from "./VideoRoom";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getLocalStorage } from "../../../helpers/storage";
 import { STORAGE } from "../../../constants";
 import { callPostApi } from "../../../_service";
 import { callSocket } from "../../../config/socket";
+import ChatRoom from "../ChatRoom";
+import ChsLogo from "../../../assets/img/chs_logo.png";
 
 function TwillioCall() {
   const [token, setToken] = useState(null);
@@ -49,25 +51,38 @@ function TwillioCall() {
   }, []);
 
   return (
-    <div className="app">
-      <header>
-        <h1>CHS Appointment</h1>
-      </header>
-      <main>
+    <div className="app-video">
+      <div className="header-video">
+        <img
+          src={ChsLogo}
+          style={{ "height": 50 }}
+          className="img-fluid"
+          alt="Logo"
+        />
+        {/* <h1>CHS Appointment</h1> */}
+      </div>
+      <main className="main-video">
         {token ? (
-          <VideoRoom
-            appointmentId={appointmentId}
-            token={token}
-            handleLogout={handleLogout}
-            mode={mode || "audio"}
-          />
+          <>
+            {mode !== "chat" ? (
+              <VideoRoom
+                appointmentId={appointmentId}
+                token={token}
+                handleLogout={handleLogout}
+                mode={mode || "audio"}
+                isDoctor={user?.role == "Doctor"}
+              />
+            ) : (
+              <ChatRoom roomName={appointmentId} token={token} />
+            )}
+          </>
         ) : (
           <h2>Connecting...</h2>
         )}
       </main>
-      <footer>
-        <p>Powered by Twilio Programmable Video</p>
-      </footer>
+      <div className="footer-video">
+        <p>Powered by CHS Healthcare Programmable Video</p>
+      </div>
     </div>
   );
 }

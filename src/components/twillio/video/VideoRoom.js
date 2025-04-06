@@ -13,23 +13,27 @@ import {
   PhoneOff,
 } from "lucide-react";
 
-const VideoRoom = ({ appointmentId, token, handleLogout, mode }) => {
+const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(mode === "video");
+
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const screenTrack = useRef(null);
 
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSeconds((prev) => prev + 1);
-    }, 1000);
+    let interval;
+    if (participants?.length !== 0) {
+      interval = setInterval(() => {
+        setSeconds((prev) => prev + 1);
+      }, 1000);
+    }
 
     return () => clearInterval(interval);
-  }, []);
+  }, [participants]);
 
   // Connect to the room when component mounts
   useEffect(() => {
@@ -47,7 +51,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode }) => {
     Video.connect(token, {
       name: appointmentId,
       audio: true,
-      video: true,
+      video: mode === "video",
     })
       .then((room) => {
         setRoom(room);
@@ -166,39 +170,46 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode }) => {
   if (room) {
     render = (
       <div className="video-room">
-        <div className="timer">{formatTime(seconds)}</div>
+        {seconds > 0 && <div className="timer">{formatTime(seconds)}</div>}
 
-        <div className="remote-participants">
-          {participants.map((participant) => (
-            <Participant
-              key={participant.sid}
-              participant={participant}
-              isLocal={false}
-            />
-          ))}
-        </div>
-
-        <div className="local-participant">
-          <Participant
-            key="local"
-            participant={room.localParticipant}
-            isLocal={true}
-          />
-        </div>
+        {mode === "video" ? (
+          <>
+            <div className="remote-participants">
+              {participants.map((participant) => (
+                <Participant
+                  key={participant.sid}
+                  participant={participant}
+                  isLocal={false}
+                />
+              ))}
+            </div>
+            <div className="local-participant">
+              <Participant participant={room.localParticipant} isLocal={true} />
+            </div>
+          </>
+        ) : (
+          <div className="audio-placeholder">
+            <h2>Audio Call Ongoing</h2>
+          </div>
+        )}
 
         <div className="controls">
-          <button onClick={initiateCall} title="Start Call">
-            <PhoneCall />
-          </button>
+          {isDoctor && (
+            <button onClick={initiateCall} title="Start Call">
+              <PhoneCall />
+            </button>
+          )}
           <button onClick={toggleAudio} title="Toggle Audio">
             {isAudioEnabled ? <Mic /> : <MicOff />}
           </button>
-          <button onClick={toggleVideo} title="Toggle Video">
-            {isVideoEnabled ? <VideoIcon /> : <VideoOff />}
-          </button>
-          <button onClick={toggleScreenShare} title="Share Screen">
+          {mode === "video" && (
+            <button onClick={toggleVideo} title="Toggle Video">
+              {isVideoEnabled ? <VideoIcon /> : <VideoOff />}
+            </button>
+          )}
+          {/* <button onClick={toggleScreenShare} title="Share Screen">
             {isScreenSharing ? <MonitorOff /> : <Monitor />}
-          </button>
+          </button> */}
           <button onClick={leaveRoom} title="Leave Room">
             <PhoneOff />
           </button>

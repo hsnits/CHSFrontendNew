@@ -64,7 +64,7 @@ const EditReport = ({ isOpen, onClose, reportData, refreshData, userId }) => {
         <Form onSubmit={formik.handleSubmit}>
           <Form.Group className="mb-3">
             <Form.Label>
-              Heart Rate (BMI)
+              Heart Rate (BPM)
               <span className="text-danger font-semibold">*</span>
             </Form.Label>
             <Form.Control

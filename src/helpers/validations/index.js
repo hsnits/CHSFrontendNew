@@ -2,8 +2,8 @@ import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
   heartRate: Yup.number()
-    .min(30, "Heart rate should be at least 30 bpm")
-    .max(200, "Heart rate should not exceed 200 bpm")
+    .min(30, "Heart rate should be at least 30 BPM")
+    .max(200, "Heart rate should not exceed 200 BPM")
     .required("Heart rate is required"),
 
   bodyTemperature: Yup.number()

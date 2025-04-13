@@ -12,21 +12,24 @@ import {
   PhoneCall,
   PhoneOff,
 } from "lucide-react";
+import AppointmentFormModal from "../successpage/callForm";
+import AppointmentSuccessModal from "../successpage/callSuccess";
 
 const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isVideoEnabled, setIsVideoEnabled] = useState(mode === "video");
-
   const [isScreenSharing, setIsScreenSharing] = useState(false);
-  const screenTrack = useRef(null);
-
   const [seconds, setSeconds] = useState(0);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const screenTrack = useRef(null);
 
   useEffect(() => {
     let interval;
-    if (participants?.length !== 0) {
+    if (participants.length !== 0) {
       interval = setInterval(() => {
         setSeconds((prev) => prev + 1);
       }, 1000);
@@ -69,7 +72,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
         room.disconnect();
       }
     };
-  }, [appointmentId, token]);
+  }, [appointmentId, token, mode]);
 
   // Toggle audio
   const toggleAudio = () => {
@@ -134,12 +137,11 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
 
   const initiateCall = async () => {
     if (!token || !appointmentId) {
-      console.error("Appointment ID is missing");
+      console.error("Appointment ID or token is missing");
       return;
     }
 
     try {
-      // callSocket.emit("join-room", { userId: user?.profile?._id });
       await callPostApi("doctor/call/start", {
         appointment_id: appointmentId,
         token: token,
@@ -154,7 +156,12 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   const leaveRoom = () => {
     if (room) {
       room.disconnect();
-      handleLogout();
+      if (isDoctor) {
+        setShowFormModal(true);
+      } else {
+        setShowSuccessModal(true);
+      }
+      // handleLogout();
     }
   };
 
@@ -166,9 +173,41 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
       .padStart(2, "0")}`;
   };
 
-  let render;
-  if (room) {
-    render = (
+  const handleFormSubmit = async (formData) => {
+    try {
+      // Update appointment status to completed
+      await callPostApi(`appointment/${appointmentId}`, {
+        status: "Completed",
+        ...formData
+      });
+      
+      // Close form modal and show success modal
+      setShowFormModal(false);
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+      alert("Failed to update appointment. Please try again.");
+    }
+  };
+
+  const closeFormModal = () => {
+    setShowFormModal(false);
+    // If you want to fully exit the call when modal is closed
+    handleLogout();
+  };
+
+  const closeSuccessModal = () => {
+    setShowSuccessModal(false);
+    // This will call the original handleLogout from props
+    handleLogout();
+  };
+
+  const renderVideoContent = () => {
+    if (!room) {
+      return <p>Connecting to room...</p>;
+    }
+
+    return (
       <div className="video-room">
         {seconds > 0 && <div className="timer">{formatTime(seconds)}</div>}
 
@@ -207,56 +246,37 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
               {isVideoEnabled ? <VideoIcon /> : <VideoOff />}
             </button>
           )}
-          {/* <button onClick={toggleScreenShare} title="Share Screen">
+          <button onClick={toggleScreenShare} title="Share Screen">
             {isScreenSharing ? <MonitorOff /> : <Monitor />}
-          </button> */}
+          </button>
           <button onClick={leaveRoom} title="Leave Room">
             <PhoneOff />
           </button>
         </div>
       </div>
-      // <div className="video-room">
-      //   <h2>Room: {`Appointment-${appointmentId}`}</h2>
-      //   <div className="participants">
-      //     <div className="local-participant">
-      //       <h3>Your Video</h3>
-      //       <Participant
-      //         key="local"
-      //         participant={room.localParticipant}
-      //         isLocal={true}
-      //       />
-      //     </div>
-      //     <div className="remote-participants">
-      //       <h3>Remote Participants ({participants.length})</h3>
-      //       {participants.map((participant) => (
-      //         <Participant
-      //           key={participant.sid}
-      //           participant={participant}
-      //           isLocal={false}
-      //         />
-      //       ))}
-      //     </div>
-      //   </div>
-      //   <div className="controls">
-      //     <button onClick={initiateCall}>Start Call</button>
-      //     <button onClick={toggleAudio}>
-      //       {isAudioEnabled ? "Mute Audio" : "Unmute Audio"}
-      //     </button>
-      //     <button onClick={toggleVideo}>
-      //       {isVideoEnabled ? "Turn Off Video" : "Turn On Video"}
-      //     </button>
-      //     <button onClick={toggleScreenShare}>
-      //       {isScreenSharing ? "Stop Sharing" : "Share Screen"}
-      //     </button>
-      //     <button onClick={leaveRoom}>Leave Room</button>
-      //   </div>
-      // </div>
     );
-  } else {
-    render = <p>Connecting to room...</p>;
-  }
+  };
 
-  return render;
+  return (
+    <>
+      {renderVideoContent()}
+      {showFormModal && (
+        <AppointmentFormModal 
+          appointmentId={appointmentId}
+          onClose={closeFormModal}
+          onSubmit={handleFormSubmit}
+        />
+      )}
+      
+      {showSuccessModal && (
+        <AppointmentSuccessModal
+          isDoctor={isDoctor}
+          appointmentId={appointmentId}
+          onClose={closeSuccessModal}
+        />
+      )}
+    </>
+  );
 };
 
 export default VideoRoom;

@@ -338,7 +338,7 @@ const PatSymptoms = () => {
                                   <div class="col-lg-6 col-md-6">
                                     <div class="form-wrap">
                                       <label class="col-form-label">
-                                        Heart Rate (BMI)
+                                        Heart Rate (BPM)
                                       </label>
                                       <Controller
                                         name="heartRate"
@@ -349,7 +349,7 @@ const PatSymptoms = () => {
                                             type="number"
                                             step="0.1"
                                             class="form-control"
-                                            placeholder="Enter Heart Rate (BMI)"
+                                            placeholder="Enter Heart Rate (BPM)"
                                           />
                                         )}
                                       />
@@ -404,7 +404,7 @@ const PatSymptoms = () => {
                                   </div>
                                   <div class="col-lg-6 col-md-6">
                                     <div class="form-wrap">
-                                      <label class="col-form-label">BMP</label>
+                                      <label class="col-form-label">BMI</label>
                                       <Controller
                                         name="bmp"
                                         control={control}
@@ -414,7 +414,7 @@ const PatSymptoms = () => {
                                             type="number"
                                             step="0.1"
                                             class="form-control"
-                                            placeholder="Enter BMP "
+                                            placeholder="Enter BMI "
                                           />
                                         )}
                                       />
@@ -499,7 +499,7 @@ const PatSymptoms = () => {
                                       {watch("heartRate") && (
                                         <label class=" col-lg-3 col-form-label">
                                           Heart Rate :{" "}
-                                          {`${watch("heartRate")}BMI`}
+                                          {`${watch("heartRate")}BPM`}
                                         </label>
                                       )}
                                       {watch("bodyTemperature") && (
@@ -521,7 +521,7 @@ const PatSymptoms = () => {
                                       )}
                                       {watch("bmp") && (
                                         <label class=" col-lg-3 col-form-label">
-                                          BMP : {`${watch("bmp")}`}
+                                          BMI : {`${watch("bmp")}`}
                                         </label>
                                       )}
                                       <div>

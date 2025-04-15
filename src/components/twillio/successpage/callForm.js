@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { callPostApi } from "../../../_service";
+import { callPostApi, callPutApi } from "../../../_service";
 import { Upload, X, CheckCircle } from "lucide-react";
 import "./callSuccess.css";
+import { toastMessage } from "../../../config/toast";
 
 const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
   const [filePreview, setFilePreview] = useState(null);
@@ -15,7 +16,7 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
       reason: "",
       testDate: new Date().toISOString().substr(0, 10),
       testComments: "",
-      testStatus: "Normal",
+      healthStatus: "Normal",
       prescriptionFile: null,
     },
     validationSchema: Yup.object({
@@ -23,39 +24,71 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
       reason: Yup.string().required("Reason is required"),
       testDate: Yup.date().required("Date is required"),
       testComments: Yup.string().required("Test comments are required"),
-      testStatus: Yup.string().oneOf(["Normal", "High"]).required("Test status is required"),
-      prescriptionFile: Yup.mixed(),
+      healthStatus: Yup.string()
+        .oneOf(["Normal", "High", "Low", "Medium"])
+        .required("Test status is required"),
+      prescriptionFile: Yup.mixed()
+        .required("Prescription file is required")
+        .test("fileFormat", "Only PDF or DOC files are allowed", (value) => {
+          if (!value) return false; // Required validation
+          const allowedTypes = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          ];
+          return allowedTypes.includes(value.type);
+        }),
     }),
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
         // Handle file upload first if there's a file
         let prescriptionFileUrl = null;
+        let prescriptionFileKey = null;
+
         if (values.prescriptionFile) {
           const formData = new FormData();
           formData.append("file", values.prescriptionFile);
-          
-          // Assuming you have an endpoint for file uploads
-          const fileUploadResponse = await callPostApi("upload/prescription", formData);
-          prescriptionFileUrl = fileUploadResponse.fileUrl;
-        }
 
+          toastMessage("success", "Prescription report is uploading...");
+          // ✅ Upload File
+          const fileUploadResponse = await callPostApi(
+            "user/upload-file",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+
+          if (!fileUploadResponse?.data?.location) {
+            throw new Error("Invalid response from server.");
+          }
+
+          prescriptionFileUrl = fileUploadResponse?.data?.location;
+          prescriptionFileKey = fileUploadResponse?.data?.key;
+        }
         // Update appointment with completed status and prescription details
-        await callPostApi(`appointment/${appointmentId}`, {
+        let res=await callPutApi(`patient/appointment/${appointmentId}`, {
           status: "Completed",
           testName: values.testName,
           reason: values.reason,
           prescriptionDate: values.testDate,
           comments: values.testComments,
-          testStatus: values.testStatus,
+          healthStatus: values.healthStatus,
           prescriptionFile: prescriptionFileUrl || null,
+          prescriptionFileKey: prescriptionFileKey || null,
         });
 
         // Notify parent component
+        if(!res?.status){
+          toastMessage("error","Test report submission error!")
+          return
+        }
+        formik.resetForm();
         onSubmit(values);
       } catch (error) {
         console.error("Error submitting appointment details:", error);
-        alert("Failed to submit appointment details. Please try again.");
+        toastMessage("Failed to submit appointment details. Please try again.");
       } finally {
         setIsSubmitting(false);
       }
@@ -66,7 +99,7 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
     const file = event.currentTarget.files[0];
     if (file) {
       formik.setFieldValue("prescriptionFile", file);
-      
+
       // Create a preview URL for the file
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -86,9 +119,11 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
       <div className="modal-container">
         <div className="modal-header">
           <h2>Complete Appointment</h2>
-          <button className="close-button" onClick={onClose}>×</button>
+          {/* <button className="close-button" onClick={onClose}>
+            ×
+          </button> */}
         </div>
-        
+
         <div className="modal-body">
           <form onSubmit={formik.handleSubmit}>
             <div className="form-row">
@@ -152,25 +187,31 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
                 rows="3"
               />
               {formik.touched.testComments && formik.errors.testComments ? (
-                <div className="error-message">{formik.errors.testComments}</div>
+                <div className="error-message">
+                  {formik.errors.testComments}
+                </div>
               ) : null}
             </div>
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="testStatus">Test Status</label>
+                <label htmlFor="healthStatus">Health Status</label>
                 <select
-                  id="testStatus"
-                  name="testStatus"
+                  id="healthStatus"
+                  name="healthStatus"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.testStatus}
+                  value={formik.values.healthStatus}
                 >
+                  <option value="Low">Low</option>
                   <option value="Normal">Normal</option>
+                  <option value="Medium">Medium</option>
                   <option value="High">High</option>
                 </select>
-                {formik.touched.testStatus && formik.errors.testStatus ? (
-                  <div className="error-message">{formik.errors.testStatus}</div>
+                {formik.touched.healthStatus && formik.errors.healthStatus ? (
+                  <div className="error-message">
+                    {formik.errors.healthStatus}
+                  </div>
                 ) : null}
               </div>
 
@@ -184,40 +225,53 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
                     onChange={handleFileChange}
                     className="hidden-file-input"
                   />
-                  <label htmlFor="prescriptionFile" className="file-upload-button">
+                  <label
+                    htmlFor="prescriptionFile"
+                    className="file-upload-button"
+                  >
                     <Upload size={16} />
                     <span>Upload Prescription</span>
                   </label>
-                  
+
                   {filePreview && (
                     <div className="file-preview">
                       <div className="file-preview-name">
                         {formik.values.prescriptionFile.name}
                       </div>
-                      <button type="button" onClick={removeFile} className="remove-file-btn">
+                      <button
+                        type="button"
+                        onClick={removeFile}
+                        className="remove-file-btn"
+                      >
                         <X size={16} />
                       </button>
                     </div>
                   )}
+                  {formik.touched.prescriptionFile &&
+                  formik.errors.prescriptionFile ? (
+                    <div className="error-message">
+                      {formik.errors.prescriptionFile}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </div>
 
             <div className="form-actions">
-              <button 
-                type="button" 
-                className="cancel-btn" 
+              {/* <button
+                type="button"
+                className="cancel-btn"
                 onClick={onClose}
                 disabled={isSubmitting}
               >
                 Cancel
-              </button>
-              <button 
-                type="submit" 
-                className="submit-btn" 
+              </button> */}
+              <button
+                type="submit"
+                className="submit-btn"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Submitting..." : "Complete Appointment"}
+                {isSubmitting ? "Submitting..." : "Submit Report"}
               </button>
             </div>
           </form>

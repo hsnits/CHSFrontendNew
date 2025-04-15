@@ -24,6 +24,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   const [seconds, setSeconds] = useState(0);
   const [showFormModal, setShowFormModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [callStarted, setCallStarted] = useState(false);
 
   const screenTrack = useRef(null);
 
@@ -42,6 +43,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   useEffect(() => {
     const participantConnected = (participant) => {
       setParticipants((prevParticipants) => [...prevParticipants, participant]);
+      setCallStarted(true);
     };
 
     const participantDisconnected = (participant) => {
@@ -90,7 +92,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
 
   // Toggle video
   const toggleVideo = () => {
-    if (room) {
+    if (room && mode === "video") {
       room.localParticipant.videoTracks.forEach((publication) => {
         if (isVideoEnabled) {
           publication.track.disable();
@@ -147,6 +149,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
         token: token,
         mode,
       });
+      setCallStarted(true);
     } catch (error) {
       console.error("Call initiation failed:", error);
     }
@@ -176,11 +179,11 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   const handleFormSubmit = async (formData) => {
     try {
       // Update appointment status to completed
-      await callPostApi(`appointment/${appointmentId}`, {
-        status: "Completed",
-        ...formData
-      });
-      
+      // await callPostApi(`appointment/${appointmentId}`, {
+      //   status: "Completed",
+      //   ...formData,
+      // });
+
       // Close form modal and show success modal
       setShowFormModal(false);
       setShowSuccessModal(true);
@@ -192,14 +195,32 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
 
   const closeFormModal = () => {
     setShowFormModal(false);
-    // If you want to fully exit the call when modal is closed
-    handleLogout();
   };
 
   const closeSuccessModal = () => {
     setShowSuccessModal(false);
-    // This will call the original handleLogout from props
     handleLogout();
+  };
+
+  // Helper functions for rendering audio call UI
+  const renderAudioParticipant = (isLocal) => {
+    const role = isLocal
+      ? isDoctor
+        ? "Doctor"
+        : "Patient"
+      : isDoctor
+      ? "Patient"
+      : "Doctor";
+    const initial = role === "Doctor" ? "D" : "P";
+
+    return (
+      <div className="audio-participant">
+        <div className="audio-avatar">
+          <span className="participant-initial">{initial}</span>
+        </div>
+        <div className="participant-role">{role}</div>
+      </div>
+    );
   };
 
   const renderVideoContent = () => {
@@ -228,28 +249,60 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
           </>
         ) : (
           <div className="audio-placeholder">
-            <h2>Audio Call Ongoing</h2>
+            <h2>Audio Call</h2>
+            <div className="remote-participants">
+              {renderAudioParticipant(true)}
+            </div>
+            <div className="local-participant">
+              {participants.length > 0 && renderAudioParticipant(false)}
+            </div>
+            {/* <div className="audio-participants-container">
+              {renderAudioParticipant(true)}
+              {participants.length > 0 && renderAudioParticipant(false)}
+            </div> */}
           </div>
         )}
 
         <div className="controls">
-          {isDoctor && (
-            <button onClick={initiateCall} title="Start Call">
+          {isDoctor && !callStarted && (
+            <button
+              onClick={initiateCall}
+              title="Start Call"
+              className="control-button"
+            >
               <PhoneCall />
             </button>
           )}
-          <button onClick={toggleAudio} title="Toggle Audio">
+          <button
+            onClick={toggleAudio}
+            title="Toggle Audio"
+            className="control-button"
+          >
             {isAudioEnabled ? <Mic /> : <MicOff />}
           </button>
           {mode === "video" && (
-            <button onClick={toggleVideo} title="Toggle Video">
+            <button
+              onClick={toggleVideo}
+              title="Toggle Video"
+              className="control-button"
+            >
               {isVideoEnabled ? <VideoIcon /> : <VideoOff />}
             </button>
           )}
-          <button onClick={toggleScreenShare} title="Share Screen">
-            {isScreenSharing ? <MonitorOff /> : <Monitor />}
-          </button>
-          <button onClick={leaveRoom} title="Leave Room">
+          {/* {mode === "video" && (
+            <button
+              onClick={toggleScreenShare}
+              title="Share Screen"
+              className="control-button"
+            >
+              {isScreenSharing ? <MonitorOff /> : <Monitor />}
+            </button>
+          )} */}
+          <button
+            onClick={leaveRoom}
+            title="Leave Room"
+            className="control-button"
+          >
             <PhoneOff />
           </button>
         </div>
@@ -261,13 +314,13 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
     <>
       {renderVideoContent()}
       {showFormModal && (
-        <AppointmentFormModal 
+        <AppointmentFormModal
           appointmentId={appointmentId}
           onClose={closeFormModal}
           onSubmit={handleFormSubmit}
         />
       )}
-      
+
       {showSuccessModal && (
         <AppointmentSuccessModal
           isDoctor={isDoctor}

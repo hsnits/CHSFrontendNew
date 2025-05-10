@@ -32,8 +32,8 @@ export default function ProductDesc() {
   const { data, loading } = useGetMountData(`/admin/product/${productId}`);
 
   const getDiscountedPrice = (item) => {
-    const discount = key=="Wholesale" ? item.sellerDiscount || 25 : item.discount || 0;
-    return (item.price - (item.price * discount) / 100).toFixed(2);
+    const discount = key=="Wholesale" ? item.sellerDiscount || 25 : item?.discount || 0;
+    return (item.price - (item.price * discount || 0) / 100).toFixed(2);
   };
 
   const handleAddToCart = async (item) => {
@@ -113,7 +113,7 @@ export default function ProductDesc() {
                         <p className="text-muted">
                           <del>₹ {data?.price}</del>
                           <span className="ms-2 badge bg-warning">
-                            {key=="Wholesale" ? data.sellerDiscount || 25 : data.discount}%
+                            {key=="Wholesale" ? data.sellerDiscount || 25 : data?.discount}%
                             OFF
                           </span>
                         </p>

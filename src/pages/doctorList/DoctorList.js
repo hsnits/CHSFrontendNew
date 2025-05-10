@@ -390,7 +390,9 @@ function DoctorList() {
                                 <div className="clinic-booking book-appoint">
                                   <Link
                                     className="btn btn-primary"
-                                    to="/doctorprofile"
+                                    to={`/doctorprofile?userId=${
+                                      el?._id || null
+                                    }`}
                                   >
                                     View Details
                                   </Link>

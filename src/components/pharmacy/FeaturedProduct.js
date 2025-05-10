@@ -27,9 +27,9 @@ export default function FeaturedProduct({
   const getDiscountedPrice = (item) => {
     const discount = isWholesaler
       ? item.sellerDiscount || 25
-      : item.discount || 0;
+      : item?.discount || 0;
 
-    return (item.price - (item.price * discount) / 100).toFixed(2);
+    return (item.price - (item.price * discount || 0) / 100).toFixed(2);
   };
 
   const handleAddToCart = async (item) => {
@@ -135,8 +135,8 @@ export default function FeaturedProduct({
                           <div className="discount-section">
                             <span className="discount-badge">
                               {isWholesaler
-                                ? item.sellerDiscount || 25
-                                : item.discount}
+                                ? item?.sellerDiscount || 25
+                                : item?.discount || 0}
                               % OFF
                             </span>
                             <h5 className="text-muted original-price">

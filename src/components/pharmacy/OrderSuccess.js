@@ -35,15 +35,21 @@ export default function OrderStatus() {
       <Container>
         <Row className="justify-content-center">
           <Col lg={6} md={8} sm={10} xs={12}>
-            <Card className={`status-card ${isSuccess ? "success" : "failure"}`}>
+            <Card
+              className={`status-card ${isSuccess ? "success" : "failure"}`}
+            >
               <CardBody className="text-center">
                 <div className="status-icon">{icon}</div>
                 <h3 className="status-title">{message}</h3>
                 <p className="status-description">{description}</p>
 
                 <div className="order-details">
-                  <p className="order-id">Order ID: <strong>{orderId}</strong></p>
-                  <p className="order-amount">Amount: <strong>₹{amount}</strong></p>
+                  <p className="order-id">
+                    Order ID: <strong>{orderId}</strong>
+                  </p>
+                  <p className="order-amount">
+                    Amount: <strong>₹{amount}</strong>
+                  </p>
                 </div>
 
                 <div className="btn-group">
@@ -58,9 +64,9 @@ export default function OrderStatus() {
                   <Button
                     variant="secondary"
                     className="bubble-btn"
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate("/pharmacy")}
                   >
-                    Go Back
+                    See Products
                   </Button>
                 </div>
               </CardBody>

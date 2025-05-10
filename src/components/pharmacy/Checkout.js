@@ -43,7 +43,7 @@ export default function Checkout() {
   const getDiscountedPrice = (item) => {
     const discount =
       key == "Wholesale" ? item.sellerDiscount || 25 : item.discount || 0;
-    return (item.price - (item.price * discount) / 100).toFixed(2);
+    return (item.price - (item.price * discount || 0) / 100).toFixed(2);
   };
 
   const calculateTotal = () => {
@@ -62,12 +62,12 @@ export default function Checkout() {
       return acc + discountPrice;
     }, 0);
 
-    const tax = (subtotal - discount) * 0.1;
+    const tax = (subtotal - discount || 0) * 0.1;
     // 10% Tax
     const shipping = 50;
     // Fixed shipping charge
 
-    const total = subtotal - discount + tax + shipping;
+    const total = subtotal - discount || 0 + tax + shipping;
 
     return { subtotal, discount, tax, shipping, total };
   };
@@ -570,22 +570,22 @@ export default function Checkout() {
                         <span>Discount Price:</span>
                         <strong>
                           ₹{" "}
-                          {totals.subtotal.toFixed(2) -
-                            totals.discount.toFixed(2)}
+                          {totals?.subtotal?.toFixed(2) -
+                            totals?.discount?.toFixed(2)}
                         </strong>
                       </li>
                       <li className="d-flex justify-content-between">
                         <span>Tax (10%):</span>
-                        <strong>₹ {totals.tax.toFixed(2)}</strong>
+                        <strong>₹ {totals?.tax?.toFixed(2)}</strong>
                       </li>
                       <li className="d-flex justify-content-between">
                         <span>Shipping:</span>
-                        <strong>₹ {totals.shipping.toFixed(2)}</strong>
+                        <strong>₹ {totals?.shipping?.toFixed(2)}</strong>
                       </li>
                       <hr />
                       <li className="d-flex justify-content-between">
                         <span>Total:</span>
-                        <strong>₹ {totals.total.toFixed(2)}</strong>
+                        <strong>₹ {totals?.total?.toFixed(2)}</strong>
                       </li>
                     </ul>
                   </div>

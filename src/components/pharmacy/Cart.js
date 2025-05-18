@@ -31,7 +31,7 @@ const Cart = () => {
 
   const getDiscountedPrice = (item) => {
     const discount =
-      key == "Wholesale" ? item.sellerDiscount || 25 : item.discount || 0;
+      key == "Wholesale" ? item?.sellerDiscount || 25 : item?.discount || 0;
     return (item.price - (item.price * discount || 0) / 100).toFixed(2);
   };
 
@@ -86,7 +86,7 @@ const Cart = () => {
       const discountPrice =
         it?.quantity *
         (it?.productId?.price - getDiscountedPrice(it?.productId));
-      return acc + discountPrice;
+      return acc + discountPrice || 0;
     }, 0);
 
     const tax = (subtotal - discount || 0) * 0.1;

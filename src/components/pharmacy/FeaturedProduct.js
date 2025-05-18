@@ -57,7 +57,7 @@ export default function FeaturedProduct({
                 <h4>Featured Products</h4>
               </div>
             </Col>
-            <Col xs="12" md="6">
+            <Col xs="12" md="6"   >
               <div className="pharmacy-title-link text-md-end text-start mt-2 mt-md-0">
                 <select
                   className="form-select custom-select"
@@ -92,7 +92,7 @@ export default function FeaturedProduct({
                 lg="4"
                 md="4"
                 sm="6"
-                xs="6"
+                xs="10"
                 key={index}
                 className="mb-4"
               >

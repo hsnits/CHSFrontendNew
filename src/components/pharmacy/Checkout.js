@@ -66,10 +66,12 @@ export default function Checkout() {
     // 10% Tax
     const shipping = 50;
     // Fixed shipping charge
+    let discountPrice = subtotal - discount;
 
-    const total = subtotal - discount || 0 + tax + shipping;
+    let total = subtotal - discount ;
+    total = total + tax + shipping;
 
-    return { subtotal, discount, tax, shipping, total };
+    return { subtotal, discount, tax, shipping, total, discountPrice };
   };
 
   const totals = calculateTotal();
@@ -121,12 +123,12 @@ export default function Checkout() {
 
   const handleCheckout = async () => {
     try {
-      if (!selectedAddress || !totals.total.toFixed(2)) {
+      if (!selectedAddress || !totals?.total?.toFixed(2)) {
         return;
       }
 
       const orderResponse = await callPostApi("/payment/create-order", {
-        amount: totals.total.toFixed(2),
+        amount: totals?.total?.toFixed(2),
         currency: "INR",
       });
 
@@ -568,11 +570,7 @@ export default function Checkout() {
                       </li>
                       <li className="d-flex justify-content-between">
                         <span>Discount Price:</span>
-                        <strong>
-                          ₹{" "}
-                          {totals?.subtotal?.toFixed(2) -
-                            totals?.discount?.toFixed(2)}
-                        </strong>
+                        <strong>₹ {totals?.discountPrice?.toFixed(2)}</strong>
                       </li>
                       <li className="d-flex justify-content-between">
                         <span>Tax (10%):</span>

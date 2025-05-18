@@ -94,9 +94,12 @@ const Cart = () => {
     const shipping = 50;
     // Fixed shipping charge
 
-    const total = subtotal - discount || 0 + tax + shipping;
+    let discountPrice = subtotal - discount;
 
-    return { subtotal, discount, tax, shipping, total };
+    let total = subtotal - discount || 0;
+    total = total + tax + shipping;
+
+    return { subtotal, discount, tax, shipping, total, discountPrice };
   };
 
   const totals = calculateTotal();
@@ -173,10 +176,7 @@ const Cart = () => {
                   </li>
                   <li className="d-flex justify-content-between">
                     <span>Discount Price:</span>
-                    <strong>
-                      ₹{" "}
-                      {totals?.subtotal?.toFixed(2) - totals?.discount?.toFixed(2) || 0}
-                    </strong>
+                    <strong>₹ {totals?.discountPrice?.toFixed(2)}</strong>
                   </li>
                   <li className="d-flex justify-content-between">
                     <span>Tax (10%):</span>

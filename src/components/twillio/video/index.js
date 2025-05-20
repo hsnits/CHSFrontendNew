@@ -81,7 +81,7 @@ function TwillioCall() {
         )}
       </main>
       <div className="footer-video">
-        <p>Powered by CHS Healthcare Programmable Video</p>
+        <p>Powered by CHS Healthcare</p>
       </div>
     </div>
   );

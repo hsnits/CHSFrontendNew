@@ -17,10 +17,10 @@ const Banner = () => {
             <span className="form-text text-white">Based on your Location</span>
             </div> */}
             <div className="mb-3 search-info aos aos-init aos-animate" data-aos="fade-up">
-            <input type="text" className="form-control" placeholder="Search Doctors, Clinics, Hospitals, Diseases Etc"/>
-            <span className="form-text text-white">Ex : Dental or Sugar Check up etc</span>
+            {/* <input type="text" className="form-control" placeholder="Search Doctors, Clinics, Hospitals, Diseases Etc"/>
+            <span className="form-text text-white">Ex : Dental or Sugar Check up etc</span> */}
             </div>
-            <button type="submit" className="btn btn-primary search-btn mt-0 aos aos-init aos-animate" data-aos="fade-up"><i className="fas fa-search"></i> <span>Search</span></button>
+            {/* <button type="submit" className="btn btn-primary search-btn mt-0 aos aos-init aos-animate" data-aos="fade-up"><i className="fas fa-search"></i> <span>Search</span></button> */}
             </Form>
             </div>
         </div>

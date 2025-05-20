@@ -36,7 +36,7 @@ import CancellationRefundPolicy from "../components/static/CancellationRefundPol
 import ShippingDeliveryPolicy from "../components/static/ShippingDeliveryPolicy";
 import ScrollToTop from "../components/common/scrolltoTop";
 import CallHandler from "../components/twillio/CallHandler";
-import VideoCall from "../components/twillio/VideoCall";
+// import VideoCall from "../components/twillio/VideoCall";
 import { getLocalStorage } from "../helpers/storage";
 import TwillioCall from "../components/twillio/video";
 

@@ -298,13 +298,15 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
               {isScreenSharing ? <MonitorOff /> : <Monitor />}
             </button>
           )} */}
-          <button
-            onClick={leaveRoom}
-            title="Leave Room"
-            className="control-button"
-          >
-            <PhoneOff />
-          </button>
+          {isDoctor && (
+            <button
+              onClick={leaveRoom}
+              title="Leave Room"
+              className="control-button"
+            >
+              <PhoneOff />
+            </button>
+          )}
         </div>
       </div>
     );

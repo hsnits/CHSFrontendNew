@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import Banner from "../../components/Banner";
@@ -17,13 +17,29 @@ import { toastMessage } from "../../config/toast";
 function DoctorList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const doctorsList = useSelector(
+
+  const [backupDoctorsList, setBackupDoctorsList] = useState([]);
+  const [doctorsList, setDoctorsList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [availability, setAvailability] = useState(null); // true, false, or null
+  const [sortOrder, setSortOrder] = useState("A-Z");
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+
+  const allDoctorsList = useSelector(
     (state) => state.DOCTOR?.data?.user?.getDoctorsResult
   );
+
   const apLoading = useSelector(
     (state) => state.DOCTOR?.loading?.user?.createAppointmentLoading
   );
   const userProfileId = getLocalStorage(STORAGE.USER_KEY);
+  const allLanguages = Array.from(
+    new Set(
+      backupDoctorsList.flatMap((doc) => doc.profile?.languages || [])
+    )
+  );
+
   useEffect(() => {
     dispatch(getDoctors());
   }, []);
@@ -51,6 +67,83 @@ function DoctorList() {
     });
   };
 
+  useEffect(() => {
+if(allDoctorsList?.length>0){
+  setBackupDoctorsList(allDoctorsList);
+  setDoctorsList(allDoctorsList);
+}    
+  }, [allDoctorsList]);
+
+  useEffect(() => {
+    let filtered = [...backupDoctorsList];
+
+    // Search
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter((doc) => {
+        const profile = doc.profile || {};
+        return (
+          (profile.firstName && profile.firstName.toLowerCase().includes(term)) ||
+          (profile.lastName && profile.lastName.toLowerCase().includes(term)) ||
+          (profile.displayName && profile.displayName.toLowerCase().includes(term)) ||
+          (doc.designation && doc.designation.toLowerCase().includes(term)) ||
+          (doc.name && doc.name.toLowerCase().includes(term))
+        );
+      });
+    }
+
+    // Filter by languages
+    if (selectedLanguages.length > 0 && isFilterApplied) {
+      filtered = filtered.filter((doc) => {
+        const profile = doc.profile || {};
+        return (
+          profile.languages &&
+          profile.languages.some((lang) => selectedLanguages.includes(lang))
+        );
+      });
+    }
+
+    // Filter by availability
+    if (availability !== null) {
+      filtered = filtered.filter((doc) => doc.availability === availability);
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      const nameA = (a.profile?.displayName || a.profile?.firstName || a.name || "").toLowerCase();
+      const nameB = (b.profile?.displayName || b.profile?.firstName || b.name || "").toLowerCase();
+      if (sortOrder === "A-Z") return nameA.localeCompare(nameB);
+      if (sortOrder === "Z-A") return nameB.localeCompare(nameA);
+      return 0;
+    });
+
+    setDoctorsList(filtered);
+  }, [searchTerm, availability, sortOrder, backupDoctorsList,isFilterApplied]);
+
+  const handleLanguageChange = (lang) => {
+    setSelectedLanguages((prev) =>
+      prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang]
+    );
+    setIsFilterApplied(false);
+  };
+
+  const handleApplyFilters = () => {
+    setIsFilterApplied(true);
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm("");
+    setSelectedLanguages([]);
+    setAvailability(null);
+    setSortOrder("A-Z");
+    setIsFilterApplied(false);
+    setDoctorsList(backupDoctorsList);
+  };
+
+  const handleAvailabilityChange = (e) => {
+    setAvailability(e.target.checked);
+  };
+
   return (
     <>
       <Header />
@@ -67,98 +160,23 @@ function DoctorList() {
                       <h4 className="filter-title">Filter</h4>
                     </div>
                     <div className="filter-details">
-                      <div className="filter-grid">
-                        <h4>
-                          <a href="#collapseone" data-bs-toggle="collapse">
-                            Gender
-                          </a>
-                        </h4>
-                        <div id="collapseone" className="collapse show">
-                          <div className="filter-collapse">
-                            <ul>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="gender" />
-                                  <span className="checkmark"></span>
-                                  Male Gender
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="gender" />
-                                  <span className="checkmark"></span>
-                                  Female Gender
-                                </label>
-                              </li>
-                            </ul>
-                          </div>
+                     
+                      {/* <div className="doctor-filter-availability mb-4">
+                        <p>Availability</p>
+                        <div className="status-toggle status-tog">
+                          <input
+                            type="checkbox"
+                            id="status_6"
+                            className="check"
+                            checked={availability === true}
+                            onChange={handleAvailabilityChange}
+                          />
+                          <label htmlFor="status_6" className="checktoggle">
+                            checkbox
+                          </label>
                         </div>
-                      </div>
-
-                      <div className="filter-grid">
-                        <h4>
-                          <a href="#collapsefour" data-bs-toggle="collapse">
-                            Speciality
-                          </a>
-                        </h4>
-                        <div id="collapsefour" className="collapse show">
-                          <div className="filter-collapse">
-                            <ul>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="speciality" />
-                                  <span className="checkmark"></span>
-                                  Urology
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="speciality" />
-                                  <span className="checkmark"></span>
-                                  Ophthalmology
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="speciality" />
-                                  <span className="checkmark"></span>
-                                  Cardiology
-                                </label>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="filter-grid">
-                        <h4>
-                          <a href="#collapsefive" data-bs-toggle="collapse">
-                            Experience
-                          </a>
-                        </h4>
-                        <div id="collapsefive" className=" collapse show">
-                          <div className="filter-collapse">
-                            <ul>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="experience" />
-                                  <span className="checkmark"></span>
-                                  1-5 Years
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="experience" />
-                                  <span className="checkmark"></span>
-                                  5+ Years
-                                </label>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="filter-grid">
+                      </div> */}
+                      {/* <div className="filter-grid">
                         <h4>
                           <a href="#collapsesix" data-bs-toggle="collapse">
                             Online Consultation
@@ -202,7 +220,7 @@ function DoctorList() {
                             </ul>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
 
                       <div className="filter-grid">
                         <h4>
@@ -213,34 +231,19 @@ function DoctorList() {
                         <div id="collapseeight" className="collapse show">
                           <div className="filter-collapse">
                             <ul>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="language" />
-                                  <span className="checkmark"></span>
-                                  English
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="language" />
-                                  <span className="checkmark"></span>
-                                  French
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="language" />
-                                  <span className="checkmark"></span>
-                                  Spanish
-                                </label>
-                              </li>
-                              <li>
-                                <label className="custom_check d-inline-flex">
-                                  <input type="checkbox" name="language" />
-                                  <span className="checkmark"></span>
-                                  German
-                                </label>
-                              </li>
+                              {allLanguages.map((lang) => (
+                                <li key={lang}>
+                                  <label className="custom_check d-inline-flex">
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedLanguages.includes(lang)}
+                                      onChange={() => handleLanguageChange(lang)}
+                                    />
+                                    <span className="checkmark"></span>
+                                    {lang}
+                                  </label>
+                                </li>
+                              ))}
                             </ul>
                           </div>
                         </div>
@@ -249,14 +252,20 @@ function DoctorList() {
                       <div className="filter-btn apply-btn">
                         <div className="row">
                           <div className="col-6">
-                            <a href="#" className="btn btn-primary">
+                            <button 
+                              className="btn btn-primary"
+                              onClick={handleApplyFilters}
+                            >
                               Apply
-                            </a>
+                            </button>
                           </div>
                           <div className="col-6">
-                            <a href="#" className="btn btn-outline-primary">
+                            <button 
+                              className="btn btn-outline-primary"
+                              onClick={handleResetFilters}
+                            >
                               Reset
-                            </a>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -266,35 +275,35 @@ function DoctorList() {
                 <Col xl="9" lg="9">
                   <div className="doctor-filter-info">
                     <div className="doctor-filter-inner">
-                      {/* <div>
+                      <div>
                         <div className="doctors-found">
-                          <p>
-                            <span>10 Doctors found for:</span> Dentist in India
+                          <div className="search-filter">
+                            <div className="input-group">
+                              <span className="input-group-text">
+                              <i className="fas fa-search"></i> 
+                              </span>
+                              <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Search doctors by name, specialization..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                              />
+                            </div>
+                          </div>
+                          <p className="mt-3 text-center text-gray-500">
+                            <span>Total {doctorsList.length} Doctors found</span>
                           </p>
                         </div>
-                        <div className="doctor-filter-availability">
-                          <p>Availability</p>
-                          <div className="status-toggle status-tog">
-                            <input
-                              type="checkbox"
-                              id="status_6"
-                              className="check"
-                            />
-                            <label for="status_6" className="checktoggle">
-                              checkbox
-                            </label>
-                          </div>
-                        </div>
-                      </div> */}
+                      </div>
                       <div></div>
                       <div className="doctor-filter-option">
                         <div className="doctor-filter-sort">
                           <p>Sort</p>
                           <div className="doctor-filter-select">
-                            <select className="select">
-                              <option>A to Z</option>
-                              <option>Z to A</option>
-                              <option>Availability</option>
+                            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+                              <option value="A-Z">A to Z</option>
+                              <option value="Z-A">Z to A</option>
                             </select>
                           </div>
                         </div>
@@ -302,10 +311,10 @@ function DoctorList() {
                     </div>
                   </div>
                   <div className="card doctor-card">
-                    {doctorsList?.map((el, index) => {
-                      const data = el?.profile;
-                      return (
-                        <>
+                    {doctorsList.length > 0 ? (
+                      doctorsList?.map((el, index) => {
+                        const data = el?.profile;
+                        return (
                           <div key={index} className="card-body">
                             <div className="doctor-widget-one">
                               <div className="doc-info-left">
@@ -408,9 +417,17 @@ function DoctorList() {
                               </div>
                             </div>
                           </div>
-                        </>
-                      );
-                    })}
+                        );
+                      })
+                    ) : (
+                      <div className="card-body text-center py-5">
+                        <div className="no-result-found">
+                          <i className="feather-search mb-3" style={{ fontSize: '48px', color: '#ccc' }}></i>
+                          <h4 className="text-muted mb-2">No doctors found</h4>
+                          <p className="text-muted">Try adjusting your search or filter criteria</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Col>
               </Row>

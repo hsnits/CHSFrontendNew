@@ -34,7 +34,6 @@ const CallHandler = ({ currentUserId }) => {
 
     return () => {
       callSocket.off("incoming-call", handleIncomingCall);
-      // Stop audio if component unmounts
       if (window.incomingCallAudio) {
         window.incomingCallAudio.pause();
         window.incomingCallAudio = null;

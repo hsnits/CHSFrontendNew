@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getLocalStorage } from "../../../helpers/storage";
 import { STORAGE } from "../../../constants";
 import { callPostApi } from "../../../_service";
-import { callSocket } from "../../../config/socket";
+import {  symptomSocket } from "../../../config/socket";
 import ChatRoom from "../ChatRoom";
 import ChsLogo from "../../../assets/img/chs_logo.png";
 
@@ -18,6 +18,7 @@ function TwillioCall() {
   const { patientId, doctorId, appointmentId, mode } = location.state || {};
 
   const handleGetToken = useCallback(async () => {
+     const callSocket = symptomSocket;
     try {
       if (!appointmentId || !user) return;
       const response = await callPostApi(`doctor/token`, {

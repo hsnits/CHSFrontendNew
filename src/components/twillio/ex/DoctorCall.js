@@ -5,7 +5,7 @@ import {
   createLocalVideoTrack,
   createLocalAudioTrack,
 } from "twilio-video";
-import { callSocket } from "../../../config/socket";
+import {  symptomSocket } from "../../../config/socket";
 import { callPostApi } from "../../../_service";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
 
@@ -28,7 +28,7 @@ const DoctorCall = ({ doctorId, patientId, appointmentId, role, mode }) => {
     const userId = role === "doctor" ? doctorId : patientId;
     
     // Socket connection
-    const socket = callSocket;
+    const socket = symptomSocket;
     socket.emit("join-room", { userId });
 
     // Socket event listeners

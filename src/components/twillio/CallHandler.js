@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { callSocket } from "../../config/socket";
+import { symptomSocket } from "../../config/socket";
 import "./chathandler.css";
 import { callPostApi } from "../../_service";
 
@@ -11,7 +11,9 @@ const CallHandler = ({ currentUserId }) => {
   useEffect(() => {
     if (!currentUserId) return;
 
-    const handleIncomingCall = ({ appointment_id, doctor_id, mode,token }) => {
+    const callSocket = symptomSocket;
+
+    const handleIncomingCall = ({ appointment_id, doctor_id, mode, token }) => {
       console.log("Incoming call received:", {
         appointment_id,
         doctor_id,
@@ -82,7 +84,7 @@ const CallHandler = ({ currentUserId }) => {
       window.incomingCallAudio.pause();
       window.incomingCallAudio = null;
     }
-
+    const callSocket = symptomSocket;
     try {
       await callPostApi("patient/call/respond", {
         appointment_id: incoming?.appointment_id,

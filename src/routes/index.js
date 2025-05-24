@@ -43,9 +43,10 @@ import TwillioCall from "../components/twillio/video";
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
 
+  console.log(userData, "cus");
   return (
     <BrowserRouter>
-      {userData?.profile && (
+      {userData?.profile && userData?.role != "Doctor" && (
         <CallHandler currentUserId={userData?.profile?._id} />
       )}
       <ScrollToTop />

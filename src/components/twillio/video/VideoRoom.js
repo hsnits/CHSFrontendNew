@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import AppointmentFormModal from "../successpage/callForm";
 import AppointmentSuccessModal from "../successpage/callSuccess";
+import { symptomSocket } from "../../../config/socket";
 
 const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   const [room, setRoom] = useState(null);
@@ -158,6 +159,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   // Handle room disconnect
   const leaveRoom = () => {
     if (room) {
+      symptomSocket.emit("call-end");
       room.disconnect();
       if (isDoctor) {
         setShowFormModal(true);

@@ -43,7 +43,6 @@ import TwillioCall from "../components/twillio/video";
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
 
-  console.log(userData, "cus");
   return (
     <BrowserRouter>
       {userData?.profile && userData?.role != "Doctor" && (

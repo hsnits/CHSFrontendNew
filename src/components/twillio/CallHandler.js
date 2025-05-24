@@ -31,11 +31,18 @@ const CallHandler = ({ currentUserId }) => {
       window.incomingCallAudio = audio;
     };
 
+    const handleCallEnd = () => {
+      setIncoming(null);
+      navigate("/patient");
+    };
+
     callSocket.emit("join-room", { userId: currentUserId });
     callSocket.on("incoming-call", handleIncomingCall);
+    callSocket.on("call-ended", handleCallEnd);
 
     return () => {
       callSocket.off("incoming-call", handleIncomingCall);
+      callSocket.on("call-ended", handleCallEnd);
       if (window.incomingCallAudio) {
         window.incomingCallAudio.pause();
         window.incomingCallAudio = null;

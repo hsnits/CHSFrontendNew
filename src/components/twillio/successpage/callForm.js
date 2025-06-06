@@ -17,6 +17,7 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
       testDate: new Date().toISOString().substr(0, 10),
       testComments: "",
       healthStatus: "Normal",
+      prescriptionText: "",
       prescriptionFile: null,
     },
     validationSchema: Yup.object({
@@ -27,16 +28,21 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
       healthStatus: Yup.string()
         .oneOf(["Normal", "High", "Low", "Medium"])
         .required("Test status is required"),
+      prescriptionText: Yup.string().nullable(),
       prescriptionFile: Yup.mixed()
-        .required("Prescription file is required")
-        .test("fileFormat", "Only PDF or DOC files are allowed", (value) => {
-          if (!value) return false; // Required validation
-          const allowedTypes = [
+        .nullable()
+        .test("fileSize", "File size is too large", (value) => {
+          if (!value) return true; // File is optional
+          return value.size <= 5242880; // 5MB
+        })
+        .test("fileType", "Unsupported file type", (value) => {
+          if (!value) return true; // File is optional
+          return [
             "application/pdf",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-          ];
-          return allowedTypes.includes(value.type);
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+          ].includes(value.type);
         }),
     }),
     onSubmit: async (values) => {
@@ -68,21 +74,22 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
           prescriptionFileKey = fileUploadResponse?.data?.key;
         }
         // Update appointment with completed status and prescription details
-        let res=await callPutApi(`patient/appointment/${appointmentId}`, {
+        let res = await callPutApi(`patient/appointment/${appointmentId}`, {
           status: "Completed",
           testName: values.testName,
           reason: values.reason,
           prescriptionDate: values.testDate,
           comments: values.testComments,
           healthStatus: values.healthStatus,
+          prescriptionText: values.prescriptionText,
           prescriptionFile: prescriptionFileUrl || null,
           prescriptionFileKey: prescriptionFileKey || null,
         });
 
         // Notify parent component
-        if(!res?.status){
-          toastMessage("error","Test report submission error!")
-          return
+        if (!res?.status) {
+          toastMessage("error", "Test report submission error!");
+          return;
         }
         formik.resetForm();
         onSubmit(values);
@@ -96,7 +103,7 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
   });
 
   const handleFileChange = (event) => {
-    const file = event.currentTarget.files[0];
+    const file = event.target.files[0];
     if (file) {
       formik.setFieldValue("prescriptionFile", file);
 
@@ -109,7 +116,7 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
     }
   };
 
-  const removeFile = () => {
+  const handleRemoveFile = () => {
     formik.setFieldValue("prescriptionFile", null);
     setFilePreview(null);
   };
@@ -216,7 +223,9 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="prescriptionFile">Prescription File</label>
+                <label htmlFor="prescriptionFile">
+                  Prescription File (Optional)
+                </label>
                 <div className="file-upload-container">
                   <input
                     id="prescriptionFile"
@@ -224,15 +233,15 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
                     type="file"
                     onChange={handleFileChange}
                     className="hidden-file-input"
+                    accept=".pdf,.jpg,.jpeg,.png"
                   />
                   <label
                     htmlFor="prescriptionFile"
                     className="file-upload-button"
                   >
                     <Upload size={16} />
-                    <span>Upload Prescription</span>
+                    <span>Upload Prescription (PDF/Image)</span>
                   </label>
-
                   {filePreview && (
                     <div className="file-preview">
                       <div className="file-preview-name">
@@ -240,23 +249,40 @@ const AppointmentFormModal = ({ appointmentId, onClose, onSubmit }) => {
                       </div>
                       <button
                         type="button"
-                        onClick={removeFile}
+                        onClick={handleRemoveFile}
                         className="remove-file-btn"
                       >
                         <X size={16} />
                       </button>
                     </div>
                   )}
-                  {formik.touched.prescriptionFile &&
-                  formik.errors.prescriptionFile ? (
-                    <div className="error-message">
-                      {formik.errors.prescriptionFile}
-                    </div>
-                  ) : null}
                 </div>
+                <small className="text-muted">
+                  Supported formats: PDF, JPG, JPEG, PNG
+                </small>
+                {formik.touched.prescriptionFile &&
+                formik.errors.prescriptionFile ? (
+                  <div className="error-message">
+                    {formik.errors.prescriptionFile}
+                  </div>
+                ) : null}
               </div>
             </div>
 
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="prescriptionText">Prescription Text</label>
+                <textarea
+                  id="prescriptionText"
+                  name="prescriptionText"
+                  value={formik.values.prescriptionText || ""}
+                  onChange={formik.handleChange}
+                  className="form-control"
+                  rows="4"
+                  placeholder="Enter prescription details here..."
+                />
+              </div>
+            </div>
             <div className="form-actions">
               {/* <button
                 type="button"

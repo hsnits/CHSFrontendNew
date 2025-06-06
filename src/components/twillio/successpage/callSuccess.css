@@ -406,3 +406,110 @@
   .modal-body::-webkit-scrollbar-thumb:hover {
     background: #224abe;
   }
+  
+  /* Prescription Details Modal */
+  .prescription-details-modal {
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideUp 0.4s ease;
+  }
+  
+  .prescription-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 32px;
+    background: linear-gradient(to right, #4e73df, #224abe);
+    color: white;
+  }
+  
+  .prescription-details-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .prescription-details-body {
+    padding: 32px;
+    background-color: #f8f9fa;
+  }
+  
+  .prescription-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .prescription-table th {
+    background: #f8f9fa;
+    padding: 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #e9ecef;
+  }
+  
+  .prescription-table td {
+    padding: 16px;
+    border-bottom: 1px solid #e9ecef;
+    color: #495057;
+  }
+  
+  .prescription-table tr:last-child td {
+    border-bottom: none;
+  }
+  
+  .prescription-table tr:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .prescription-close-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  
+  .prescription-close-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .prescription-text-cell {
+    max-width: 400px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+  
+  @media (max-width: 768px) {
+    .prescription-details-modal {
+      width: 95%;
+      margin: 20px;
+    }
+    
+    .prescription-details-body {
+      padding: 20px;
+    }
+    
+    .prescription-table {
+      display: block;
+      overflow-x: auto;
+    }
+    
+    .prescription-text-cell {
+      max-width: 300px;
+    }
+  }

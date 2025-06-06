@@ -2,27 +2,31 @@ import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Modal, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import user_img from "../../assets/img/dr_profile.jpg";
-import { getDateFormate, getIdLastDigits } from "../../helpers/utils";
+import {
+  getDateFormate,
+  getIdLastDigits,
+  truncateAllText,
+  TruncatedText,
+} from "../../helpers/utils";
 import useGetMountData from "../../helpers/getDataHook";
 import NotFound from "../../components/common/notFound";
-import { callPutApi } from "../../_service";
+import { callDeleteApi, callPutApi } from "../../_service";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { toastMessage } from "../../config/toast";
 import { callPostApi } from "../../_service";
+import PrescriptionDetailsModal from "../../components/twillio/successpage/PrescriptionDetailsModal";
 // import PatientCall from "../../components/twillio/PatientCall";
 
 // Validation schema with Yup
 const validationSchema = yup.object().shape({
   name: yup.string().required("Name is required"),
   description: yup.string().required("Description is required"),
-  file: yup
-    .mixed()
-    .required("File is required")
-    .test("fileSize", "File size is too large", (value) => {
-      return value && value[0]?.size <= 2 * 1024 * 1024; // 2MB limit
-    }),
+  file: yup.mixed().required("File is required"),
+  // .test("fileSize", "File size is too large", (value) => {
+  //   return value && value[0]?.size <= 5 * 1024 * 1024; // 5MB limit
+  // }),
 });
 
 const Dashboard = ({
@@ -33,6 +37,8 @@ const Dashboard = ({
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("appointments");
   const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [isFile, setFile] = useState(null);
 
   const handleModelShow = () => setShowModal(true);
   const handleModelClose = () => setShowModal(false);
@@ -58,6 +64,7 @@ const Dashboard = ({
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -68,6 +75,12 @@ const Dashboard = ({
   //   loading: reportLoading,
   //   getAllData: reportGetData,
   // } = useGetMountData(`/doctor/appointment/${userProfileId}`);
+
+  const {
+    data: isReports,
+    loading: reportLoading,
+    getAllData: reportGetData,
+  } = useGetMountData(`/patient/medical/${userProfileId}`);
 
   const {
     data: appointmentData,
@@ -91,25 +104,57 @@ const Dashboard = ({
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const verifyResponse = await callDeleteApi(`/patient/medical/${id}`);
+      if (!verifyResponse.status) throw new Error(verifyResponse.message);
+
+      toastMessage("success", "The Report has been deleted.");
+      reportGetData(`/patient/medical/${userProfileId}`);
+    } catch (error) {
+      toastMessage("error", "Report delete process failed!");
+    }
+  };
+
   useEffect(() => {
     if (data?.profile?._id) {
       getAllData(`/patient/appointment-comp/${data?.profile?._id}`);
     }
   }, [data]);
 
-  console.log(appointmentData, "appointmentData");
+  // Add file change handler
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setFile(file);
+      setValue("file", file);
+    }
+  };
 
   const onSubmit = async (values) => {
     try {
+      if (!isFile) {
+        toastMessage("error", "Please select a file to upload");
+        return;
+      }
+
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append("file", isFile);
+
       // Step 1: Upload the file
-      const file = values.file[0];
-      const uploadedFile = await callPostApi(`/user/upload-file`, { file });
+      const uploadedFile = await callPostApi(`/user/upload-file`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       if (!uploadedFile.status) throw new Error(uploadedFile.message);
 
       // Step 2: Prepare the updated data
       const updatedData = {
         name: values.name,
-        attachment: uploadedFile?.data?.file,
+        attachment: uploadedFile?.data?.location || uploadedFile?.data?.file,
         description: values.description,
       };
 
@@ -122,16 +167,11 @@ const Dashboard = ({
 
       // Step 4: Notify success and refresh data
       toastMessage("success", "Report is added successfully.");
-      // reportGetData(`/patient/reports/${userProfileId}`);
-
-      // Refresh the list or data
-     
-
+      reportGetData(`/patient/medical/${userProfileId}`);
+      setFile(null); // Reset file state
       setShowModal(false);
     } catch (error) {
       toastMessage("error", error.message || "Report adding process failed!");
-    } finally {
-      setShowModal(false);
     }
   };
   const renderButton = () => {
@@ -279,20 +319,51 @@ const Dashboard = ({
                                         </a>
                                       </td>
                                       <td>
-                                        {el?.name || "Electro cardiography"}
+                                        {el?.name ||
+                                          el?.testName ||
+                                          "Electro cardiography"}
                                       </td>
                                       <td>{el?.reason || "--"}</td>
 
                                       <td>{getDateFormate(el?.date)}</td>
                                       <td>Dr {el?.refDoctor?.displayName}</td>
-                                      <td>${el?.amount || 300}</td>
+                                      <td>${el?.amount || 0}</td>
                                       <td>
                                         {el?.comments || "Good take rest"}
                                       </td>
+
                                       <td>
-                                        <span className="badge badge-success-bg">
-                                          {el?.testStatus || "Normal"}
-                                        </span>
+                                        {(() => {
+                                          const status =
+                                            el?.healthStatus?.toLowerCase();
+                                          switch (status) {
+                                            case "low":
+                                              return (
+                                                <span className="badge badge-danger-bg">
+                                                  Low
+                                                </span>
+                                              );
+                                            case "medium":
+                                              return (
+                                                <span className="badge badge-warning-bg">
+                                                  Medium
+                                                </span>
+                                              );
+                                            case "high":
+                                              return (
+                                                <span className="badge badge-primary-bg">
+                                                  High
+                                                </span>
+                                              );
+                                            case "normal":
+                                            default:
+                                              return (
+                                                <span className="badge badge-success-bg">
+                                                  {el?.healthStatus || "Normal"}
+                                                </span>
+                                              );
+                                          }
+                                        })()}
                                       </td>
                                       <td>
                                         {/* <div className="d-flex align-items-center">
@@ -340,37 +411,84 @@ const Dashboard = ({
                                 <th>Action</th>
                               </tr>
                             </thead>
-                            <tbody>
-                              <tr>
-                                <td className="text-blue-600">
-                                  <a href="#">#MR-123</a>
-                                </td>
-                                <td>
-                                  <a href="#" className="lab-icon">
-                                    <span>
-                                      <i className="fa-solid fa-paperclip"></i>
-                                    </span>
-                                    Lab Report
-                                  </a>
-                                </td>
-                                <td>24 Mar 2024</td>
-                                <td>Glucose Test V12</td>
-                                <td>
-                                  <div className="action-item">
-                                    <a href="#">
-                                      <i className="fa-solid fa-pen-to-square"></i>
-                                    </a>
-                                    <a href="#">
-                                      <i className="fa-solid fa-download"></i>
-                                    </a>
-                                    <a href="#">
-                                      <i className="fa-solid fa-trash-can"></i>
-                                    </a>
-                                  </div>
-                                </td>
-                              </tr>
-                            </tbody>
+                            {!reportLoading &&
+                              isReports?.length > 0 &&
+                              isReports?.map((el, index) => {
+                                return (
+                                  <tbody>
+                                    {console.log(el, "elelel")}
+                                    <tr>
+                                      <td className="text-blue-600">
+                                        <a href="#">
+                                          {" "}
+                                          <p>
+                                            {getIdLastDigits(el?._id, "MR-")}
+                                          </p>
+                                        </a>
+                                      </td>
+                                      <td>
+                                        {el?.attachment ? (
+                                          <a
+                                            href={el?.attachment}
+                                            className="lab-icon prescription"
+                                            title={el?.attachment}
+                                            target="_blank"
+                                          >
+                                            <span>
+                                              <i className="fa-solid fa-paperclip"></i>
+                                            </span>
+                                            {el?.attachment?.length > 20
+                                              ? `${el.attachment.slice(
+                                                  0,
+                                                  20
+                                                )}...`
+                                              : el?.attachment}
+                                          </a>
+                                        ) : (
+                                          <span
+                                            className="lab-icon prescription"
+                                            style={{ cursor: "pointer" }}
+                                          >
+                                            {el?.name || "--"}
+                                          </span>
+                                        )}
+                                      </td>
+                                      <td>{getDateFormate(el?.updatedAt)}</td>
+                                      <td>
+                                        {truncateAllText(el?.description)}
+                                      </td>
+                                      <td>
+                                        <div className="action-item">
+                                          {/* <a href="#">
+                                            <i className="fa-solid fa-pen-to-square"></i>
+                                          </a> */}
+                                          <a
+                                            href={el?.attachment}
+                                            className="lab-icon prescription"
+                                            title={el?.attachment}
+                                            target="_blank"
+                                          >
+                                            <i className="fa-solid fa-download"></i>
+                                          </a>
+                                          <a
+                                            onClick={() =>
+                                              handleDelete(el?._id)
+                                            }
+                                          >
+                                            <i className="fa-solid fa-trash-can"></i>
+                                          </a>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                );
+                              })}
                           </table>
+                          <NotFound
+                            loading={reportLoading}
+                            isData={isReports?.length > 0}
+                            message="No Reports found."
+                          />
                         </div>
                       </div>
                     </div>
@@ -399,10 +517,14 @@ const Dashboard = ({
                             {!loading &&
                               appointmentData?.length > 0 &&
                               appointmentData
-                                .filter((it) => it?.prescriptionFile)
+                                .filter(
+                                  (it) =>
+                                    it?.prescriptionFile || it?.prescriptionText
+                                )
                                 ?.map((el, index) => {
                                   return (
                                     <tbody>
+                                      {console.log(el, "eleleell")}
                                       <tr>
                                         <td className="text-blue-600">
                                           <a
@@ -414,25 +536,44 @@ const Dashboard = ({
                                         </td>
                                         <td>
                                           <span className="lab-icon prescription">
-                                            {el?.name || "Electro cardiograph"}
+                                            {el?.name ||
+                                              el?.testName ||
+                                              "Electro cardiograph"}
                                           </span>
                                         </td>
                                         <td>
-                                          <a
-                                            href="#"
-                                            className="lab-icon prescription"
-                                            title={el?.prescriptionFile}
-                                          >
-                                            <span>
-                                              <i className="fa-solid fa-prescription"></i>
+                                          {el?.prescriptionFile ? (
+                                            <a
+                                              href={el?.prescriptionFile}
+                                              className="lab-icon prescription"
+                                              title={el?.prescriptionFile}
+                                              target="_blank"
+                                            >
+                                              <span>
+                                                <i className="fa-solid fa-prescription"></i>
+                                              </span>
+                                              {el?.prescriptionFile?.length > 20
+                                                ? `${el.prescriptionFile.slice(
+                                                    0,
+                                                    20
+                                                  )}...`
+                                                : el?.prescriptionFile}
+                                            </a>
+                                          ) : (
+                                            <span
+                                              className="lab-icon prescription"
+                                              onClick={() =>
+                                                setSelectedPrescription(el)
+                                              }
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              {truncateAllText(
+                                                el?.prescriptionText ||
+                                                  el?.comments ||
+                                                  "--"
+                                              )}
                                             </span>
-                                            {el?.prescriptionFile?.length > 20
-                                              ? `${el.prescriptionFile.slice(
-                                                  0,
-                                                  20
-                                                )}...`
-                                              : el?.prescriptionFile}
-                                          </a>
+                                          )}
                                         </td>
                                         <td>
                                           {getDateFormate(el?.prescriptionDate)}
@@ -454,9 +595,27 @@ const Dashboard = ({
                                         </td>
                                         <td>
                                           <div className="action-item">
-                                            <a>
-                                              <i className="fa-solid fa-download"></i>
-                                            </a>
+                                            {el?.prescriptionFile ? (
+                                              <a
+                                                href={el?.prescriptionFile}
+                                                className="lab-icon prescription"
+                                                title={el?.prescriptionFile}
+                                                target="_blank"
+                                              >
+                                                <i className="fa-solid fa-download"></i>
+                                              </a>
+                                            ) : (
+                                              <a
+                                                className="lab-icon prescription"
+                                                onClick={() =>
+                                                  setSelectedPrescription(el)
+                                                }
+                                                style={{ cursor: "pointer" }}
+                                              >
+                                                <i className="fa-solid fa-eye"></i>
+                                              </a>
+                                            )}
+
                                             <a
                                               onClick={() =>
                                                 handleUpdate(el?._id)
@@ -495,7 +654,10 @@ const Dashboard = ({
       {/* Modal for adding medical record */}
       <Modal
         show={showModal}
-        onHide={handleModelClose}
+        onHide={() => {
+          handleModelClose();
+          setFile(null); // Reset file when modal closes
+        }}
         backdrop="static"
         keyboard={false}
       >
@@ -544,9 +706,17 @@ const Dashboard = ({
               </Form.Label>
               <Form.Control
                 type="file"
-                {...register("file")}
+                accept="/pdf"
+                onChange={handleFileChange}
                 isInvalid={!!errors.file}
               />
+              {isFile && (
+                <div className="mt-2">
+                  <small className="text-muted">
+                    Selected file: {isFile.name}
+                  </small>
+                </div>
+              )}
               <Form.Control.Feedback type="invalid">
                 {errors.file?.message}
               </Form.Control.Feedback>
@@ -556,12 +726,19 @@ const Dashboard = ({
             <Button variant="secondary" onClick={handleModelClose}>
               Close
             </Button>
-            <Button variant="primary" type="submit">
-              Save medicalRecords
+            <Button variant="primary" type="submit" disabled={!isFile}>
+              Save Medical Record
             </Button>
           </Modal.Footer>
         </Form>
       </Modal>
+
+      {selectedPrescription && (
+        <PrescriptionDetailsModal
+          prescription={selectedPrescription}
+          onClose={() => setSelectedPrescription(null)}
+        />
+      )}
     </>
   );
 };

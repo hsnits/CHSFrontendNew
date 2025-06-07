@@ -351,7 +351,7 @@ const Dashboard = ({
                                               );
                                             case "high":
                                               return (
-                                                <span className="badge badge-primary-bg">
+                                                <span className="badge badge-danger-bg">
                                                   High
                                                 </span>
                                               );

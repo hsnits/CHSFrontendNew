@@ -68,7 +68,7 @@ export default function Checkout() {
     // Fixed shipping charge
     let discountPrice = subtotal - discount;
 
-    let total = subtotal - discount ;
+    let total = subtotal - discount;
     total = total + tax + shipping;
 
     return { subtotal, discount, tax, shipping, total, discountPrice };
@@ -171,15 +171,54 @@ export default function Checkout() {
             );
 
             if (verifyResponse.status) {
-              toastMessage("success", "Payment Successful!");
-              navigate("/payment-status", {
-                state: {
-                  status: "success",
-                  orderId: id,
-                  amount: totals.total.toFixed(2),
+              // Create order after successful payment
+              const orderData = {
+                products: data.items.map((item) => ({
+                  productId: item.productId._id,
+                  quantity: item.quantity,
+                  price: item.productId.price,
+                })),
+                shippingAddress: {
+                  street: selectedAddress.houseNumber,
+                  city: selectedAddress.city,
+                  state: selectedAddress.state,
+                  country: "India",
+                  zipCode: selectedAddress.pincode,
                 },
-                replace: true, // ✅ This ensures the current URL is replaced
-              });
+                paymentMethod: "razorpay",
+                paymentStatus: "completed",
+                notes: "Order placed through online payment",
+              };
+
+              const orderResponse = await callPostApi(
+                "/orders/create",
+                orderData
+              );
+
+              if (orderResponse.status) {
+                toastMessage(
+                  "success",
+                  "Payment Successful and Order Created!"
+                );
+                navigate("/payment-status", {
+                  state: {
+                    status: "success",
+                    orderId: orderResponse.data._id,
+                    amount: totals.total.toFixed(2),
+                  },
+                  replace: true,
+                });
+              } else {
+                toastMessage("error", "Order Creation Failed!");
+                navigate("/payment-status", {
+                  state: {
+                    status: "failed",
+                    orderId: id,
+                    amount: totals.total.toFixed(2),
+                  },
+                  replace: true, // ✅ Replace the current URL
+                });
+              }
             } else {
               toastMessage("error", "Payment Verification Failed!");
               navigate("/payment-status", {

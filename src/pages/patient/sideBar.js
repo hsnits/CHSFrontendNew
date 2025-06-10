@@ -53,7 +53,12 @@ const SideBar = ({ data }) => {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link as={Link} to={`${location.pathname}?key=third`} eventKey="third">
-                <i className="fa-solid fa-shield-halved"></i> Health Report
+                <i className="fa-solid fa-shield-halved"></i> Health Reports
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={Link} to={`${location.pathname}?key=orders`} eventKey="orders">
+                <i className="fa-solid fa-box"></i> My Orders
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>

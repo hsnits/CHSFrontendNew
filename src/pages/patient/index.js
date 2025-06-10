@@ -19,6 +19,8 @@ import useGetMountData from "../../helpers/getDataHook";
 import { STORAGE } from "../../constants";
 import { getLocalStorage } from "../../helpers/storage";
 import { getAllAppointment } from "../../redux/slices/patientApi";
+import MyOrders from './MyOrders';
+import OrderDetails from './OrderDetails';
 
 function PatientDashboard() {
   const dispatch = useDispatch();
@@ -104,6 +106,10 @@ function PatientDashboard() {
                       getAllData={getAllData}
                       userData={data}
                     />
+                  </Tab.Pane>
+                  {/* My Orders view */}
+                  <Tab.Pane eventKey="orders">
+                    <MyOrders />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

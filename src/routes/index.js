@@ -39,6 +39,7 @@ import CallHandler from "../components/twillio/CallHandler";
 // import VideoCall from "../components/twillio/VideoCall";
 import { getLocalStorage } from "../helpers/storage";
 import TwillioCall from "../components/twillio/video";
+import OrderDetails from "../pages/patient/OrderDetails";
 
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -117,6 +118,8 @@ const Routes = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/order-details/:orderId" element={<OrderDetails />} />
+        
         <Route path="/DoctorList" element={<DoctorList />} />
         <Route path="/DoctorProfile" element={<DoctorProfile />} />
         <Route
@@ -131,6 +134,7 @@ const Routes = () => {
         <Route path="/ProductDesc" element={<ProductDesc />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+      
 
         <Route
           path="/DoctorBooking/:id"

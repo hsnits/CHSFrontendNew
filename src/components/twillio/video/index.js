@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getLocalStorage } from "../../../helpers/storage";
 import { STORAGE } from "../../../constants";
 import { callPostApi } from "../../../_service";
-import {  symptomSocket } from "../../../config/socket";
+import { symptomSocket } from "../../../config/socket";
 import ChatRoom from "../ChatRoom";
 import ChsLogo from "../../../assets/img/chs_logo.png";
 
@@ -18,7 +18,7 @@ function TwillioCall() {
   const { patientId, doctorId, appointmentId, mode } = location.state || {};
 
   const handleGetToken = useCallback(async () => {
-     const callSocket = symptomSocket;
+    const callSocket = symptomSocket;
     try {
       if (!appointmentId || !user) return;
       const response = await callPostApi(`doctor/token`, {
@@ -29,6 +29,7 @@ function TwillioCall() {
 
       if (response?.status) {
         callSocket.emit("join-room", { userId: user?.profile?._id });
+        callSocket.emit("join-room", { userId: patientId });
         setToken(response?.data?.token);
       }
     } catch (error) {
@@ -56,7 +57,7 @@ function TwillioCall() {
       <div className="header-video">
         <img
           src={ChsLogo}
-          style={{ "height": 50 }}
+          style={{ height: 50 }}
           className="img-fluid"
           alt="Logo"
         />
@@ -72,6 +73,8 @@ function TwillioCall() {
                 handleLogout={handleLogout}
                 mode={mode || "audio"}
                 isDoctor={user?.role == "Doctor"}
+                patientId={patientId}
+                doctorId={doctorId}
               />
             ) : (
               <ChatRoom roomName={appointmentId} token={token} />

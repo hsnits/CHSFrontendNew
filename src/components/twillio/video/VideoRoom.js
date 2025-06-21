@@ -15,8 +15,10 @@ import {
 import AppointmentFormModal from "../successpage/callForm";
 import AppointmentSuccessModal from "../successpage/callSuccess";
 import { symptomSocket } from "../../../config/socket";
+import { getLocalStorage } from "../../../helpers/storage";
+import { STORAGE } from "../../../constants";
 
-const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
+const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patientId, doctorId }) => {
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
@@ -43,11 +45,13 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   // Connect to the room when component mounts
   useEffect(() => {
     const participantConnected = (participant) => {
+      console.log("Participant connected:", participant.identity);
       setParticipants((prevParticipants) => [...prevParticipants, participant]);
       setCallStarted(true);
     };
 
     const participantDisconnected = (participant) => {
+      console.log("Participant disconnected:", participant.identity);
       setParticipants((prevParticipants) =>
         prevParticipants.filter((p) => p !== participant)
       );
@@ -60,10 +64,46 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
       video: mode === "video",
     })
       .then((room) => {
+        console.log("Connected to room:", room.name);
         setRoom(room);
+        
+        // Add local participant to the list
+        setParticipants([room.localParticipant]);
+        
         room.on("participantConnected", participantConnected);
         room.on("participantDisconnected", participantDisconnected);
+        
+        // Add existing participants
         room.participants.forEach(participantConnected);
+        
+        // Log local participant tracks
+        console.log("Local participant tracks:", {
+          audio: room.localParticipant.audioTracks.size,
+          video: room.localParticipant.videoTracks.size
+        });
+        
+
+        // Ensure local audio track is published
+        if (room.localParticipant.audioTracks.size === 0) {
+          console.log("No local audio track found, creating one...");
+          Video.createLocalAudioTrack().then(track => {
+            room.localParticipant.publishTrack(track);
+            console.log("Local audio track published");
+          }).catch(error => {
+            console.error("Failed to create local audio track:", error);
+          });
+        }
+
+        // Ensure local video track is published for video calls
+        if (mode === "video" && room.localParticipant.videoTracks.size === 0) {
+          console.log("No local video track found, creating one...");
+          Video.createLocalVideoTrack().then(track => {
+            room.localParticipant.publishTrack(track);
+            console.log("Local video track published");
+          }).catch(error => {
+            console.error("Failed to create local video track:", error);
+          });
+        }
       })
       .catch((error) => {
         console.error("Error connecting to room:", error);
@@ -159,7 +199,28 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
   // Handle room disconnect
   const leaveRoom = () => {
     if (room) {
-      symptomSocket.emit("call-end");
+      // Get the other participant's ID to notify them
+      const otherParticipant = participants.find(p => p !== room.localParticipant);
+      let otherUserId = null;
+      
+      if (otherParticipant) {
+        otherUserId = otherParticipant.identity;
+      } else {
+        // Fallback: try to get user ID from localStorage or props
+        const user = getLocalStorage(STORAGE.USER_KEY);
+        if (user?.profile?._id) {
+          // If we're the doctor, the other user is the patient, and vice versa
+          otherUserId = isDoctor ? patientId : doctorId;
+        }
+      }
+      
+      console.log("Leaving room, notifying user:", otherUserId);
+      
+      // Emit call-end with the other user's ID (or null if not found)
+      symptomSocket.emit("call-end", { 
+        toUserId: otherUserId 
+      });
+      
       room.disconnect();
       if (isDoctor) {
         setShowFormModal(true);
@@ -230,38 +291,58 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor }) => {
       return <p>Connecting to room...</p>;
     }
 
+    // Filter participants to show only local and one remote
+    const localParticipant = room.localParticipant;
+    const remoteParticipants = participants.filter(p => p !== localParticipant);
+    const remoteParticipant = remoteParticipants[0]; // Only show the first remote participant
+
     return (
       <div className="video-room">
         {seconds > 0 && <div className="timer">{formatTime(seconds)}</div>}
 
         {mode === "video" ? (
           <>
-            <div className="remote-participants">
-              {participants.map((participant) => (
-                <Participant
-                  key={participant.sid}
-                  participant={participant}
-                  isLocal={false}
+            <div className="video-participants">
+              {/* Remote participant (full screen) */}
+              {remoteParticipant && (
+                <div className="remote-participant">
+                  <Participant
+                    key={remoteParticipant.sid}
+                    participant={remoteParticipant}
+                    isLocal={false}
+                  />
+                </div>
+              )}
+              
+              {/* Local participant (small preview) */}
+              <div className="local-participant">
+                <Participant 
+                  participant={localParticipant} 
+                  isLocal={true} 
                 />
-              ))}
-            </div>
-            <div className="local-participant">
-              <Participant participant={room.localParticipant} isLocal={true} />
+              </div>
             </div>
           </>
         ) : (
           <div className="audio-placeholder">
             <h2>Audio Call</h2>
-            <div className="remote-participants">
-              {renderAudioParticipant(true)}
+            <div className="audio-participants">
+              {/* Local participant */}
+              <div className="local-audio-participant">
+                {renderAudioParticipant(true)}
+              </div>
+              
+              {/* Remote participant */}
+              {remoteParticipant && (
+                <div className="remote-audio-participant">
+                  <Participant
+                    key={remoteParticipant.sid}
+                    participant={remoteParticipant}
+                    isLocal={false}
+                  />
+                </div>
+              )}
             </div>
-            <div className="local-participant">
-              {participants.length > 0 && renderAudioParticipant(false)}
-            </div>
-            {/* <div className="audio-participants-container">
-              {renderAudioParticipant(true)}
-              {participants.length > 0 && renderAudioParticipant(false)}
-            </div> */}
           </div>
         )}
 

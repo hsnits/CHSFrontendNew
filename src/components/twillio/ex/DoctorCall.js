@@ -132,6 +132,20 @@ const DoctorCall = ({ doctorId, patientId, appointmentId, role, mode }) => {
       // Create new tracks
       const tracks = [];
       
+      // Always create audio track for both audio and video calls
+      try {
+        const audioTrack = await createLocalAudioTrack({
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        });
+        tracks.push(audioTrack);
+        localTracks.current.push(audioTrack);
+        console.log("Local audio track created");
+      } catch (e) {
+        console.error("Error creating audio track:", e);
+      }
+      
       if (mode === "video") {
         try {
           const videoTrack = await createLocalVideoTrack({
@@ -148,17 +162,10 @@ const DoctorCall = ({ doctorId, patientId, appointmentId, role, mode }) => {
             localVideoRef.current.innerHTML = '';
             localVideoRef.current.appendChild(videoElements);
           }
+          console.log("Local video track created");
         } catch (e) {
           console.error("Error creating video track:", e);
         }
-      }
-      
-      try {
-        const audioTrack = await createLocalAudioTrack();
-        tracks.push(audioTrack);
-        localTracks.current.push(audioTrack);
-      } catch (e) {
-        console.error("Error creating audio track:", e);
       }
       
       // Connect to room
@@ -231,12 +238,37 @@ const DoctorCall = ({ doctorId, patientId, appointmentId, role, mode }) => {
       remoteVideoRef.current.innerHTML = '';
       remoteVideoRef.current.appendChild(element);
     } else if (track.kind === 'audio') {
-      document.body.appendChild(track.attach());
+      // Create a hidden audio element for remote audio
+      const audioElement = track.attach();
+      audioElement.style.display = 'none';
+      audioElement.autoplay = true;
+      audioElement.muted = false; // Don't mute remote audio
+      document.body.appendChild(audioElement);
+      
+      console.log("Remote audio track attached");
     }
   };
 
   const endCall = () => {
     if (roomRef.current) {
+      // Get the other participant's ID to notify them
+      const otherParticipant = Array.from(roomRef.current.participants.values())[0];
+      let otherUserId = null;
+      
+      if (otherParticipant) {
+        otherUserId = otherParticipant.identity;
+      } else {
+        // Fallback: use the other user's ID based on role
+        otherUserId = role === "doctor" ? patientId : doctorId;
+      }
+      
+      console.log("Ending call, notifying user:", otherUserId);
+      
+      // Emit call-end with the other user's ID
+      symptomSocket.emit("call-end", { 
+        toUserId: otherUserId 
+      });
+      
       roomRef.current.disconnect();
       roomRef.current = null;
     }

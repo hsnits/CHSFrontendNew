@@ -1,8 +1,19 @@
 // socket.js
 import { io } from "socket.io-client";
 
-// socket for symptoms
-export const symptomSocket = io(process.env.REACT_APP_SOCKET_BASE_URL);
+// Socket for symptoms
+export const symptomSocket = io(process.env.REACT_APP_SOCKET_BASE_URL, {
+  transports: ["websocket", "polling"],
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
+  withCredentials: true,
+  path: "/socket.io/",
+  forceNew: true,
+  autoConnect: true,
+});
 
 const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
 
@@ -11,36 +22,38 @@ export const callSocket = io(SOCKET_URL, {
   reconnection: true,
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
   timeout: 20000,
   withCredentials: true,
   path: "/socket.io/",
   forceNew: true,
+  autoConnect: true,
 });
 
 // Add connection status logging
 callSocket.on("connect", () => {
-  console.log("Socket connected successfully");
-});
-
-callSocket.on("connect_error", (error) => {
-  console.error("Socket connection error:", error);
+  console.log("Call socket connected successfully");
 });
 
 callSocket.on("disconnect", (reason) => {
-  console.log("Socket disconnected:", reason);
+  console.log("Call socket disconnected:", reason);
 });
 
-// Add Symptom connection status logging
+callSocket.on("connect_error", (error) => {
+  console.error("Call socket connection error:", error);
+});
+
+// Add connection status logging for symptom socket
 symptomSocket.on("connect", () => {
-  console.log("Symptom Socket connected successfully");
-});
-
-symptomSocket.on("connect_error", (error) => {
-  console.error("Symptom Socket connection error:", error);
+  console.log("Symptom socket connected successfully");
 });
 
 symptomSocket.on("disconnect", (reason) => {
-  console.log("Symptom Socket disconnected:", reason);
+  console.log("Symptom socket disconnected:", reason);
+});
+
+symptomSocket.on("connect_error", (error) => {
+  console.error("Symptom socket connection error:", error);
 });
 
 // export const symptomSocket = io('https://api.chshealthcare.in/' );

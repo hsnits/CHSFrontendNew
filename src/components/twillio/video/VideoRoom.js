@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import AppointmentFormModal from "../successpage/callForm";
 import AppointmentSuccessModal from "../successpage/callSuccess";
-import { symptomSocket } from "../../../config/socket";
+import { callSocket } from "../../../config/socket";
 import { getLocalStorage } from "../../../helpers/storage";
 import { STORAGE } from "../../../constants";
 
@@ -217,7 +217,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
       console.log("Leaving room, notifying user:", otherUserId);
       
       // Emit call-end with the other user's ID (or null if not found)
-      symptomSocket.emit("call-end", { 
+      callSocket.emit("call-end", { 
         toUserId: otherUserId 
       });
       

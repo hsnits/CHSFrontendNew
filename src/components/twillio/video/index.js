@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getLocalStorage } from "../../../helpers/storage";
 import { STORAGE } from "../../../constants";
 import { callPostApi } from "../../../_service";
-import { symptomSocket } from "../../../config/socket";
+import { callSocket } from "../../../config/socket";
 import ChatRoom from "../ChatRoom";
 import ChsLogo from "../../../assets/img/chs_logo.png";
 
@@ -18,7 +18,7 @@ function TwillioCall() {
   const { patientId, doctorId, appointmentId, mode } = location.state || {};
 
   const handleGetToken = useCallback(async () => {
-    const callSocket = symptomSocket;
+    const callSocketNew = callSocket;
     try {
       if (!appointmentId || !user) return;
       const response = await callPostApi(`doctor/token`, {
@@ -28,8 +28,8 @@ function TwillioCall() {
       });
 
       if (response?.status) {
-        callSocket.emit("join-room", { userId: user?.profile?._id });
-        callSocket.emit("join-room", { userId: patientId });
+        callSocketNew.emit("join-room", { userId: user?.profile?._id });
+        callSocketNew.emit("join-room", { userId: patientId });
         setToken(response?.data?.token);
       }
     } catch (error) {

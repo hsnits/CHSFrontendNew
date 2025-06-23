@@ -5,7 +5,7 @@ import {
   createLocalVideoTrack,
   createLocalAudioTrack,
 } from "twilio-video";
-import {  symptomSocket } from "../../../config/socket";
+import {  callSocket } from "../../../config/socket";
 import { callPostApi } from "../../../_service";
 import { Mic, MicOff, Video, VideoOff, PhoneOff } from "lucide-react";
 
@@ -28,7 +28,7 @@ const DoctorCall = ({ doctorId, patientId, appointmentId, role, mode }) => {
     const userId = role === "doctor" ? doctorId : patientId;
     
     // Socket connection
-    const socket = symptomSocket;
+    const socket = callSocket;
     socket.emit("join-room", { userId });
 
     // Socket event listeners
@@ -265,7 +265,7 @@ const DoctorCall = ({ doctorId, patientId, appointmentId, role, mode }) => {
       console.log("Ending call, notifying user:", otherUserId);
       
       // Emit call-end with the other user's ID
-      symptomSocket.emit("call-end", { 
+      callSocket.emit("call-end", { 
         toUserId: otherUserId 
       });
       

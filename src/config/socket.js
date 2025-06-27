@@ -4,19 +4,19 @@ import { io } from "socket.io-client";
 const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
 
 // Socket for symptoms
-export const symptomSocket = io(SOCKET_URL);
-// export const symptomSocket = io(SOCKET_URL, {
-//   transports: ["websocket", "polling"],
-//   reconnection: true,
-//   reconnectionAttempts: 5,
-//   reconnectionDelay: 1000,
-//   reconnectionDelayMax: 5000,
-//   timeout: 20000,
-//   withCredentials: true,
-//   path: "/socket.io/",
-//   forceNew: true,
-//   autoConnect: true,
-// });
+// export const symptomSocket = io(SOCKET_URL);
+export const symptomSocket = io(SOCKET_URL, {
+  transports: ["websocket", "polling"],
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  timeout: 20000,
+  withCredentials: true,
+  path: "/socket.io/",
+  forceNew: true,
+  autoConnect: true,
+});
 
 export const callSocket = io(SOCKET_URL, {
   transports: ["websocket", "polling"],

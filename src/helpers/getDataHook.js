@@ -10,9 +10,8 @@ const useGetMountData = (baseUrl) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [dataLength, setDataLength] = useState(0);
   const [filter, setFilter] = useState("");
-  const [query, setQuery] = useState("");
-
-  const pageLimit = 10;
+  const [query, setQuery] = useState({});
+  const [pageLimit, setPageLimit] = useState(10);
 
   const getAllData = useCallback(
     async (baseUrl, loadText) => {
@@ -38,21 +37,34 @@ const useGetMountData = (baseUrl) => {
         if (response?.status) {
           setData(response.data);
           setBackupData(response.data);
+          // Update dataLength with total count from API response
+          if (response?.pagination) {
+            setDataLength(response.pagination.total);
+            setPageLimit(response.pagination.limit);
+          } else if (response.totalCount !== undefined) {
+            setDataLength(response.totalCount);
+          } else if (response.count !== undefined) {
+            setDataLength(response.count);
+          } else if (response.data && Array.isArray(response.data)) {
+            setDataLength(response.data.length);
+          }
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+        setData([]);
+        setDataLength(0);
       } finally {
         setLoading(false);
       }
     },
-    [baseUrl, query]
+    [baseUrl, query, currentPage, pageLimit]
   );
 
   useEffect(() => {
     if (baseUrl) {
       getAllData(baseUrl, true);
     }
-  }, [getAllData, baseUrl, query]);
+  }, [getAllData, baseUrl, query, currentPage, pageLimit]);
 
   const openModelWithItem = (key, item) => {
     setIsOpen(key);
@@ -78,6 +90,8 @@ const useGetMountData = (baseUrl) => {
     openModelWithItem,
     query,
     setQuery,
+    setPageLimit,
+    pageLimit,
   };
 };
 

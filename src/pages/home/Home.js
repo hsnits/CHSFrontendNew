@@ -11,9 +11,19 @@ import BookAppointment from "../../components/BookAppointment";
 import Facilities from "../../components/Facilities";
 import FeedbackBanner from "../../components/FeedbackBanner";
 import services_img from "../../assets/img/service-img.png";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Button } from "react-bootstrap";
+import useGetMountData from "../../helpers/getDataHook";
+import { useMergedCategories } from "../../helpers/useMergedCategories";
 
 export default function Home() {
+  const { data: categories, isLoading: categoriesLoading } = useGetMountData(
+    "/admin/categories/dropdown"
+  );
+
+  // Use custom hook for merged categories
+  const { mergedCategories, allCategoryNames, hasMergedCategories } =
+    useMergedCategories(categories);
+
   return (
     <>
       <Header />
@@ -119,9 +129,14 @@ export default function Home() {
       {/* <Category/> */}
       <FeedbackBanner />
 
-      <BrowseCategory />
+      <BrowseCategory
+        mergedCategories={mergedCategories}
+        allCategoryNames={allCategoryNames}
+        hasMergedCategories={hasMergedCategories}
+        show={true}
+      />
 
-      <PopularCategory />
+      {/* <PopularCategory /> */}
       <FeatureCarousel />
       <Team />
       {/* <HowItWorks/> */}

@@ -17,6 +17,7 @@ import { getLocalStorage, removeLocalStorage } from "../helpers/storage";
 import { toastMessage } from "../config/toast";
 import DrugLicenseModal from "./modals/drug-model";
 
+
 function Header() {
   const [show, setShow] = useState(false);
 
@@ -93,8 +94,9 @@ function Header() {
                     id="menu_close"
                     onClick={toggleMenu}
                     to={
-                      isLoggedIn?.role == "Doctor"
-                        ? "/DoctorDashboard"
+                      isLoggedIn?.role == "Doctor" ? "/DoctorDashboard"
+                    : isLoggedIn?.role == "Pathology" ? "/PathologyDashboard"
+                    : isLoggedIn?.role == "Nursing" ? "/NurseDashboard"
                         : "/patient"
                     }
                   >
@@ -497,6 +499,10 @@ function Header() {
                       to={
                         isLoggedIn?.role == "Doctor"
                           ? "/DoctorDashboard"
+                          : isLoggedIn?.role == "Pathology"
+                          ? "/PathologyDashboard"
+                          : isLoggedIn?.role == "Nursing"
+                          ? "/NurseDashboard?key=sixth"
                           : "/patient"
                       }
                     >
@@ -507,6 +513,8 @@ function Header() {
                       to={
                         isLoggedIn?.role == "Doctor"
                           ? "/DoctorDashboard?key=sixth"
+                          : isLoggedIn?.role == "Pathology" ? "/PathologyDashboard?key=sixth"
+                          : isLoggedIn?.role == "Nursing" ? "/NurseDashboard?key=sixth"
                           : "/patient?key=fourth"
                       }
                     >

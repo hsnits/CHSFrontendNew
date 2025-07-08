@@ -40,6 +40,8 @@ import CallHandler from "../components/twillio/CallHandler";
 import { getLocalStorage } from "../helpers/storage";
 import TwillioCall from "../components/twillio/video";
 import OrderDetails from "../pages/patient/OrderDetails";
+import PathologyDashboard from "../pages/PathologyDashboard/PathologyDashboard";
+import NurseDashboard from "../pages/NurseDashboard/NurseDashboard";
 
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -122,11 +124,20 @@ const Routes = () => {
         
         <Route path="/DoctorList" element={<DoctorList />} />
         <Route path="/DoctorProfile" element={<DoctorProfile />} />
+          <Route
+            path="/DoctorDashboard"
+            element={
+              <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
+                <DoctorDashboard />
+              </ProtectedRoute>
+            }
+          />
+        <Route path="/PathologyDashboard" element={<ProtectedRoute allowedRoles={[ROLES.PATHOLOGY]}><PathologyDashboard /></ProtectedRoute>} />
         <Route
-          path="/DoctorDashboard"
+          path="/NurseDashboard"
           element={
-            <ProtectedRoute allowedRoles={[ROLES.DOCTOR]}>
-              <DoctorDashboard />
+            <ProtectedRoute allowedRoles={[ROLES.NURSING]}>
+              <NurseDashboard />
             </ProtectedRoute>
           }
         />

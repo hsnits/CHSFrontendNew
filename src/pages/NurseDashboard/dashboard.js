@@ -296,39 +296,7 @@ const Dashboard = () => {
               : "col-xl-12 d-flex"
           }
         >
-          <div className="dashboard-card w-100">
-            <div className="dashboard-card-head">
-              <div className="header-title">
-                <h5>Ward & Availability</h5> {/* Changed from Clinic to Ward */}
-              </div>
-            </div>
-            <div className="dashboard-card-body">
-              <div className="clinic-available">
-                <div className="clinic-head">
-                  <div className="clinic-info">
-                    <span className="clinic-img">
-                      <img src={drProfileImg} alt="Ward" />
-                    </span>
-                    <h6>General Ward</h6> {/* Changed clinic name */}
-                  </div>
-                  <div className="clinic-charge">
-                    <span>Floor 2</span> {/* Changed from price to floor */}
-                  </div>
-                </div>
-                <div className="available-time">
-                  <ul>
-                    <li>
-                      <span>Today :</span>
-                      07:00 AM - 09:00 PM
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div className="d-flex justify-content-end change-time">
-                <Button>Change Availability</Button>
-              </div>
-            </div>
-          </div>
+        
         </div>
       </div>
     </div>

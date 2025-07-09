@@ -22,4 +22,7 @@ export const ENDPOINTS = {
   DOCTOR: {
     GET_DOCTORS: "/doctor/list",
   },
+  APPOINTMENT: {
+    GET_RECORD: "/common/doctorandnurse/list",
+  },
 };

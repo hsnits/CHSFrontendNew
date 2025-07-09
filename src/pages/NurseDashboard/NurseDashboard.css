@@ -145,7 +145,7 @@
   border-radius: 12px;
   display: flex;
   align-items: center;
-  justify-content: center;
+
   font-size: 2rem;
   color: #6c757d;
 }
@@ -172,4 +172,42 @@
 
 .change-photo input[type="file"] {
   display: none;
+}
+
+/* Profile image circular styles */
+.profile-img {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.profile-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.booking-nurse-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  margin: 0 auto 10px auto;
+}
+
+.booking-nurse-img img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
 }

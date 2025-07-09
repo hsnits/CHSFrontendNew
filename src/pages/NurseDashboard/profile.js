@@ -312,11 +312,12 @@ const Profile = ({ getAllData, nurseDetails }) => {
           <div className="change-avatar img-upload">
             <div className="profile-img">
               {nurseDetails?.coverImage ? (
-                <img src={nurseDetails?.coverImage} alt="Profile Preview" />
+                <img src={nurseDetails?.coverImage} alt="Profile Preview" style={{  width: '120px', height: '120px', objectFit: 'cover' }} />
               ) : selectedFile ? (
                 <img
                   src={URL.createObjectURL(selectedFile)}
                   alt="Profile Preview"
+                  style={{ borderRadius: '50%', width: '120px', height: '120px', objectFit: 'cover' }}
                 />
               ) : (
                 <i className="fa-solid fa-file-image"></i>
@@ -325,16 +326,16 @@ const Profile = ({ getAllData, nurseDetails }) => {
             <div className="upload-img">
               <h5>Profile Image</h5>
               <div className="imgs-load d-flex align-items-center">
-                <div className="change-photo" style={{ cursor: "pointer" }}>
+                <label className="change-photo" style={{ cursor: "pointer" }}>
                   Upload New
                   <input
                     type="file"
                     className="upload cursor-pointer"
-                    style={{ cursor: "pointer" }}
+                    style={{ display: "none" }}
                     accept="image/*"
                     onChange={handlePhotoChange}
                   />
-                </div>
+                </label>
                 <div
                   onClick={() => setIsOpen({ is: true })}
                   className="upload-remove "

@@ -62,7 +62,7 @@ const Sidebar = ({ UserDetails }) => {
             <div className="profile-det-info">
               <h3>
                 <a href="#">
-                  RN {`${firstName || ""} ${lastName || ""}`}
+                  RN {`${firstName || ""} ${lastName || ""}`} 
                 </a>
               </h3>
               <span className="badge nurse-role-badge">
@@ -74,7 +74,7 @@ const Sidebar = ({ UserDetails }) => {
         </div>
 
         {/* Availability Switch */}
-        <div className="nurse-available-head">
+        <div className="nurse-available-head" style={{ margin:"0 20px 0 20px" }}>
           <div className="input-block input-block-new">
             <label className="form-label">
               Availability <span className="text-danger">*</span>

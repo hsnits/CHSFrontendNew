@@ -17,6 +17,7 @@ const useGetMountData = (baseUrl) => {
     async (baseUrl, loadText) => {
       setLoading(loadText || true);
       try {
+        debugger;
         let url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}`;
 
         if (query && Object.keys(query).length > 0) {

@@ -1,0 +1,213 @@
+
+.document-icon {
+  width: 80px;
+  height: 80px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: #6c757d;
+}
+
+.img-upload {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.upload-img h5 {
+  margin-bottom: 0.5rem;
+}
+
+.upload-remove {
+  margin-left: 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.change-photo input[type="file"] {
+  display: none;
+}
+
+.form-wrap {
+  margin-bottom: 1.25rem;
+}
+
+.setting-card {
+  padding: 1.5rem;
+  border: 1px solid #eaeaea;
+  border-radius: 12px;
+  background-color: #fff;
+}
+
+.patient-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 15px;
+  }
+  
+  .patient-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .patient-details {
+    flex: 1;
+  }
+  
+  .patient-name {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .patient-id {
+    color: #666;
+    font-size: 14px;
+  }
+  
+  .patient-age {
+    color: #444;
+    font-size: 14px;
+  }
+  
+  .patient-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 15px;
+  }
+  
+  .patient-card-body {
+    margin-top: 15px;
+  }
+  
+  .patient-card-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    color: #444;
+  }
+  
+  .patient-card-details li {
+    margin-bottom: 5px;
+  }
+  
+  .patient-card-address {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+  }
+  
+  .appointment-info {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  
+  .appointment-info p {
+    margin-bottom: 5px;
+  }
+  /* src/pages/NurseDashboard/NurseDashboard.css */
+.availability-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.day-schedule {
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.time-inputs {
+  max-width: 300px;
+}
+.booking-nurse-img img{
+  border-radius: 50%;
+  
+}
+.document-icon {
+  width: 80px;
+  height: 80px;
+  background: #f0f0f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+
+  font-size: 2rem;
+  color: #6c757d;
+}
+
+.img-upload {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 1rem;
+  background-color: #fff;
+}
+
+.upload-img h5 {
+  margin-bottom: 0.5rem;
+}
+
+.upload-remove {
+  margin-left: 1rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.change-photo input[type="file"] {
+  display: none;
+}
+
+/* Profile image circular styles */
+.profile-img {
+  width: 120px;
+  height: 120px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.profile-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.booking-nurse-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  margin: 0 auto 10px auto;
+}
+
+.booking-nurse-img img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}

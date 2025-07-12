@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes as Routing } from "react-router-dom";
 import PatientDashboard from "../pages/patient";
 import DoctorProfile from "../pages/doctorProfile/DoctorProfile";
+import NurseProfile from "../pages/NurseProfile/NurseProfile";
 import DoctorDashboard from "../pages/doctorDashboard/DoctorDashboard";
 import Pharmacy from "../pages/pharmacy/Pharmacy";
 import ProductDesc from "../components/pharmacy/ProductDesc";
@@ -19,6 +20,7 @@ import ResetPassword from "../pages/auth/reset-password";
 import About from "../pages/about/About";
 import Contact from "../pages/contact/Contact";
 import DoctorList from "../pages/doctorList/DoctorList";
+import BookAppointment from "../pages/bookAppointment/BookAppointment";
 import BookingSuccess from "../pages/BookingSuccess/BookingSuccess";
 import VirtualConsultation from "../pages/services/VirtualConsultation";
 import DoctorBooking from "../pages/doctorBooking";
@@ -42,6 +44,7 @@ import TwillioCall from "../components/twillio/video";
 import OrderDetails from "../pages/patient/OrderDetails";
 import PathologyDashboard from "../pages/PathologyDashboard/PathologyDashboard";
 import NurseDashboard from "../pages/NurseDashboard/NurseDashboard";
+import NurseBooking from "../pages/NurseBooking/NurseBooking";
 
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -123,7 +126,10 @@ const Routes = () => {
         <Route path="/order-details/:orderId" element={<OrderDetails />} />
         
         <Route path="/DoctorList" element={<DoctorList />} />
+        <Route path="/bookappointment" element={<BookAppointment />} />
         <Route path="/DoctorProfile" element={<DoctorProfile />} />
+        <Route path="/nurseprofile" element={<NurseProfile />} />
+        <Route path="/nurse/appointment/:userId" element={<NurseBooking />} />
           <Route
             path="/DoctorDashboard"
             element={

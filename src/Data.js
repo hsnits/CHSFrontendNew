@@ -105,7 +105,7 @@ export const Navbar = [
       {
         id: 2,
         menu_name: "Appointment Scheduling",
-        path: "/doctorlist",
+        path: "/bookappointment",
       },
       {
         id: 3,

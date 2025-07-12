@@ -67,7 +67,7 @@ export const Navbar = [
   },
   {
     id: 2,
-    menu_name: "Doctors",
+    menu_name: "Doctors1",
     path: "/doctorlist", // Update with correct path
   },
   // {

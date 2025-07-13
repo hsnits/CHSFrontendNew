@@ -37,7 +37,7 @@ const Contact = () => {
       } else if (result?.data?.role === ROLES.DOCTOR) {
         navigate("/DoctorDashboard");
       } else if (result?.data?.role === ROLES.PATHOLOGY) {
-        navigate("/DoctorDashboard");
+        navigate("/PathologyDashboard");
       } 
      else if (result?.data?.role === ROLES.NURSING) {
       navigate("/NurseDashboard");

@@ -45,7 +45,6 @@ function DoctorList() {
   }, []);
 
   const handleBookAppointment = async (data) => {
-    // console.log(userProfileId,"userProfileId")
     if (userProfileId?.role?.toLowerCase() == "doctor") {
       toastMessage(
         "error",

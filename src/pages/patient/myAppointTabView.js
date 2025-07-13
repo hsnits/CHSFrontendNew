@@ -129,14 +129,24 @@ const MyAppointTabView = ({ appointmentData }) => {
                       <div className="patinet-information">
                         <a>
                           <img
-                            src={el?.refDoctor?.coverImage || user_img}
-                            alt="User Image"
+                            src={
+                              el?.refDoctor?.coverImage || 
+                              el?.refNurse?.coverImage || 
+                              el?.refPathology?.coverImage || 
+                              user_img
+                            }
+                            alt="Provider Image"
                           />
                         </a>
                         <div className="patient-info">
                           <p>{getIdLastDigits(el?._id, "AP")}</p>
                           <h6>
-                            <a>Dr {el?.refDoctor?.displayName || "--"}</a>
+                            <a>
+                              {el?.refDoctor && `Dr ${el?.refDoctor?.displayName}`}
+                              {el?.refNurse && `Nurse ${el?.refNurse?.firstName} ${el?.refNurse?.lastName}`}
+                              {el?.refPathology && `${el?.refPathology?.labName || el?.refPathology?.firstName + ' ' + el?.refPathology?.lastName}`}
+                              {!el?.refDoctor && !el?.refNurse && !el?.refPathology && "Unknown Provider"}
+                            </a>
                           </h6>
                         </div>
                       </div>
@@ -275,14 +285,24 @@ const MyAppointTabView = ({ appointmentData }) => {
                       <div className="patinet-information">
                         <a>
                           <img
-                            src={el?.refDoctor?.coverImage || user_img}
-                            alt="User Image"
+                            src={
+                              el?.refDoctor?.coverImage || 
+                              el?.refNurse?.coverImage || 
+                              el?.refPathology?.coverImage || 
+                              user_img
+                            }
+                            alt="Provider Image"
                           />
                         </a>
                         <div className="patient-info">
                           <p>{getIdLastDigits(el?._id, "AP")}</p>
                           <h6>
-                            <a>Dr {el?.refDoctor?.displayName || "--"}</a>
+                            <a>
+                              {el?.refDoctor && `Dr ${el?.refDoctor?.displayName}`}
+                              {el?.refNurse && `Nurse ${el?.refNurse?.firstName} ${el?.refNurse?.lastName}`}
+                              {el?.refPathology && `${el?.refPathology?.labName || el?.refPathology?.firstName + ' ' + el?.refPathology?.lastName}`}
+                              {!el?.refDoctor && !el?.refNurse && !el?.refPathology && "Unknown Provider"}
+                            </a>
                           </h6>
                         </div>
                       </div>

@@ -22,7 +22,7 @@ import { STORAGE } from "../../constants";
 import { uploadFile } from "../../redux/slices/userApi";
 const formatDate = (date) => date.toISOString().split("T")[0];
 
-export default function DoctorBooking() {
+export default function DoctorBooking({ type = "doctor" }) {
   const { id } = useParams(); // Appointment ID
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,7 +34,7 @@ export default function DoctorBooking() {
     dependent: "",
     reason: "",
     symptoms: "",
-    appointmentType: "chat",
+    appointmentType: "Chat",
     isInsurance: false,
   });
 
@@ -212,7 +212,7 @@ export default function DoctorBooking() {
     dispatch(updateAppointment(formattedData)).then((res) => {
       if (res?.meta?.requestStatus === "fulfilled") {
         setLoading(false);
-        navigate("/BookingSuccess");
+        navigate("/BookingSuccess", { state: { type: "doctor" } });
       } else {
         setLoading(false);
         toastMessage("error", "Appointment update failed.");
@@ -374,7 +374,7 @@ export default function DoctorBooking() {
                     </button>
                   </div>
                 </Col>
-                <BookingSummary data={data?.refDoctor} />
+                <BookingSummary data={data?.refDoctor} type={type} />
               </>
             )}
             {step === 2 && (
@@ -402,7 +402,7 @@ export default function DoctorBooking() {
                     </button>
                   </div>
                 </Col>
-                <BookingSummary data={data?.refDoctor} />
+                <BookingSummary data={data?.refDoctor} type={type} />
               </>
             )}
             {step === 3 && (
@@ -427,7 +427,7 @@ export default function DoctorBooking() {
                     </button>
                   </div>
                 </Col>
-                <BookingSummary data={data?.refDoctor} />
+                <BookingSummary data={data?.refDoctor} type={type} />
               </>
             )}
           </Row>

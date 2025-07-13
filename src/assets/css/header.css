@@ -1,0 +1,60 @@
+/* Header Navigation Menu Styles */
+.header .header-nav .main-nav > li > a {
+  font-size: 14px!important;
+  font-weight: 500;
+  padding: 0 50px;
+  line-height: 85px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.header .header-nav .main-nav > li > a:hover {
+  color: #0E82FD;
+}
+
+.header .header-nav .main-nav > li.active > a {
+  color: #0E82FD;
+}
+
+/* Mobile Navigation Styles */
+@media (max-width: 991.98px) {
+  .header .header-nav .main-nav > li > a {
+    line-height: 1.5;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 15px 20px !important;
+  }
+}
+
+/* Navigation Item Spacing */
+.header .header-nav .main-nav > li {
+  margin-right: 25px;
+}
+
+.header .header-nav .main-nav > li:last-child {
+  margin-right: 0;
+}
+
+/* Submenu Styles */
+.header .header-nav .main-nav > li .submenu li a {
+  font-size: 14px;
+  padding: 12px 20px;
+  line-height: 1.4;
+}
+
+.header .header-nav .main-nav > li .submenu li a:hover {
+  color: #379339;
+  background-color: #f8f9fa;
+}
+
+/* Account Dropdown Styles */
+.header .header-nav .header-navbar-rht .dropdown-toggle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.header .header-nav .header-navbar-rht .dropdown-menu .dropdown-item {
+  font-size: 14px;
+  padding: 10px 20px;
+}

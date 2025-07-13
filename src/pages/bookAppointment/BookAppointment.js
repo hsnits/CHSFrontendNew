@@ -12,6 +12,7 @@ import { createAppointment } from "../../redux/slices/patientApi";
 import { cpFirstName, formatName } from "../../helpers/utils";
 import { toastMessage } from "../../config/toast";
 import { axiosInstance } from "../../helpers/axiosInstance";
+import { useDispatch } from "react-redux";
 
 function getProfile(item) {
   if (item.profile) return item.profile;
@@ -21,6 +22,7 @@ function getProfile(item) {
 
 function BookAppointment() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [backupList, setBackupList] = useState([]);
   const [practitionersList, setPractitionersList] = useState([]);
@@ -30,6 +32,7 @@ function BookAppointment() {
   const [sortOrder, setSortOrder] = useState("A-Z");
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   // Role filter state
   const [selectedRoles, setSelectedRoles] = useState(['doctor', 'nurse', 'Pathology']);
@@ -108,18 +111,68 @@ function BookAppointment() {
       );
       return;
     }
+    
+    console.log("Booking appointment for:", data);
+    console.log("User profile:", userProfileId);
+    
+    setBookingLoading(true);
+    
     const formattedData = {
-      refDoctor: data?.profile?._id,
       id: userProfileId?.profile?._id,
       status: "Created",
     };
-    // You may want to adjust this if nurses can be booked too
-    createAppointment(formattedData).then((res) => {
-      if (res?.meta?.requestStatus === "fulfilled")
+
+    // Handle different practitioner types
+    if (data.type === 'nurse') {
+      formattedData.refNurse = data?.profile?._id || data?._id;
+    } else if (data.type === 'pathology') {
+      formattedData.refPathology = data?.profile?._id || data?._id;
+    } else {
+      formattedData.refDoctor = data?.profile?._id || data?._id;
+    }
+    
+    console.log("Formatted appointment data:", formattedData);
+    
+    if (!formattedData.id) {
+      toastMessage("error", "User profile not found. Please login again.");
+      setBookingLoading(false);
+      return;
+    }
+    
+    if (data.type === 'pathology' && !formattedData.refPathology) {
+      toastMessage("error", "Pathology lab information not found.");
+      setBookingLoading(false);
+      return;
+    }
+
+    dispatch(createAppointment(formattedData)).then((res) => {
+      console.log("Appointment creation response:", res);
+      
+      if (res?.meta?.requestStatus === "fulfilled") {
         setLocalStorage(STORAGE.APPOINTMENT_KEY, {
           appointment_id: res?.payload?._id,
         });
-      navigate(`/doctorbooking/${res?.payload?._id}`);
+        
+        toastMessage("success", "Appointment created successfully!");
+        
+        // Navigate to appropriate booking page based on type
+        if (data.type === 'nurse') {
+          navigate(`/nursebooking/${res?.payload?._id}`);
+        } else if (data.type === 'pathology') {
+          console.log("Navigating to pathology booking:", `/pathologybooking/${res?.payload?._id}`);
+          navigate(`/pathologybooking/${res?.payload?._id}`);
+        } else {
+          navigate(`/doctorbooking/${res?.payload?._id}`);
+        }
+      } else {
+        console.error("Appointment creation failed:", res);
+        toastMessage("error", res?.payload?.message || "Failed to create appointment");
+      }
+      setBookingLoading(false);
+    }).catch((error) => {
+      console.error("Appointment creation error:", error);
+      toastMessage("error", "Failed to create appointment");
+      setBookingLoading(false);
     });
   };
 
@@ -165,7 +218,10 @@ function BookAppointment() {
 
     // Filter by availability
     if (availability !== null) {
-      filtered = filtered.filter((doc) => (getProfile(doc)?.availability === availability));
+      filtered = filtered.filter((doc) => {
+        const profile = getProfile(doc);
+        return (profile?.available === availability || profile?.availability === availability);
+      });
     }
 
     // Speciality/Designation filter logic
@@ -404,7 +460,7 @@ function BookAppointment() {
                                 <div className="doctor-img">
                                   <a href="#">
                                     <img
-                                      src={el?.coverImage || user_img}
+                                      src={el?.profile?.coverImage || el?.coverImage || user_img}
                                       className="img-fluid"
                                       alt="Profile"
                                     />
@@ -424,7 +480,12 @@ function BookAppointment() {
                                       </>
                                     ) : el.type === 'pathology' ? (
                                       <>
-                                        <span>{data.displayName || data.name || 'Pathology'}</span>
+                                        <span>{
+                                          data.displayName ||
+                                          `${data.firstName || ''} ${data.lastName || ''}`.trim() ||
+                                          data.name ||
+                                          'Pathology'
+                                        }</span>
                                         <i className="fas fa-circle-check"></i>
                                       </>
                                     ) : (
@@ -480,12 +541,12 @@ function BookAppointment() {
 
                                       <span
                                         className={`available-date ${
-                                          data?.availability
+                                          data?.available || data?.availability
                                             ? "available-today"
                                             : "notavailable-today"
                                         }`}
                                       >
-                                        {data?.availability
+                                        {data?.available || data?.availability
                                           ? "Available Today"
                                           : "Not available today"}
                                       </span>
@@ -495,18 +556,29 @@ function BookAppointment() {
                                 <div className="clinic-booking book-appoint">
                                   {el.type === 'pathology' ? (
                                     <>
-                                      <button
+                                      <Link
                                         className="btn btn-primary"
-                                        onClick={handleUnderDevelopment}
+                                        to={`/pathologyprofile?userId=${el?._id}`}
                                       >
                                         View Details
-                                      </button>
-                                      <button
-                                        className="btn btn-primary-light"
-                                        onClick={handleUnderDevelopment}
+                                      </Link>
+                                      <div
+                                        onClick={() => !bookingLoading && handleBookAppointment(el)}
+                                        className={`btn btn-primary-light ${bookingLoading ? 'disabled' : ''}`}
+                                        style={{ 
+                                          cursor: bookingLoading ? 'not-allowed' : 'pointer',
+                                          opacity: bookingLoading ? 0.6 : 1
+                                        }}
                                       >
-                                        Book Online Consultation
-                                      </button>
+                                        {bookingLoading ? (
+                                          <>
+                                            <Spinner size="sm" className="me-2" />
+                                            Booking...
+                                          </>
+                                        ) : (
+                                          'Book Lab Test'
+                                        )}
+                                      </div>
                                     </>
                                   ) : (
                                     <>
@@ -517,11 +589,21 @@ function BookAppointment() {
                                         View Details
                                       </Link>
                                       <div
-                                        onClick={() => handleBookAppointment(el)}
-                                        className="btn btn-primary-light"
-                                        aria-disabled={loading}
+                                        onClick={() => !bookingLoading && handleBookAppointment(el)}
+                                        className={`btn btn-primary-light ${bookingLoading ? 'disabled' : ''}`}
+                                        style={{ 
+                                          cursor: bookingLoading ? 'not-allowed' : 'pointer',
+                                          opacity: bookingLoading ? 0.6 : 1
+                                        }}
                                       >
-                                        Book Online Consultation {loading && <Spinner size="sm" />}
+                                        {bookingLoading ? (
+                                          <>
+                                            <Spinner size="sm" className="me-2" />
+                                            Booking...
+                                          </>
+                                        ) : (
+                                          'Book Online Consultation'
+                                        )}
                                       </div>
                                     </>
                                   )}

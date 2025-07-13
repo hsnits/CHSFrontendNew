@@ -31,9 +31,22 @@ export const createAppointment = createAsyncThunk(
   "createAppointment",
   async (data) => {
     try {
+      const appointmentData = {};
+      
+      // Handle doctor, nurse, and pathology appointments
+      if (data.refDoctor) {
+        appointmentData.refDoctor = data.refDoctor;
+      }
+      if (data.refNurse) {
+        appointmentData.refNurse = data.refNurse;
+      }
+      if (data.refPathology) {
+        appointmentData.refPathology = data.refPathology;
+      }
+
       const response = await axiosInstance.post(
         ENDPOINTS.PATIENT.CREATE_APPOINTMENT + `/${data?.id}`,
-        { refDoctor: data.refDoctor }
+        appointmentData
       );
 
       return response.data.data;

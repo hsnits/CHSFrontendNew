@@ -10,7 +10,7 @@ import {
 } from "../../helpers/utils";
 import NotFound from "../../components/common/notFound";
 import { ChevronDown, ChevronUp } from "react-feather";
-import { Dropdown, Form } from "react-bootstrap";
+import { Dropdown, Form, Modal, Button } from "react-bootstrap";
 import { toastMessage } from "../../config/toast";
 import { callPutApi } from "../../_service";
 import DatePicker from "react-datepicker";
@@ -22,6 +22,9 @@ const Requests = ({ activeKey }) => {
   const [endDate, setEndDate] = useState(null);
   const [time, setTime] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [showAmountModal, setShowAmountModal] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [amount, setAmount] = useState("");
 
   const userProfileId = getLocalStorage(STORAGE.USER_KEY)?.profile?._id;
 
@@ -64,6 +67,42 @@ const Requests = ({ activeKey }) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
+  };
+
+  const handleAcceptWithAmount = (appointment) => {
+    setSelectedAppointment(appointment);
+    setShowAmountModal(true);
+    setAmount(""); // Reset amount
+  };
+
+  const handleConfirmAccept = async () => {
+    if (!amount || parseFloat(amount) <= 0) {
+      toastMessage("error", "Please enter a valid amount");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const verifyResponse = await callPutApi(`/patient/appointment/${selectedAppointment._id}`, {
+        status: "Accepted",
+        amount: parseFloat(amount)
+      });
+      
+      if (!verifyResponse.status) throw new Error(verifyResponse.message);
+      
+      setShowAmountModal(false);
+      setSelectedAppointment(null);
+      setAmount("");
+      setUploading(false);
+
+      toastMessage("success", `Appointment accepted with amount $${amount}`);
+
+      const updatedData = Appointments?.filter((item) => item?._id !== selectedAppointment._id);
+      setData(updatedData || []);
+    } catch (error) {
+      setUploading(false);
+      toastMessage("error", "Appointment update process failed!");
+    }
   };
 
   const handleUpdate = async (id, status) => {
@@ -174,7 +213,7 @@ const Requests = ({ activeKey }) => {
                   <ul className="request-action">
                     <li>
                       <span
-                        onClick={() => handleUpdate(it?._id, "Accepted")}
+                        onClick={() => handleAcceptWithAmount(it)}
                         className="accept-link"
                         style={{ cursor: "pointer" }}
                       >
@@ -204,6 +243,44 @@ const Requests = ({ activeKey }) => {
         title="Are you sure you want to reject this appointment request?"
         onConfirm={() => handleUpdate(customData?._id, "Rejected")}
       />
+
+      {/* Amount Modal */}
+      <Modal show={showAmountModal} onHide={() => setShowAmountModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Set Appointment Amount</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedAppointment && (
+            <div className="mb-3">
+              <p><strong>Patient:</strong> {selectedAppointment.appointmentPersonName || formatName(selectedAppointment.patientId, "Pt")}</p>
+              <p><strong>Date:</strong> {getDateFormate(selectedAppointment.date)} {selectedAppointment.time}</p>
+              <p><strong>Type:</strong> {selectedAppointment.appointmentType}</p>
+            </div>
+          )}
+          <Form.Group>
+            <Form.Label>Amount ($) <span className="text-danger">*</span></Form.Label>
+            <Form.Control
+              type="number"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min="0"
+              step="0.01"
+            />
+            <Form.Text className="text-muted">
+              Enter the consultation fee for this appointment
+            </Form.Text>
+          </Form.Group>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAmountModal(false)} disabled={uploading}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={handleConfirmAccept} disabled={uploading}>
+            {uploading ? "Processing..." : "Accept Appointment"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };

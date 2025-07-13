@@ -1,14 +1,15 @@
 // File: pages/pathologyDashboard/profile.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup"; // ✅ MISSING LINE ADDED
+import * as yup from "yup";
 import { Badge, Col, Row } from "react-bootstrap";
 import { ChevronDown, ChevronUp } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { Spinner } from "reactstrap";
 import { useDispatch } from "react-redux";
 
-import { callDeleteApi, callPostApi, callPutApi } from "../../_service";
+import { callDeleteApi, callPostApi } from "../../_service";
+import { updatePathologyLabProfile } from "../../redux/slices/pathologyApi";
 import { toastMessage } from "../../config/toast";
 import { getLocalStorage, setLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
@@ -33,6 +34,7 @@ const schema = yup.object().shape({
 
 const Profile = ({ getAllData, labDetails }) => {
   const dispatch = useDispatch();
+  const fileInputRef = useRef(null);
   const [listOpen, setListOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -52,8 +54,15 @@ const Profile = ({ getAllData, labDetails }) => {
   });
 
   const handlePhotoChange = async (e) => {
+    console.log("handlePhotoChange triggered", e.target.files);
     const file = e.target.files[0];
-    if (!file) return toastMessage("error", "No file selected.");
+    if (!file) {
+      console.log("No file selected");
+      return toastMessage("error", "No file selected.");
+    }
+    
+    console.log("File selected:", file.name, file.type, file.size);
+    
     if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type))
       return toastMessage("error", "Only JPEG, JPG, PNG allowed.");
     if (file.size > 4 * 1024 * 1024)
@@ -62,6 +71,7 @@ const Profile = ({ getAllData, labDetails }) => {
     setSelectedFile(file);
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("file", file);
       const res = await callPostApi("user/upload-file", formData, {
@@ -70,30 +80,46 @@ const Profile = ({ getAllData, labDetails }) => {
 
       if (!res?.data?.location) throw new Error("Invalid file upload response");
 
-      const updateRes = await callPutApi(`/pathology/${labDetails?.profile?._id}`, {
+      const resultAction = await dispatch(updatePathologyLabProfile({
+        userId: labDetails?._id,
         coverImage: res.data.location,
         fileKey: res.data.key,
-      });
+      }));
 
-      if (updateRes?.status) {
+      if (updatePathologyLabProfile.fulfilled.match(resultAction)) {
         getAllData("/user");
         dispatch(userProfile());
+        toastMessage("success", "Profile photo updated successfully");
+      } else {
+        throw new Error(resultAction.payload || "Failed to update profile photo");
       }
+      setLoading(false);
     } catch (error) {
       console.error(error);
       toastMessage("error", "File upload failed");
+      setLoading(false);
     }
   };
 
   const handleProfileRemove = async () => {
     try {
       setLoading(true);
-      const res = await callDeleteApi(`/user/delete-dp/${labDetails?.profile?._id}`);
-      if (res?.status) {
+      
+      // Update profile to remove cover image
+      const resultAction = await dispatch(updatePathologyLabProfile({
+        userId: labDetails?._id,
+        coverImage: null,
+        fileKey: null,
+      }));
+
+      if (updatePathologyLabProfile.fulfilled.match(resultAction)) {
         setIsOpen({ is: false, id: null });
         setSelectedFile(null);
         getAllData("/user");
         dispatch(userProfile());
+        toastMessage("success", "Profile photo removed successfully");
+      } else {
+        throw new Error(resultAction.payload || "Failed to remove profile photo");
       }
       setLoading(false);
     } catch (error) {
@@ -102,45 +128,50 @@ const Profile = ({ getAllData, labDetails }) => {
     }
   };
 
-  const onSubmit = async () => {
-    toastMessage("info", "⚙️ This feature is under development.");
-    return;
+  const onSubmit = async (data) => {
+    console.log("Form submit data:", data);
+    console.log("labDetails:", labDetails);
+    
     const updatedData = {
-      firstName: watch("firstName"),
-      lastName: watch("lastName"),
-      displayName: watch("displayName"),
-      designation: watch("designation"),
-      phoneNumber: watch("phoneNumber"),
-      email: watch("email"),
-      languages: watch("languages"),
+      firstName: data.firstName,
+      lastName: data.lastName,
+      designation: data.designation,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+      languages: data.languages,
     };
 
     try {
       setLoading(true);
-      toastMessage("info", "⚙️ This feature is under development.");
-      setLoading(false);
-      return;
-      const res = await callPutApi(`/pathology/${labDetails?.profile?._id}`, updatedData);
-      if (!res?.status) throw new Error(res?.message);
+      
+      const resultAction = await dispatch(updatePathologyLabProfile({
+        userId: labDetails?._id,
+        ...updatedData
+      }));
 
-      toastMessage("success", "Lab profile updated successfully");
-      await getAllData("/user");
+      if (updatePathologyLabProfile.fulfilled.match(resultAction)) {
+        toastMessage("success", "Lab profile updated successfully");
+        await getAllData("/user");
 
-      const userProfile = getLocalStorage(STORAGE.USER_KEY);
-      let profile = userProfile.profile;
+        const userProfile = getLocalStorage(STORAGE.USER_KEY);
+        let profile = userProfile.profile;
 
-      setLocalStorage(STORAGE.USER_KEY, {
-        ...userProfile,
-        name: updatedData.firstName,
-        phoneNumber: updatedData.phoneNumber,
-        email: updatedData.email,
-        profile: { ...profile, ...updatedData },
-      });
+        setLocalStorage(STORAGE.USER_KEY, {
+          ...userProfile,
+          name: updatedData.firstName,
+          phoneNumber: updatedData.phoneNumber,
+          email: updatedData.email,
+          profile: { ...profile, ...updatedData },
+        });
+      } else {
+        throw new Error(resultAction.payload || "Profile update failed");
+      }
 
       setLoading(false);
     } catch (error) {
+      console.error("Profile update error:", error);
       setLoading(false);
-      toastMessage("error", "Profile update failed");
+      toastMessage("error", error.message || "Profile update failed");
     }
   };
 
@@ -149,6 +180,11 @@ const Profile = ({ getAllData, labDetails }) => {
       reset(labDetails?.profile);
     }
   }, [labDetails, reset]);
+
+  // Debug logging
+  useEffect(() => {
+    console.log("Profile component - labDetails:", labDetails);
+  }, [labDetails]);
 
   const handleSelect = (e) => {
     const lang = e.target.value;
@@ -173,10 +209,12 @@ const Profile = ({ getAllData, labDetails }) => {
         <div className="setting-card">
           <div className="change-avatar img-upload">
             <div className="profile-img">
-              {labDetails?.coverImage ? (
-                <img src={labDetails.coverImage} alt="Preview" />
-              ) : selectedFile ? (
+              {selectedFile ? (
                 <img src={URL.createObjectURL(selectedFile)} alt="Preview" />
+              ) : labDetails?.profile?.coverImage ? (
+                <img src={labDetails.profile.coverImage} alt="Preview" />
+              ) : labDetails?.coverImage ? (
+                <img src={labDetails.coverImage} alt="Preview" />
               ) : (
                 <i className="fa-solid fa-file-image"></i>
               )}
@@ -186,11 +224,22 @@ const Profile = ({ getAllData, labDetails }) => {
               <div className="imgs-load d-flex align-items-center">
                 <div className="change-photo">
                   <input
+                    ref={fileInputRef}
                     type="file"
+                    id="profile-image-upload"
                     className="upload"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/jpg"
                     onChange={handlePhotoChange}
+                    disabled={loading}
+                    style={{ display: 'none' }}
                   />
+                  <label 
+                    htmlFor="profile-image-upload"
+                    className="upload-btn"
+                    style={{ cursor: loading ? 'not-allowed' : 'pointer' }}
+                  >
+                    {loading ? "Uploading..." : "Choose File"}
+                  </label>
                 </div>
                 <div
                   onClick={() => setIsOpen({ is: true })}

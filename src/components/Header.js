@@ -16,6 +16,7 @@ import { STORAGE } from "../constants/index";
 import { getLocalStorage, removeLocalStorage } from "../helpers/storage";
 import { toastMessage } from "../config/toast";
 import DrugLicenseModal from "./modals/drug-model";
+import "../assets/css/header.css";
 
 
 function Header() {

@@ -45,6 +45,8 @@ import OrderDetails from "../pages/patient/OrderDetails";
 import PathologyDashboard from "../pages/PathologyDashboard/PathologyDashboard";
 import NurseDashboard from "../pages/NurseDashboard/NurseDashboard";
 import NurseBooking from "../pages/NurseBooking/NurseBooking";
+import PathologyBooking from "../pages/PathologyBooking/PathologyBooking";
+import PathologyProfile from "../pages/PathologyProfile/PathologyProfile";
 
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -129,6 +131,7 @@ const Routes = () => {
         <Route path="/bookappointment" element={<BookAppointment />} />
         <Route path="/DoctorProfile" element={<DoctorProfile />} />
         <Route path="/nurseprofile" element={<NurseProfile />} />
+        <Route path="/pathologyprofile" element={<PathologyProfile />} />
         <Route path="/nurse/appointment/:userId" element={<NurseBooking />} />
           <Route
             path="/DoctorDashboard"
@@ -157,7 +160,25 @@ const Routes = () => {
           path="/DoctorBooking/:id"
           element={
             <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
-              <DoctorBooking />
+              <DoctorBooking type="doctor" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/nursebooking/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <NurseBooking type="nurse" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/pathologybooking/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <PathologyBooking type="pathology" />
             </ProtectedRoute>
           }
         />

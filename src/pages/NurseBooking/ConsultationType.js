@@ -1,17 +1,11 @@
 import React from "react";
-import BookingSummary from "../../components/doctorBooking/BookingSummary";
-import Breadcrumb from "../../components/Breadcrumb";
-import Footer from "../../components/Footer";
 import {
-  ArrowLeft,
   Home,
   MessageCircle,
   Mic,
   User,
   Video,
 } from "react-feather";
-import Header from "../../components/Header";
-import { Link } from "react-router-dom";
 
 export default function ConsultationType({
   formData,
@@ -81,16 +75,17 @@ export default function ConsultationType({
               </div>
             </div>
             <div className="consultation-info">
-              {/* <p>Home Visit</p>
-              <div
-                className={`consultation-types ${
-                  formData.appointmentType === "home" ? "active" : ""
-                }`}
-                onClick={() => onConsultationTypeChange("home")}
-              >
+              <p>In-Person Services</p>
+              <div className="consultation-list">
                 <ul>
                   <li>
-                    <div className="consultation-types">
+                    <div
+                      className={`consultation-types ${
+                        formData.appointmentType === "Home" ? "active" : ""
+                      }`}
+                      onClick={() => onConsultationTypeChange("Home")}
+                    >
+                      <div>RS : 0 </div>{" "}
                       <a href="#">
                         <Home /> &nbsp; Home Visit
                       </a>
@@ -99,37 +94,28 @@ export default function ConsultationType({
                       </span>
                     </div>
                   </li>
+                  <li>
+                    <div
+                      className={`consultation-types ${
+                        formData.appointmentType === "Consult" ? "active" : ""
+                      }`}
+                      onClick={() => onConsultationTypeChange("Consult")}
+                    >
+                      <div>RS : 0 </div>{" "}
+                      <a href="#">
+                        <User /> &nbsp; In-Person Consult
+                      </a>
+                      <span>
+                        <i className="fas fa-circle-check"></i>
+                      </span>
+                    </div>
+                  </li>
                 </ul>
-              </div> */}
-              {/* <ul>
-                <li>
-                  <div
-                    className={`consultation-types ${
-                      formData.appointmentType === "instant" ? "active" : ""
-                    }`}
-                    onClick={() => onConsultationTypeChange("instant")}
-                  >
-                    <a href="#">
-                      <User /> &nbsp; Consult Instantly
-                    </a>
-                    <span>
-                      <i className="fas fa-circle-check"></i>
-                    </span>
-                  </div>
-                </li>
-              </ul> */}
+              </div>
             </div>
           </div>
-          {/* <div className="booking-btn">
-                <Link
-                  to="/BookingSuccess"
-                  className="btn btn-primary   justify-content-center align-items-center"
-                >
-                  Next <i className="feather-arrow-right-circle"></i>
-                </Link>
-              </div> */}
         </div>
       </div>
     </>
   );
-}
+} 

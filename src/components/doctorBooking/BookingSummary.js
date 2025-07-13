@@ -4,7 +4,36 @@ import message from "../../assets/img/icons/device-message.svg";
 import { Card, CardBody, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
-export default function BookingSummary({ data }) {
+export default function BookingSummary({ data, type }) {
+  // Determine the title prefix based on the type or designation
+  const getTitlePrefix = () => {
+    debugger;
+    if (type === "nurse") {
+      return ""; // No prefix for nurses
+    }
+    if (type === "pathology") {
+      return ""; // No prefix for pathology labs
+    }
+    if (data?.designation && data.designation.toLowerCase().includes("nurse")) {
+      return ""; // No prefix for nurses
+    }
+    return "Dr. "; // Default to Dr. for doctors
+  };
+
+  // Get the full name
+  const getFullName = () => {
+    if (data?.displayName) {
+      return data.displayName;
+    }
+    if (data?.firstName && data?.lastName) {
+      return `${data.firstName} ${data.lastName}`;
+    }
+    if (data?.firstName) {
+      return data.firstName;
+    }
+    return "Unknown";
+  };
+
   return (
     <>
       <Col lg="4" md="12">
@@ -17,14 +46,14 @@ export default function BookingSummary({ data }) {
               <div className="booking-doctor-left">
                 <div className="booking-doctor-img">
                   <Link to="#">
-                    <img src={user_img} alt="John Doe" />
+                    <img src={data?.coverImage || user_img} alt={getFullName()} />
                   </Link>
                 </div>
                 <div className="booking-doctor-info">
                   <h4>
-                    <Link to="#">Dr.{data?.firstName}</Link>
+                    <Link to="#">{getTitlePrefix()}{getFullName()}</Link>
                   </h4>
-                  <p>{data?.designation}</p>
+                  <p>{data?.designation || (type === "nurse" ? "Registered Nurse" : type === "pathology" ? "Pathology Lab" : "Doctor")}</p>
                   <p>{data?.languages && data?.languages?.join(",")}</p>
                 </div>
               </div>

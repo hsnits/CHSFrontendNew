@@ -326,7 +326,12 @@ const Dashboard = ({
                                       <td>{el?.reason || "--"}</td>
 
                                       <td>{getDateFormate(el?.date)}</td>
-                                      <td>Dr {el?.refDoctor?.displayName}</td>
+                                      <td>
+                                        {el?.refDoctor && `Dr ${el?.refDoctor?.displayName}`}
+                                        {el?.refNurse && `Nurse ${el?.refNurse?.firstName} ${el?.refNurse?.lastName}`}
+                                        {el?.refPathology && `${el?.refPathology?.labName || el?.refPathology?.firstName + ' ' + el?.refPathology?.lastName}`}
+                                        {!el?.refDoctor && !el?.refNurse && !el?.refPathology && "--"}
+                                      </td>
                                       <td>${el?.amount || 0}</td>
                                       <td>
                                         {el?.comments || "Good take rest"}

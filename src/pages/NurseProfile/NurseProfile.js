@@ -38,7 +38,7 @@ function NurseProfile() {
       return;
     }
     const formattedData = {
-      refDoctor: data?.profile?._id,
+      refNurse: data?.profile?._id,
       id: userProfileId?.profile?._id,
       status: "Created",
     };
@@ -47,7 +47,7 @@ function NurseProfile() {
         setLocalStorage(STORAGE.APPOINTMENT_KEY, {
           appointment_id: res?.payload?._id,
         });
-      navigate(`/doctorbooking/${res?.payload?._id}`);
+      navigate(`/nursebooking/${res?.payload?._id}`);
     });
   };
 

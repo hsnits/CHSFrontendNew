@@ -73,6 +73,7 @@ const PatSymptoms = () => {
 
   const onSubmit = async () => {
     try {
+      debugger;
       setLoading(true);
       const response = await callPostApi("/patient/symptom-checker", {
         symptoms: watch("symptoms"),
@@ -87,7 +88,7 @@ const PatSymptoms = () => {
       });
       if (!response) throw new Error(response?.message);
       setLoading(false);
-      // toastMessage("success", "symptoms checker sending...");
+      toastMessage("success", "symptoms checker sending...");
     } catch (error) {}
   };
 
@@ -135,6 +136,7 @@ const PatSymptoms = () => {
 
   useEffect(() => {
     symptomSocket.on("summary", (messages) => {
+      debugger;
       if (messages && messages?.summary) {
         setSummary(messages?.summary);
       }

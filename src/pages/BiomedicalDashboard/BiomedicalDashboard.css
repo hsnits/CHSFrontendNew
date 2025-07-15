@@ -1,0 +1,387 @@
+/* Biomedical Dashboard Styles */
+.biomedical-sidebar {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.biomedical-role-badge {
+  background: #28a745;
+  color: white;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.biomedical-role-badge i {
+  color: #fff;
+  margin-right: 4px;
+}
+
+.biomedical-available-head {
+  padding: 20px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.biomedical-available-head .form-label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.biomedical-available-head .form-control {
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.biomedical-available-head .form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Dashboard Statistics Cards */
+.dashboard-widget-box {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-content-info h6 {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.dashboard-content-info h3 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+.dashboard-widget-img {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.1;
+  width: 80px;
+  height: 80px;
+}
+
+.dashboard-widget-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 123, 255, 0.1);
+  border-radius: 50%;
+  color: #007bff;
+  font-size: 24px;
+}
+
+/* Service Statistics Cards */
+.service-stat-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.service-stat-icon {
+  width: 50px;
+  height: 50px;
+  background: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.service-stat-info h6 {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.service-stat-info h4 {
+  color: #333;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 0;
+}
+
+/* Appointments Table */
+.table-hover tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.avatar-sm {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+}
+
+.badge-soft-info {
+  background-color: rgba(23, 162, 184, 0.1);
+  color: #17a2b8;
+  border: 1px solid rgba(23, 162, 184, 0.2);
+}
+
+.action-item {
+  display: flex;
+  gap: 5px;
+}
+
+.action-item .btn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* Profile Components */
+.biomedical-profile-container .profile-image {
+  border: 3px solid #007bff;
+}
+
+.service-areas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.service-areas-grid .form-check {
+  margin-bottom: 0;
+}
+
+/* Availability Component */
+.availability-container .card {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.availability-container .card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 15px 20px;
+}
+
+.availability-container .card-header h5 {
+  margin-bottom: 0;
+  color: #333;
+  font-weight: 600;
+}
+
+.availability-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.summary-item {
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.summary-item strong {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Service Request Details Modal */
+.service-request-details .detail-section {
+  margin-bottom: 25px;
+}
+
+.service-request-details .detail-section h6 {
+  color: #007bff;
+  font-weight: 600;
+  margin-bottom: 15px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #007bff;
+}
+
+.service-request-details .detail-item {
+  margin-bottom: 10px;
+}
+
+.service-request-details .detail-item label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.service-request-details .detail-item p {
+  margin-bottom: 0;
+  color: #666;
+}
+
+/* Badge Styles */
+.badge-success {
+  background-color: #28a745;
+  color: white;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.badge-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.badge-info {
+  background-color: #17a2b8;
+  color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-widget-box {
+    margin-bottom: 15px;
+  }
+  
+  .dashboard-content-info h3 {
+    font-size: 20px;
+  }
+  
+  .dashboard-widget-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+  
+  .service-areas-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .availability-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-item {
+    flex-direction: column;
+    gap: 3px;
+  }
+  
+  .card-header-btns {
+    margin-top: 10px;
+  }
+  
+  .card-header-btns .btn {
+    margin-bottom: 5px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-header h3 {
+    font-size: 20px;
+  }
+  
+  .card-header h4 {
+    font-size: 18px;
+  }
+  
+  .table-responsive {
+    font-size: 12px;
+  }
+  
+  .service-request-details .detail-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* Loading States */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.25em;
+}
+
+/* Form Enhancements */
+.form-control:focus,
+.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.form-check-input:checked {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* Button Enhancements */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.btn-outline-primary {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-outline-primary:hover {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+/* Animation */
+.dashboard-widget-box {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-widget-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card {
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+} 

@@ -39,9 +39,18 @@ const Contact = () => {
       } else if (result?.data?.role === ROLES.PATHOLOGY) {
         navigate("/PathologyDashboard");
       } 
-     else if (result?.data?.role === ROLES.NURSING) {
-      navigate("/NurseDashboard");
-    } 
+      else if (result?.data?.role === ROLES.NURSING) {
+        navigate("/NurseDashboard");
+      } 
+      else if (result?.data?.role === ROLES.AMBULANCE) {
+        navigate("/AmbulanceDashboard");
+      } 
+      else if (result?.data?.role === ROLES.BIOCHEMICAL) {
+        navigate("/BiomedicalDashboard");
+      } 
+      else if (result?.data?.role === ROLES.HOSPITAL) {
+        navigate("/HospitalDashboard");
+      } 
       else {
         navigate("/pharmacy");
       }

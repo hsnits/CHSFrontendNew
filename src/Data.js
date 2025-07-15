@@ -129,7 +129,7 @@ export const Navbar = [
       },
       {
         id: 7,
-        menu_name: "Subscription Plans",
+        menu_name: "Membership",
         path: "/subscription-plans",
       },
     ],

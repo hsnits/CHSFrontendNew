@@ -98,6 +98,9 @@ function Header() {
                       isLoggedIn?.role == "Doctor" ? "/DoctorDashboard"
                     : isLoggedIn?.role == "Pathology" ? "/PathologyDashboard"
                     : isLoggedIn?.role == "Nursing" ? "/NurseDashboard"
+                    : isLoggedIn?.role == "Hospital" ? "/HospitalDashboard"
+                    : isLoggedIn?.role == "Biomedical" ? "/BiomedicalDashboard"
+                    : isLoggedIn?.role == "Ambulance" ? "/AmbulanceDashboard"
                         : "/patient"
                     }
                   >
@@ -504,6 +507,12 @@ function Header() {
                           ? "/PathologyDashboard"
                           : isLoggedIn?.role == "Nursing"
                           ? "/NurseDashboard?key=sixth"
+                          : isLoggedIn?.role == "Hospital"
+                          ? "/HospitalDashboard"
+                          : isLoggedIn?.role == "Biomedical"
+                          ? "/BiomedicalDashboard"
+                          : isLoggedIn?.role == "Ambulance"
+                          ? "/AmbulanceDashboard"
                           : "/patient"
                       }
                     >
@@ -516,6 +525,9 @@ function Header() {
                           ? "/DoctorDashboard?key=sixth"
                           : isLoggedIn?.role == "Pathology" ? "/PathologyDashboard?key=sixth"
                           : isLoggedIn?.role == "Nursing" ? "/NurseDashboard?key=sixth"
+                          : isLoggedIn?.role == "Hospital" ? "/HospitalDashboard?key=sixth"
+                          : isLoggedIn?.role == "Biomedical" ? "/BiomedicalDashboard?key=sixth"
+                          : isLoggedIn?.role == "Ambulance" ? "/AmbulanceDashboard?key=sixth"
                           : "/patient?key=fourth"
                       }
                     >

@@ -36,7 +36,7 @@ const useGetMountData = (baseUrl) => {
           url = `${baseUrl}?${params.toString()}`;
         }
         const response = await callGetApi(url);
-        if (response?.status) {
+        if (response?.status || response?.success) {
           setData(response.data);
           setBackupData(response.data);
         }

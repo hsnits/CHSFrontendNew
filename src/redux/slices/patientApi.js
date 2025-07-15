@@ -33,7 +33,7 @@ export const createAppointment = createAsyncThunk(
     try {
       const appointmentData = {};
       
-      // Handle doctor, nurse, and pathology appointments
+      // Handle all service provider appointments
       if (data.refDoctor) {
         appointmentData.refDoctor = data.refDoctor;
       }
@@ -42,6 +42,15 @@ export const createAppointment = createAsyncThunk(
       }
       if (data.refPathology) {
         appointmentData.refPathology = data.refPathology;
+      }
+      if (data.refAmbulance) {
+        appointmentData.refAmbulance = data.refAmbulance;
+      }
+      if (data.refBiomedical) {
+        appointmentData.refBiomedical = data.refBiomedical;
+      }
+      if (data.refHospital) {
+        appointmentData.refHospital = data.refHospital;
       }
 
       const response = await axiosInstance.post(

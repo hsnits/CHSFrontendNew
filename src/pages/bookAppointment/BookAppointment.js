@@ -35,7 +35,7 @@ function BookAppointment() {
   const [bookingLoading, setBookingLoading] = useState(false);
 
   // Role filter state
-  const [selectedRoles, setSelectedRoles] = useState(['doctor', 'nurse', 'Pathology']);
+  const [selectedRoles, setSelectedRoles] = useState(['doctor', 'nurse', 'Pathology', 'ambulance', 'biomedical', 'hospital']);
 
   // Handler for role checkbox
   const handleRoleChange = (role) => {
@@ -77,29 +77,42 @@ function BookAppointment() {
   const [selectedSpecialities, setSelectedSpecialities] = useState([]);
 
   useEffect(() => {
-    const fetchPractitioners = async () => {
-      setLoading(true);
-      try {
-        const res = await axiosInstance.get("/common/doctorandnurse/list");
-        debugger;
-        if (res?.data) {
-          // Combine and tag
-          const doctors = (res.data.doctors || []).map(d => ({ ...d, type: 'doctor' }));
-          const nurses = (res.data.nurses || []).map(n => ({
-            ...n,
-            type: n.role && n.role.toLowerCase() === 'pathology' ? 'pathology' : 'nurse'
-          }));
-          const combined = [...doctors, ...nurses];
+          const fetchPractitioners = async () => {
+        setLoading(true);
+        try {
+          const res = await axiosInstance.get("/common/doctorandnurse/list");
           debugger;
-          setBackupList(combined);
-          setPractitionersList(combined);
+          if (res?.data) {
+            // Combine and tag all service types
+            const doctors = (res.data.doctors || []).map(d => ({ ...d, type: 'doctor' }));
+            const nurses = (res.data.nurses || []).map(n => ({
+              ...n,
+              type: n.role && n.role.toLowerCase() === 'pathology' ? 'pathology' : 'nurse'
+            }));
+            const ambulances = (res.data.ambulance || []).map(a => ({ ...a, type: 'ambulance' }));
+            const biomedicals = (res.data.biomedical || []).map(b => ({ ...b, type: 'biomedical' }));
+            const hospitals = (res.data.hospital || []).map(h => ({ ...h, type: 'hospital' }));
+            
+            const combined = [...doctors, ...nurses, ...ambulances, ...biomedicals, ...hospitals];
+            debugger;
+            console.log('All practitioners loaded:', {
+              doctors: doctors.length,
+              nurses: nurses.length,
+              ambulances: ambulances.length,
+              biomedicals: biomedicals.length,
+              hospitals: hospitals.length,
+              total: combined.length
+            });
+            
+            setBackupList(combined);
+            setPractitionersList(combined);
+          }
+        } catch (error) {
+          toastMessage("error", "Failed to load list");
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        toastMessage("error", "Failed to load list");
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
     fetchPractitioners();
   }, []);
 
@@ -127,6 +140,12 @@ function BookAppointment() {
       formattedData.refNurse = data?.profile?._id || data?._id;
     } else if (data.type === 'pathology') {
       formattedData.refPathology = data?.profile?._id || data?._id;
+    } else if (data.type === 'ambulance') {
+      formattedData.refAmbulance = data?.profile?._id || data?._id;
+    } else if (data.type === 'biomedical') {
+      formattedData.refBiomedical = data?.profile?._id || data?._id;
+    } else if (data.type === 'hospital') {
+      formattedData.refHospital = data?.profile?._id || data?._id;
     } else {
       formattedData.refDoctor = data?.profile?._id || data?._id;
     }
@@ -141,6 +160,24 @@ function BookAppointment() {
     
     if (data.type === 'pathology' && !formattedData.refPathology) {
       toastMessage("error", "Pathology lab information not found.");
+      setBookingLoading(false);
+      return;
+    }
+    
+    if (data.type === 'ambulance' && !formattedData.refAmbulance) {
+      toastMessage("error", "Ambulance service information not found.");
+      setBookingLoading(false);
+      return;
+    }
+    
+    if (data.type === 'biomedical' && !formattedData.refBiomedical) {
+      toastMessage("error", "Biomedical service information not found.");
+      setBookingLoading(false);
+      return;
+    }
+    
+    if (data.type === 'hospital' && !formattedData.refHospital) {
+      toastMessage("error", "Hospital service information not found.");
       setBookingLoading(false);
       return;
     }
@@ -161,6 +198,15 @@ function BookAppointment() {
         } else if (data.type === 'pathology') {
           console.log("Navigating to pathology booking:", `/pathologybooking/${res?.payload?._id}`);
           navigate(`/pathologybooking/${res?.payload?._id}`);
+        } else if (data.type === 'ambulance') {
+          console.log("Navigating to ambulance booking:", `/ambulancebooking/${res?.payload?._id}`);
+          navigate(`/ambulancebooking/${res?.payload?._id}`);
+        } else if (data.type === 'biomedical') {
+          console.log("Navigating to biomedical booking:", `/biomedicalbooking/${res?.payload?._id}`);
+          navigate(`/biomedicalbooking/${res?.payload?._id}`);
+        } else if (data.type === 'hospital') {
+          console.log("Navigating to hospital booking:", `/hospitalbooking/${res?.payload?._id}`);
+          navigate(`/hospitalbooking/${res?.payload?._id}`);
         } else {
           navigate(`/doctorbooking/${res?.payload?._id}`);
         }
@@ -265,7 +311,7 @@ function BookAppointment() {
     setAvailability(null);
     setSortOrder("A-Z");
     setIsFilterApplied(false);
-    setSelectedRoles(['doctor', 'nurse', 'Pathology']);
+    setSelectedRoles(['doctor', 'nurse', 'Pathology', 'ambulance', 'biomedical', 'hospital']);
     setPractitionersList(backupList);
   };
 
@@ -331,6 +377,39 @@ function BookAppointment() {
                                 />
                                 <span className="checkmark"></span>
                                 Pathology
+                              </label>
+                            </li>
+                            <li>
+                              <label className="custom_check d-inline-flex">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRoles.includes('ambulance')}
+                                  onChange={() => handleRoleChange('ambulance')}
+                                />
+                                <span className="checkmark"></span>
+                                Ambulance
+                              </label>
+                            </li>
+                            <li>
+                              <label className="custom_check d-inline-flex">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRoles.includes('biomedical')}
+                                  onChange={() => handleRoleChange('biomedical')}
+                                />
+                                <span className="checkmark"></span>
+                                Biomedical
+                              </label>
+                            </li>
+                            <li>
+                              <label className="custom_check d-inline-flex">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedRoles.includes('hospital')}
+                                  onChange={() => handleRoleChange('hospital')}
+                                />
+                                <span className="checkmark"></span>
+                                Hospital
                               </label>
                             </li>
                           </ul>
@@ -488,6 +567,36 @@ function BookAppointment() {
                                         }</span>
                                         <i className="fas fa-circle-check"></i>
                                       </>
+                                    ) : el.type === 'ambulance' ? (
+                                      <>
+                                        <span>{
+                                          data.displayName ||
+                                          `${data.firstName || ''} ${data.lastName || ''}`.trim() ||
+                                          data.name ||
+                                          'Ambulance Service'
+                                        }</span>
+                                        <i className="fas fa-circle-check"></i>
+                                      </>
+                                    ) : el.type === 'biomedical' ? (
+                                      <>
+                                        <span>{
+                                          data.displayName ||
+                                          `${data.firstName || ''} ${data.lastName || ''}`.trim() ||
+                                          data.name ||
+                                          'Biomedical Service'
+                                        }</span>
+                                        <i className="fas fa-circle-check"></i>
+                                      </>
+                                    ) : el.type === 'hospital' ? (
+                                      <>
+                                        <span>{
+                                          data.displayName ||
+                                          `${data.firstName || ''} ${data.lastName || ''}`.trim() ||
+                                          data.name ||
+                                          'Hospital Service'
+                                        }</span>
+                                        <i className="fas fa-circle-check"></i>
+                                      </>
                                     ) : (
                                       <>
                                         <Link to="/doctorprofile">
@@ -502,6 +611,12 @@ function BookAppointment() {
                                       'Nurse'
                                     ) : el.type === 'pathology' ? (
                                       'Pathology'
+                                    ) : el.type === 'ambulance' ? (
+                                      'Ambulance Service'
+                                    ) : el.type === 'biomedical' ? (
+                                      'Biomedical Engineering'
+                                    ) : el.type === 'hospital' ? (
+                                      'Hospital Services'
                                     ) : (
                                       `${data?.designation || ""}${
                                         data?.achievement
@@ -579,6 +694,51 @@ function BookAppointment() {
                                           'Book Lab Test'
                                         )}
                                       </div>
+                                    </>
+                                  ) : el.type === 'ambulance' ? (
+                                    <>
+                                      <Link
+                                        className="btn btn-primary"
+                                        to={`/ambulanceprofile?userId=${el?._id}`}
+                                      >
+                                        View Details
+                                      </Link>
+                                      <Link
+                                        className="btn btn-primary-light"
+                                        to="/ambulance-booking"
+                                      >
+                                        Book Ambulance
+                                      </Link>
+                                    </>
+                                  ) : el.type === 'biomedical' ? (
+                                    <>
+                                      <Link
+                                        className="btn btn-primary"
+                                        to={`/biomedicalprofile?userId=${el?._id}`}
+                                      >
+                                        View Details
+                                      </Link>
+                                      <Link
+                                        className="btn btn-primary-light"
+                                        to="/biomedical-booking"
+                                      >
+                                        Book Service
+                                      </Link>
+                                    </>
+                                  ) : el.type === 'hospital' ? (
+                                    <>
+                                      <Link
+                                        className="btn btn-primary"
+                                        to={`/hospitalprofile?userId=${el?._id}`}
+                                      >
+                                        View Details
+                                      </Link>
+                                      <Link
+                                        className="btn btn-primary-light"
+                                        to="/hospital-booking"
+                                      >
+                                        Book Service
+                                      </Link>
                                     </>
                                   ) : (
                                     <>

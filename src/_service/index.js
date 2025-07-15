@@ -2,7 +2,7 @@ import axios from "axios";
 import { getLocalStorage } from "../helpers/storage";
 
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL,
+  baseURL: process.env.REACT_APP_API_BASE_URL || "http://localhost:5000",
   // baseURL: "https://api.chshealthcare.in/",
   // baseURL:"http://localhost:5000/",
   headers: {

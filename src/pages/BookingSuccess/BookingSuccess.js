@@ -149,11 +149,49 @@ export default function BookingSuccess() {
     ? (data?.refNurse || data?.nurse)
     : type === "pathology"
     ? (data?.refPathology || data?.pathology)
+    : type === "ambulance"
+    ? (data?.refAmbulance || data?.ambulance)
+    : type === "biomedical"
+    ? (data?.refBiomedical || data?.biomedical)
+    : type === "hospital"
+    ? (data?.refHospital || data?.hospital)
     : (data?.refDoctor || data?.doctor);
 
-  const professionalTitle = type === "nurse" ? "Nurse" : type === "pathology" ? "Lab" : "Dr.";
-  const listPageLink = type === "nurse" ? "/NurseProfile" : type === "pathology" ? "/pathologyprofile" : "/doctorList";
-  const listPageText = type === "nurse" ? "Back to Nurses" : type === "pathology" ? "Back to Labs" : "Back to Doctors";
+  const professionalTitle = type === "nurse" 
+    ? "Nurse" 
+    : type === "pathology" 
+    ? "Lab" 
+    : type === "ambulance"
+    ? "Ambulance Service"
+    : type === "biomedical"
+    ? "Biomedical Service"
+    : type === "hospital"
+    ? "Hospital"
+    : "Dr.";
+    
+  const listPageLink = type === "nurse" 
+    ? "/NurseProfile" 
+    : type === "pathology" 
+    ? "/pathologyprofile" 
+    : type === "ambulance"
+    ? "/bookappointment"
+    : type === "biomedical"
+    ? "/bookappointment"
+    : type === "hospital"
+    ? "/bookappointment"
+    : "/doctorList";
+    
+  const listPageText = type === "nurse" 
+    ? "Back to Nurses" 
+    : type === "pathology" 
+    ? "Back to Labs" 
+    : type === "ambulance"
+    ? "Back to Services"
+    : type === "biomedical"
+    ? "Back to Services"
+    : type === "hospital"
+    ? "Back to Services"
+    : "Back to Doctors";
 
   return (
     <>

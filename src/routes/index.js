@@ -48,6 +48,12 @@ import NurseDashboard from "../pages/NurseDashboard/NurseDashboard";
 import NurseBooking from "../pages/NurseBooking/NurseBooking";
 import PathologyBooking from "../pages/PathologyBooking/PathologyBooking";
 import PathologyProfile from "../pages/PathologyProfile/PathologyProfile";
+import AmbulanceBooking from "../pages/AmbulanceBooking/AmbulanceBooking";
+import BiomedicalBooking from "../pages/BiomedicalBooking/BiomedicalBooking";
+import HospitalBooking from "../pages/HospitalBooking/HospitalBooking";
+import AmbulanceDashboard from "../pages/AmbulanceDashboard/AmbulanceDashboard";
+import BiomedicalDashboard from "../pages/BiomedicalDashboard/BiomedicalDashboard";
+import HospitalDashboard from "../pages/HospitalDashboard/HospitalDashboard";
 
 const Routes = () => {
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -152,6 +158,30 @@ const Routes = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/AmbulanceDashboard"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.AMBULANCE]}>
+              <AmbulanceDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/BiomedicalDashboard"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.BIOCHEMICAL]}>
+              <BiomedicalDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/HospitalDashboard"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.HOSPITAL]}>
+              <HospitalDashboard />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/pharmacy" element={<Pharmacy />} />
         <Route path="/ProductDesc" element={<ProductDesc />} />
         <Route path="/Cart" element={<Cart />} />
@@ -181,6 +211,60 @@ const Routes = () => {
           element={
             <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
               <PathologyBooking type="pathology" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ambulancebooking/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <AmbulanceBooking type="ambulance" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/biomedicalbooking/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <BiomedicalBooking type="biomedical" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hospitalbooking/:id"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <HospitalBooking type="hospital" />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ambulance-booking"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <AmbulanceBooking />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/biomedical-booking"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <BiomedicalBooking />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/hospital-booking"
+          element={
+            <ProtectedRoute allowedRoles={[ROLES.PATIENT]}>
+              <HospitalBooking />
             </ProtectedRoute>
           }
         />

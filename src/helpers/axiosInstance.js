@@ -26,3 +26,44 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// Add API helper functions
+export const getDataAPI = async (url, config = {}) => {
+  try {
+    const response = await axiosInstance.get(url, config);
+    return response.data;
+  } catch (error) {
+    console.error("GET API Error:", error);
+    throw error;
+  }
+};
+
+export const postDataAPI = async (url, data, config = {}) => {
+  try {
+    const response = await axiosInstance.post(url, data, config);
+    return response.data;
+  } catch (error) {
+    console.error("POST API Error:", error);
+    throw error;
+  }
+};
+
+export const putDataAPI = async (url, data, config = {}) => {
+  try {
+    const response = await axiosInstance.put(url, data, config);
+    return response.data;
+  } catch (error) {
+    console.error("PUT API Error:", error);
+    throw error;
+  }
+};
+
+export const deleteDataAPI = async (url, config = {}) => {
+  try {
+    const response = await axiosInstance.delete(url, config);
+    return response.data;
+  } catch (error) {
+    console.error("DELETE API Error:", error);
+    throw error;
+  }
+};

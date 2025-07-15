@@ -25,4 +25,14 @@ export const ENDPOINTS = {
   APPOINTMENT: {
     GET_RECORD: "/common/doctorandnurse/list",
   },
+  SUBSCRIPTION: {
+    GET_PLANS: "/subscription/plans",
+    GET_MY_SUBSCRIPTION: "/subscription/my-subscription",
+    GET_BENEFITS: "/subscription/benefits",
+    CREATE_ORDER: "/subscription/create-order",
+    VERIFY_PAYMENT: "/subscription/verify-payment",
+    CANCEL_SUBSCRIPTION: "/subscription/cancel",
+    GET_USAGE: "/subscription/usage",
+    CHECK_BENEFIT: "/subscription/check-benefit",
+  },
 };

@@ -21,6 +21,7 @@ import { getLocalStorage } from "../../helpers/storage";
 import { getAllAppointment } from "../../redux/slices/patientApi";
 import MyOrders from './MyOrders';
 import OrderDetails from './OrderDetails';
+import SubscriptionDashboard from './SubscriptionDashboard';
 
 function PatientDashboard() {
   const dispatch = useDispatch();
@@ -110,6 +111,10 @@ function PatientDashboard() {
                   {/* My Orders view */}
                   <Tab.Pane eventKey="orders">
                     <MyOrders />
+                  </Tab.Pane>
+                  {/* Subscription view */}
+                  <Tab.Pane eventKey="subscription">
+                    <SubscriptionDashboard />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

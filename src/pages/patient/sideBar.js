@@ -62,6 +62,11 @@ const SideBar = ({ data }) => {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
+              <Nav.Link as={Link} to={`${location.pathname}?key=subscription`} eventKey="subscription">
+                <i className="fa-solid fa-crown"></i> My Subscription
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={Link} to={`${location.pathname}?key=fourth`} eventKey="fourth">
                 <i className="fa-solid fa-user-pen"></i> Profile Settings
               </Nav.Link>

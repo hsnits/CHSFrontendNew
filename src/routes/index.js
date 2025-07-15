@@ -43,6 +43,7 @@ import { getLocalStorage } from "../helpers/storage";
 import TwillioCall from "../components/twillio/video";
 import OrderDetails from "../pages/patient/OrderDetails";
 import PathologyDashboard from "../pages/PathologyDashboard/PathologyDashboard";
+import SubscriptionPlans from "../pages/subscription/SubscriptionPlans";
 import NurseDashboard from "../pages/NurseDashboard/NurseDashboard";
 import NurseBooking from "../pages/NurseBooking/NurseBooking";
 import PathologyBooking from "../pages/PathologyBooking/PathologyBooking";
@@ -126,6 +127,7 @@ const Routes = () => {
           }
         />
         <Route path="/order-details/:orderId" element={<OrderDetails />} />
+        <Route path="/subscription-plans" element={<SubscriptionPlans />} />
         
         <Route path="/DoctorList" element={<DoctorList />} />
         <Route path="/bookappointment" element={<BookAppointment />} />

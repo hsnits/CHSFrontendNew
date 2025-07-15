@@ -127,6 +127,11 @@ export const Navbar = [
         menu_name: "Diagnostics Services",
         path: "/Diagnostics",
       },
+      {
+        id: 7,
+        menu_name: "Subscription Plans",
+        path: "/subscription-plans",
+      },
     ],
   },
   {

@@ -24,12 +24,18 @@ export default function FeaturedProduct({
     setQuery((prev) => ({ ...prev, category: e.target.value }));
   };
 
-  const getDiscountedPrice = (item) => {
-    const discount = isWholesaler
+  const getDiscountedPrice = (item, subscriptionDiscount = 0) => {
+    const productDiscount = isWholesaler
       ? item.sellerDiscount || 25
       : item?.discount || 0;
+    
+    // For regular customers, add subscription discount to product discount
+    // For wholesalers, use only seller discount
+    const totalDiscount = isWholesaler 
+      ? productDiscount 
+      : Math.min(productDiscount + subscriptionDiscount, 50); // Cap at 50%
 
-    return (item.price - (item.price * discount || 0) / 100).toFixed(2);
+    return (item.price - (item.price * totalDiscount || 0) / 100).toFixed(2);
   };
 
   const handleAddToCart = async (item) => {

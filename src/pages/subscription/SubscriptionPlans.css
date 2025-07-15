@@ -1,0 +1,215 @@
+.subscription-plans-container {
+  min-height: 80vh;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.section-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.billing-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.billing-toggle .form-check {
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.subscription-card {
+  border: 2px solid #e9ecef;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.subscription-card:hover {
+  border-color: #3399cc;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(51, 153, 204, 0.1);
+}
+
+.subscription-card.popular-plan {
+  border-color: #28a745;
+  position: relative;
+}
+
+.popular-badge {
+  position: absolute;
+  top: 20px;
+  right: -30px;
+  background: #28a745;
+  color: white;
+  padding: 5px 40px;
+  transform: rotate(45deg);
+  font-size: 0.8rem;
+  z-index: 1;
+}
+
+.plan-header {
+  padding: 1rem 0;
+}
+
+.plan-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.plan-description {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.plan-price {
+  margin-bottom: 1rem;
+}
+
+.price-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #3399cc;
+}
+
+.price-period {
+  font-size: 1rem;
+  color: #666;
+}
+
+.savings-badge {
+  margin-top: 0.5rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.feature-item:last-child {
+  border-bottom: none;
+}
+
+.plan-action .btn {
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+}
+
+.current-subscription-card {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border: none;
+  border-radius: 15px;
+}
+
+.current-subscription-card .card-body {
+  padding: 2rem;
+}
+
+.features-comparison {
+  border-radius: 15px;
+  border: 1px solid #e9ecef;
+}
+
+.features-comparison .card-header {
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.features-comparison .table {
+  margin-bottom: 0;
+}
+
+.features-comparison .table th {
+  font-weight: 600;
+  color: #333;
+  padding: 1rem;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.features-comparison .table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.payment-summary {
+  padding: 1rem 0;
+}
+
+.billing-summary {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.billing-summary > div {
+  margin-bottom: 0.5rem;
+}
+
+.billing-summary > div:last-child {
+  margin-bottom: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .price-amount {
+    font-size: 2rem;
+  }
+  
+  .subscription-card {
+    margin-bottom: 2rem;
+  }
+  
+  .popular-badge {
+    top: 15px;
+    right: -35px;
+    padding: 3px 35px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Animation for loading */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+/* Success checkmark animation */
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.success-checkmark {
+  animation: checkmark 0.5s ease-in-out;
+} 

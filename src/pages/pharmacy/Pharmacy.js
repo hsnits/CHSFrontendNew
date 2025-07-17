@@ -12,6 +12,7 @@ import FeaturedProduct from "../../components/pharmacy/FeaturedProduct";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import useGetMountData from "../../helpers/getDataHook";
+import { useMergedCategories } from "../../helpers/useMergedCategories";
 
 export default function Pharmacy() {
   const [searchParams] = useSearchParams();
@@ -19,8 +20,27 @@ export default function Pharmacy() {
 
   const userData = getLocalStorage(STORAGE.USER_KEY);
 
-  const { data, loading, getAllData, query, setQuery } =
-    useGetMountData(`/admin/products`);
+  // Initialize with default values
+  const {
+    data,
+    loading,
+    getAllData,
+    query,
+    setQuery,
+    setPageLimit,
+    currentPage,
+    setCurrentPage,
+    dataLength,
+    pageLimit,
+  } = useGetMountData(`/admin/products-for-user`);
+
+  const { data: categories, isLoading: categoriesLoading } = useGetMountData(
+    "/admin/categories/dropdown"
+  );
+
+  // Use custom hook for merged categories
+  const { mergedCategories, allCategoryNames, hasMergedCategories } =
+    useMergedCategories(categories);
 
   return (
     <>
@@ -59,13 +79,26 @@ export default function Pharmacy() {
           </Row>
         </Container>
       </section>
-      <BrowseCategory query={query} setQuery={setQuery} />
+      <BrowseCategory
+        query={query}
+        setQuery={setQuery}
+        mergedCategories={mergedCategories}
+        allCategoryNames={allCategoryNames}
+        hasMergedCategories={hasMergedCategories}
+      />
       <FeaturedProduct
         loading={loading}
         data={data}
         query={query}
         setQuery={setQuery}
         isWholesaler={key == "Wholesale" ? true : false}
+        dataLength={dataLength}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        pageLimit={pageLimit}
+        mergedCategories={mergedCategories}
+        allCategoryNames={allCategoryNames}
+        hasMergedCategories={hasMergedCategories}
       />
       <Footer />
     </>

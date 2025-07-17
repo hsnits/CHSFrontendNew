@@ -9,6 +9,7 @@ import { toastMessage } from "../../config/toast";
 import { getLocalStorage } from "../../helpers/storage";
 import { STORAGE } from "../../constants";
 import { callPostApi } from "../../_service";
+import CustomPagination from "../common/custom-pagination";
 
 export default function FeaturedProduct({
   loading,
@@ -16,6 +17,13 @@ export default function FeaturedProduct({
   query,
   setQuery,
   isWholesaler,
+  dataLength,
+  currentPage,
+  setCurrentPage,
+  pageLimit,
+  mergedCategories = {},
+  allCategoryNames = [],
+  hasMergedCategories = false,
 }) {
   const navigate = useNavigate();
   const userData = getLocalStorage(STORAGE.USER_KEY);
@@ -53,6 +61,16 @@ export default function FeaturedProduct({
     }
   };
 
+  // Get categories for dropdown - use merged categories if available, otherwise fallback to static
+  const getCategoriesForDropdown = () => {
+    if (hasMergedCategories && allCategoryNames.length > 0) {
+      return ["Select Category", ...allCategoryNames];
+    }
+    return allCategories;
+  };
+
+  const dropdownCategories = getCategoriesForDropdown();
+
   return (
     <section className="section products-sec">
       <Container>
@@ -63,14 +81,14 @@ export default function FeaturedProduct({
                 <h4>Featured Products</h4>
               </div>
             </Col>
-            <Col xs="12" md="6"   >
+            <Col xs="12" md="6">
               <div className="pharmacy-title-link text-md-end text-start mt-2 mt-md-0">
                 <select
                   className="form-select custom-select"
                   value={query?.category}
                   onChange={handleCategoryChange}
                 >
-                  {allCategories.map((category, index) => (
+                  {dropdownCategories.map((category, index) => (
                     <option
                       key={index}
                       value={category === "Select Category" ? "" : category}
@@ -167,6 +185,15 @@ export default function FeaturedProduct({
             ))}
         </Row>
       </Container>
+      {!loading && dataLength > pageLimit && (
+        <div className="d-flex justify-content-center w-100 mb-6 mt-2">
+          <CustomPagination
+            totalPages={Math.ceil(dataLength / pageLimit)}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </section>
   );
 }

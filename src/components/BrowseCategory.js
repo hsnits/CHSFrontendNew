@@ -1,17 +1,59 @@
-import React from "react";
-import { BrowseCategoryData, responsiveCategory } from "../Data";
+import React, { useEffect, useState } from "react";
+import {
+  BrowseCategoryData,
+  PopularCategoryData,
+  responsiveCategory,
+} from "../Data";
 import { Row, Col, Container } from "react-bootstrap";
 import OwlCarousel from "react-owl-carousel";
 import "owl.carousel/dist/assets/owl.carousel.css";
 import "owl.carousel/dist/assets/owl.theme.default.css";
 import { Link } from "react-router-dom";
 
-export default function BrowseCategory({ query = null, setQuery }) {
+export default function BrowseCategory({
+  query = null,
+  setQuery,
+  mergedCategories = {},
+  allCategoryNames = [],
+  hasMergedCategories = false,
+  show = false,
+}) {
+  const [categoryData, setCategoryData] = useState(BrowseCategoryData || []);
+
+  // Create a combined array of all images from both BrowseCategoryData and PopularCategoryData
+  const getAllImages = () => {
+    const popularImages = PopularCategoryData.map((item) => item.img);
+    return [...popularImages];
+  };
+
+  const allImages = getAllImages();
+
   const handleCategoryChange = (value) => {
     if (setQuery) {
       setQuery((pre) => ({ ...pre, category: value }));
     }
   };
+
+  // Create dynamic category data from merged categories
+  const getDynamicCategoryData = () => {
+    if (hasMergedCategories && allCategoryNames.length > 0) {
+      return allCategoryNames.map((categoryName, index) => ({
+        id: index + 1,
+        name: categoryName,
+        number: 124, // Default number, can be updated based on actual product count
+        img:
+          BrowseCategoryData.find((item) => item.name === categoryName)?.img ||
+          allImages[Math.floor(Math.random() * allImages.length)],
+        type: "Category",
+      }));
+    }
+    // Fallback to static data if no merged categories
+    return BrowseCategoryData;
+  };
+
+  useEffect(() => {
+    setCategoryData(getDynamicCategoryData());
+  }, [allCategoryNames, hasMergedCategories]);
 
   return (
     <section className="clinic-features-section">
@@ -43,7 +85,7 @@ export default function BrowseCategory({ query = null, setQuery }) {
                 nav
                 responsive={responsiveCategory}
               >
-                {BrowseCategoryData.map((BrowseCategory) => (
+                {categoryData.map((BrowseCategory) => (
                   <li key={BrowseCategory.id}>
                     {console.log(
                       query,
@@ -86,6 +128,15 @@ export default function BrowseCategory({ query = null, setQuery }) {
           </div>
         </Row>
       </Container>
+      {show && (
+        <div class="view-all-more text-center">
+          <Link to={"/pharmacy"}>
+            <button type="button" class="btn btn-primary btn btn-primary">
+              View More
+            </button>
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

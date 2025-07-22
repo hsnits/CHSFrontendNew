@@ -914,7 +914,7 @@ const CallHandler = ({ currentUserId }) => {
         }
         console.log("📞 Call accepted - clearing call state before navigation");
         
-        navigate(`/${incoming?.mode}-call`, {
+        navigate("/video-call", {
           state: {
             patientId: currentUserId,
             doctorId: incoming?.doctor_id,

@@ -262,7 +262,7 @@ const CallHandler = ({ currentUserId }) => {
      
      setTimeout(() => {
        console.log("2. Testing genuine replacement (should be suppressed)...");
-       testGenuineReplacement();
+       window.testGenuineReplacement();
      }, 1000);
      
      setTimeout(() => {
@@ -272,7 +272,7 @@ const CallHandler = ({ currentUserId }) => {
      
      setTimeout(() => {
        console.log("4. Testing genuine replacement again (should show popup)...");
-       testGenuineReplacement();
+       window.testGenuineReplacement();
      }, 4000);
    };
 

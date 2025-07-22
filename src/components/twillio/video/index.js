@@ -20,22 +20,68 @@ function TwillioCall() {
   const handleGetToken = useCallback(async () => {
     const callSocketNew = callSocket;
     try {
-      if (!appointmentId || !user) return;
+      if (!appointmentId || !user) {
+        console.error("Missing required data:", { appointmentId, user: !!user });
+        return;
+      }
+      
+      console.log("Requesting token with:", {
+        mode: mode || "audio",
+        identity: user?.profile?._id,
+        roomName: appointmentId,
+      });
+
       const response = await callPostApi(`doctor/token`, {
         mode: mode || "audio",
         identity: user?.profile?._id,
         roomName: appointmentId,
       });
 
-      if (response?.status) {
+      console.log("🔑 Token response:", response);
+
+      if (response?.status && response?.data?.token) {
         callSocketNew.emit("join-room", { userId: user?.profile?._id });
-        callSocketNew.emit("join-room", { userId: patientId });
+        if (patientId) {
+          callSocketNew.emit("join-room", { userId: patientId });
+        }
         setToken(response?.data?.token);
+        console.log("✅ Token set successfully");
+      } else {
+        console.error("❌ Token request failed:", response);
+        // Show detailed error message
+        let errorMessage = "Failed to setup video call. ";
+        if (response?.message) {
+          errorMessage += response.message;
+        } else if (response?.data?.message) {
+          errorMessage += response.data.message;
+        } else {
+          errorMessage += "Please check if Twilio is configured and try again.";
+        }
+        
+        alert(errorMessage);
+        console.error("🔑 Token generation failed - this usually means Twilio credentials are missing");
+        
+        // Navigate back to dashboard if token fails
+        navigate(user?.role === "Doctor" ? "/DoctorDashboard" : "/patient", {
+          replace: true,
+        });
       }
     } catch (error) {
       console.error("Error fetching token:", error);
+      
+      // Show detailed error to user
+      let errorMessage = "Failed to setup call. ";
+      if (error.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please check your connection and try again.";
+      }
+      
+      alert(errorMessage);
     }
-  }, [mode, appointmentId, user]);
+  }, [mode, appointmentId, user, patientId]);
 
   useEffect(() => {
     if (!appointmentId) {
@@ -59,9 +105,9 @@ function TwillioCall() {
           src={ChsLogo}
           style={{ height: 50 }}
           className="img-fluid"
-          alt="Logo"
+          alt="CHS Healthcare"
         />
-        {/* <h1>CHS Appointment</h1> */}
+        <span>CHS Healthcare - {mode === "video" ? "Video" : "Audio"} Consultation</span>
       </div>
       <main className="main-video">
         {token ? (

@@ -1,7 +1,13 @@
 // socket.js
 import { io } from "socket.io-client";
 
-const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL;
+const SOCKET_URL = process.env.REACT_APP_SOCKET_BASE_URL || "http://localhost:5000";
+
+console.log("🔧 Socket Configuration:", {
+  SOCKET_URL,
+  env: process.env.REACT_APP_SOCKET_BASE_URL,
+  fallback: !process.env.REACT_APP_SOCKET_BASE_URL ? "Using localhost:5000" : "Using env variable"
+});
 
 // Socket for symptoms
 // export const symptomSocket = io(SOCKET_URL);
@@ -33,18 +39,25 @@ export const callSocket = io(SOCKET_URL, {
 
 // Add connection status logging
 callSocket.on("connect", () => {
-  debugger;
-  console.log("Call socket connected successfully");
+  console.log("✅ Call socket connected successfully");
+  console.log("📊 Socket details:", {
+    id: callSocket.id,
+    connected: callSocket.connected,
+    url: SOCKET_URL
+  });
 });
 
 callSocket.on("disconnect", (reason) => {
-  debugger;
-  console.log("Call socket disconnected:", reason);
+  console.log("❌ Call socket disconnected:", reason);
 });
 
 callSocket.on("connect_error", (error) => {
-  debugger;
-  console.error("Call socket connection error:", error);
+  console.error("🚨 Call socket connection error:", error);
+  console.error("🔍 Connection details:", {
+    url: SOCKET_URL,
+    errorType: error.type,
+    errorMessage: error.message
+  });
 });
 
 // Add connection status logging for symptom socket

@@ -106,6 +106,89 @@ const Cart = () => {
 
   return (
     <>
+      <style jsx>{`
+        .cart-item-image {
+          width: 60px;
+          height: 60px;
+          border-radius: 8px;
+          overflow: hidden;
+          background: #f8f9fa;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        .cart-product-img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 4px;
+        }
+
+        .cart-item-details {
+          flex: 1;
+        }
+
+        .cart-item-name {
+          font-weight: 500;
+          font-size: 14px;
+          color: #2c3e50;
+          line-height: 1.4;
+        }
+
+        .table th {
+          background-color: #f8f9fa;
+          border-top: none;
+          font-weight: 600;
+          color: #495057;
+          padding: 12px 8px;
+          vertical-align: middle;
+        }
+
+        .table td {
+          padding: 12px 8px;
+          vertical-align: middle;
+          border-top: 1px solid #dee2e6;
+        }
+
+        .table-responsive {
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        .card {
+          border: none;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          border-radius: 12px;
+        }
+
+        .card-header {
+          background-color: #fff;
+          border-bottom: 1px solid #e9ecef;
+          padding: 16px 20px;
+        }
+
+        .card-body {
+          padding: 20px;
+        }
+
+        .checkout-btn {
+          background: linear-gradient(45deg, #007bff, #0056b3);
+          border: none;
+          padding: 12px 24px;
+          font-weight: 600;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+          background: linear-gradient(45deg, #0056b3, #003d82);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+      `}</style>
+
       <PharmacyHeader userData={userData} />
       <PharmacyMenu />
       <Breadcrumb />
@@ -251,19 +334,23 @@ const CartItem = ({
   return (
     <tr>
       <td className="text-primary ms-2">
-        <Image
-          src={item?.productId?.image || product_img}
-          alt={item?.productId?.name}
-          rounded
-          width="50"
-          height="50"
-        />{" "}
-        {item?.productId?.name}
+        <div className="d-flex align-items-center">
+          <div className="cart-item-image">
+            <Image
+              src={item?.productId?.image || product_img}
+              alt={item?.productId?.name}
+              className="cart-product-img"
+            />
+          </div>
+          <div className="cart-item-details ms-3">
+            <span className="cart-item-name">{item?.productId?.name}</span>
+          </div>
+        </div>
       </td>
       <td>{item?.productId?.SKUnumber}</td>
       <td>₹ {getDiscountedPrice(item?.productId)}</td>
       <td>
-        <div className="d-flex align-items-center">
+        <div className="d-flex align-items-center justify-content-center">
           <Button
             variant="outline-danger"
             size="sm"
@@ -274,7 +361,7 @@ const CartItem = ({
           </Button>
           <input
             type="number"
-            className="form-control mx-2"
+            className="form-control mx-2 text-center"
             style={{ width: "60px" }}
             value={item?.quantity}
             onChange={(e) => onChange(e, item)}
@@ -294,10 +381,10 @@ const CartItem = ({
           </Button>
         </div>
       </td>
-      <td>
+      <td className="text-center">
         ₹ {(getDiscountedPrice(item?.productId) * item?.quantity).toFixed(2)}
       </td>
-      <td>
+      <td className="text-center">
         <Button
           variant="danger"
           size="sm"

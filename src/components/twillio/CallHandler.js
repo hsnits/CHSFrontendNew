@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { callSocket } from "../../config/socket";
+import { io } from "socket.io-client";
 import "./chathandler.css";
 import { callPostApi } from "../../_service";
 
@@ -11,7 +12,372 @@ const CallHandler = ({ currentUserId }) => {
   const [audioContext, setAudioContext] = useState(null);
   const [audioBuffer, setAudioBuffer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState(Notification.permission);
+  const [isInCallState, setIsInCallState] = useState(false); // Track if user is in any call-related activity
   const navigate = useNavigate();
+
+  // Add immediate debugging
+  console.log("🔧 CallHandler component loaded with userId:", currentUserId);
+  console.log("🔌 Socket connection details:", {
+    connected: callSocket.connected,
+    id: callSocket.id,
+    url: callSocket.io.opts?.uri
+  });
+
+  // Listen for backend connection confirmation
+  callSocket.on("connection-confirmed", (data) => {
+    console.log("🎊 Backend connection confirmed:", data);
+  });
+
+  // Listen for test response
+      callSocket.on("test-response", (data) => {
+      console.log("🎉 Test response received:", data);
+    });
+
+    // Listen for test messages from backend
+    callSocket.on("test-message", (data) => {
+      console.log("📨 Test message received from backend:", data);
+    });
+
+  // Make test function available globally for debugging
+  window.testSocketJoin = () => {
+    console.log("🧪 Manual socket join test");
+    console.log("Socket status:", { connected: callSocket.connected, id: callSocket.id });
+    if (currentUserId) {
+      callSocket.emit("join-room", { userId: currentUserId });
+      console.log("✅ Emitted join-room for:", currentUserId);
+    } else {
+      console.log("❌ No currentUserId available");
+    }
+  };
+
+  // Make test communication function available
+  window.testBackendComm = () => {
+    console.log("🧪 Testing backend communication...");
+    callSocket.emit("test-event", { message: "Hello from frontend", userId: currentUserId });
+  };
+
+  // Add comprehensive debugging function
+  window.debugSocket = () => {
+    console.log("🔍 Socket Debug Info:", {
+      connected: callSocket.connected,
+      id: callSocket.id,
+      userId: currentUserId,
+      transport: callSocket.io.engine?.transport?.name,
+      readyState: callSocket.io.engine?.readyState,
+      url: callSocket.io.opts?.uri,
+      rooms: callSocket.rooms,
+      listeners: Object.keys(callSocket._callbacks || {}),
+      connectionAttempts: connectionAttempts
+    });
+    
+    // Test backend connectivity
+    fetch('http://localhost:5000/doctor/debug-sockets')
+      .then(res => res.json())
+      .then(data => {
+        console.log("🔧 Backend Socket Status:", data);
+      })
+             .catch(err => {
+         console.error("❌ Backend connection failed:", err);
+       });
+   };
+
+  // Test message receiving
+  window.testMessageReceive = () => {
+    fetch('http://localhost:5000/doctor/test-socket-emit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId, 
+        message: "Test from frontend debug" 
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("📤 Test message sent:", data);
+    })
+    .catch(err => {
+      console.error("❌ Test message failed:", err);
+    });
+  };
+
+  // Test single session functionality
+  window.testSingleSession = () => {
+    fetch('http://localhost:5000/doctor/test-single-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("🔒 Single session status:", data);
+    })
+    .catch(err => {
+      console.error("❌ Single session test failed:", err);
+    });
+  };
+
+  // Force session refresh (simulate new login)
+  window.forceSessionRefresh = () => {
+    console.log("🔄 Forcing session refresh...");
+    
+    // Disconnect current socket
+    if (callSocket.connected) {
+      callSocket.disconnect();
+    }
+    
+    // Reconnect after a short delay
+    setTimeout(() => {
+      callSocket.connect();
+      
+      // Join room again after connection
+      setTimeout(() => {
+        if (currentUserId) {
+          callSocket.emit("join-room", { userId: currentUserId });
+          console.log("🚀 Re-joined room after session refresh");
+        }
+      }, 1000);
+    }, 500);
+  };
+
+  // Simulate multiple logins (for testing single session enforcement)
+  window.simulateMultipleLogin = () => {
+    console.log("🧪 SIMULATING MULTIPLE LOGIN - This should trigger session replacement");
+    
+    // Wait a bit to ensure current socket is not considered "recent"
+    setTimeout(() => {
+      // Create a new socket connection (simulating login from another tab)
+      const testSocket = io('http://localhost:5000', {
+        transports: ["websocket", "polling"],
+        forceNew: true
+      });
+
+      testSocket.on('connect', () => {
+        console.log("🆕 Test socket connected:", testSocket.id);
+        
+        // Try to join the same user room
+        testSocket.emit("join-room", { userId: currentUserId });
+        console.log("📤 Test socket attempting to join same user room");
+        
+        testSocket.on('room-joined', (data) => {
+          console.log("✅ Test socket joined room:", data);
+          console.log("🔥 This should have destroyed the original session");
+        });
+      });
+
+      // Clean up test socket after 10 seconds
+      setTimeout(() => {
+        testSocket.disconnect();
+        console.log("🧹 Test socket disconnected");
+      }, 10000);
+    }, 6000); // Wait 6 seconds to ensure current socket is not considered "recent"
+  };
+
+  // Test force destroy session
+  window.forceDestroyMySession = () => {
+    console.log("🔨 TESTING FORCE DESTROY - This should destroy current session");
+    
+    fetch('http://localhost:5000/doctor/force-destroy-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("💥 Force destroy response:", data);
+    })
+    .catch(err => {
+      console.error("❌ Force destroy failed:", err);
+    });
+  };
+
+  // Clear session replacement flags (for testing)
+  window.clearSessionFlags = () => {
+    sessionStorage.removeItem('handling_session_replacement');
+    sessionStorage.removeItem('session_replacement_reload');
+    console.log("🧹 Cleared all session replacement flags");
+  };
+
+  // Check session replacement flags (for debugging)
+  window.checkSessionFlags = () => {
+    const handling = sessionStorage.getItem('handling_session_replacement');
+    const reload = sessionStorage.getItem('session_replacement_reload');
+    console.log("🔍 Session flags:", {
+      handling_session_replacement: handling,
+      session_replacement_reload: reload
+    });
+  };
+
+  // Test genuine replacement (should show popup)
+  window.testGenuineReplacement = () => {
+    console.log("🧪 TESTING GENUINE REPLACEMENT - This should show the popup");
+    
+    fetch('http://localhost:5000/doctor/test-genuine-replacement', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: currentUserId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("🔥 Genuine replacement test response:", data);
+    })
+    .catch(err => {
+      console.error("❌ Genuine replacement test failed:", err);
+    });
+  };
+
+  // Check and clear call state (for debugging)
+  window.checkCallState = () => {
+    console.log("🔍 Call State Debug:", {
+      isInCallState,
+      hasIncoming: !!incoming,
+      isPlaying,
+      hasTimeout: !!window.callStateTimeoutId
+    });
+  };
+
+        window.forceClearCallState = () => {
+     console.log("🧹 FORCE CLEARING CALL STATE");
+     setIsInCallState(false);
+     setIncoming(null);
+     stopRingtone();
+     if (window.callStateTimeoutId) {
+       clearTimeout(window.callStateTimeoutId);
+       window.callStateTimeoutId = null;
+     }
+     console.log("✅ Call state forcefully cleared");
+   };
+
+   // Test call state protection
+   window.testCallStateProtection = () => {
+     console.log("🧪 TESTING CALL STATE PROTECTION");
+     console.log("1. Setting call state...");
+     setIsInCallState(true);
+     
+     setTimeout(() => {
+       console.log("2. Testing genuine replacement (should be suppressed)...");
+       testGenuineReplacement();
+     }, 1000);
+     
+     setTimeout(() => {
+       console.log("3. Clearing call state...");
+       setIsInCallState(false);
+     }, 3000);
+     
+     setTimeout(() => {
+       console.log("4. Testing genuine replacement again (should show popup)...");
+       testGenuineReplacement();
+     }, 4000);
+   };
+
+  // Force socket reconnection and room join
+  window.forceSocketReconnect = () => {
+    console.log("🔄 Forcing socket reconnection...");
+    if (callSocket.connected) {
+      callSocket.disconnect();
+    }
+    setTimeout(() => {
+      callSocket.connect();
+      setTimeout(() => {
+        if (currentUserId) {
+          callSocket.emit("join-room", { userId: currentUserId });
+          console.log("🚀 Re-emitted join-room after reconnection");
+        }
+      }, 1000);
+    }, 500);
+  };
+
+  // Test call notification function
+  window.testCallNotification = (doctorName = "Test Doctor", mode = "video") => {
+    console.log("🧪 Testing call notification manually...");
+    fetch('http://localhost:5000/doctor/test-call-notification', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        patientId: currentUserId, 
+        doctorName, 
+        mode 
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      console.log("📤 Test notification API response:", data);
+    })
+    .catch(err => {
+      console.error("❌ Test notification failed:", err);
+    });
+  };
+
+  // Request notification permission on component mount
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      if ('Notification' in window && Notification.permission === 'default') {
+        try {
+          const permission = await Notification.requestPermission();
+          setNotificationPermission(permission);
+          console.log("Notification permission:", permission);
+        } catch (error) {
+          console.error("Error requesting notification permission:", error);
+        }
+      } else {
+        setNotificationPermission(Notification.permission);
+      }
+    };
+
+    requestNotificationPermission();
+  }, []);
+
+  // Show browser notification for incoming call
+  const showNotification = (doctorName, mode) => {
+    if ('Notification' in window && notificationPermission === 'granted') {
+      const title = `Incoming ${mode} call`;
+      const body = `Dr. ${doctorName || 'Doctor'} is calling you for a ${mode} consultation. Click to respond.`;
+      const icon = '/favicon.png'; // Use your app's icon
+      
+      try {
+        const notification = new Notification(title, {
+          body,
+          icon,
+          badge: icon,
+          tag: 'incoming-call',
+          requireInteraction: true, // Keep notification until user interacts
+          // Note: Actions are not supported in regular notifications
+          // Only ServiceWorker notifications support actions
+        });
+
+        // Handle notification clicks
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+          // The accept/decline UI will handle the call response
+        };
+
+        // Auto-close notification after 30 seconds if no response
+        setTimeout(() => {
+          if (notification) {
+            notification.close();
+          }
+        }, 30000);
+
+        console.log("📢 Browser notification shown successfully");
+        return notification;
+      } catch (error) {
+        console.error("❌ Failed to show browser notification:", error);
+        // Fallback: just focus the window
+        window.focus();
+        return null;
+      }
+    } else {
+      console.log("🚫 Notifications not available or not granted");
+      return null;
+    }
+  };
 
   // Initialize audio context and load ringtone
   useEffect(() => {
@@ -244,6 +610,20 @@ const CallHandler = ({ currentUserId }) => {
     }
 
     console.log("CallHandler initialized with userId:", currentUserId);
+    
+    // Check if this is a reload after session replacement
+    const isReloadAfterReplacement = sessionStorage.getItem('session_replacement_reload');
+    if (isReloadAfterReplacement) {
+      console.log("🔄 This is a reload after session replacement - clearing flags");
+      sessionStorage.removeItem('session_replacement_reload');
+      sessionStorage.removeItem('handling_session_replacement');
+    }
+    
+    // Force immediate room join if socket is already connected
+    if (callSocket.connected) {
+      console.log("🚀 Socket already connected, forcing room join...");
+      callSocket.emit("join-room", { userId: currentUserId });
+    }
 
     // Ensure socket is connected
     if (!callSocket.connected) {
@@ -252,53 +632,208 @@ const CallHandler = ({ currentUserId }) => {
     }
 
     const handleConnect = () => {
-      console.log("Socket connected successfully, joining room for user:", currentUserId);
+      console.log("🔗 Socket connected successfully, joining room for user:", currentUserId);
+      console.log("🔧 Connection details:", {
+        socketId: callSocket.id,
+        transport: callSocket.io.engine?.transport?.name,
+        readyState: callSocket.io.engine?.readyState,
+        url: callSocket.io.opts?.uri
+      });
+      
       setIsConnected(true);
       setConnectionAttempts(0);
       
       // Join the user's room
+      console.log("📤 Emitting join-room for user:", currentUserId);
       callSocket.emit("join-room", { userId: currentUserId });
+      
+      // Listen for room join confirmation
+      callSocket.once("room-joined", (data) => {
+        console.log("✅ Room join confirmed:", data);
+        
+        if (data.replacedOldSession) {
+          console.log("🔄 NEW SESSION CREATED - Old session was destroyed");
+          console.log("👍 You are now the ACTIVE session for this user");
+        } else {
+          console.log("🆕 Fresh session created (no previous session found)");
+        }
+      });
       
       // Verify room joining
       setTimeout(() => {
-        console.log("Socket rooms after joining:", callSocket.rooms);
+        console.log("📋 Socket rooms after joining:", callSocket.rooms);
+        console.log("📊 Socket connection details:", {
+          id: callSocket.id,
+          connected: callSocket.connected,
+          userId: currentUserId,
+          transport: callSocket.io.engine?.transport?.name
+        });
       }, 1000);
     };
 
     const handleDisconnect = (reason) => {
-      console.log("Socket disconnected:", reason);
+      console.log("❌ Socket disconnected:", reason);
       setIsConnected(false);
       
       // Attempt to reconnect
       if (connectionAttempts < 3) {
         setConnectionAttempts(prev => prev + 1);
         setTimeout(() => {
-          console.log("Attempting to reconnect...");
+          console.log("🔄 Attempting to reconnect...");
           callSocket.connect();
         }, 2000);
       }
     };
 
-    const handleIncomingCall = ({ appointment_id, doctor_id, mode, token }) => {
+    const handleConnectError = (error) => {
+      console.error("❌ Socket connection error:", error);
+      setIsConnected(false);
+    };
+
+    const handleError = (error) => {
+      console.error("❌ Socket error:", error);
+    };
+
+    const handleSessionReplaced = (data) => {
+      console.warn("🚨 THIS SESSION IS BEING REPLACED:", data);
+      
+      // Check if this is a genuine replacement or just a page refresh
+      if (!data.isGenuineReplacement) {
+        console.log("ℹ️ Not a genuine replacement - ignoring");
+        return;
+      }
+      
+                    // Check if we're in any call-related state - DON'T show popup during calls
+       if (isInCallState || incoming || isPlaying) {
+         console.log("📞 Call activity detected - suppressing SESSION REPLACEMENT popup (keeping call notification):", {
+           isInCallState,
+           hasIncoming: !!incoming,
+           isPlaying
+         });
+         // DON'T clear incoming call or stop ringtone - just suppress the session replacement popup
+         console.log("🚫 Session replacement popup suppressed due to active call state");
+         return;
+       }
+      
+      // Check if we're already in the middle of handling a session replacement
+      const isHandlingReplacement = sessionStorage.getItem('handling_session_replacement');
+      if (isHandlingReplacement) {
+        console.log("⏭️ Already handling session replacement - skipping");
+        return;
+      }
+      
+      // Set flag to prevent multiple popups
+      sessionStorage.setItem('handling_session_replacement', 'true');
+      
+      console.warn("⚠️ GENUINE OLD SESSION NOTIFICATION - showing popup to user");
+      
+      // Stop any ongoing ringtones
+      stopRingtone();
+      
+      // Clear any incoming call state
+      setIncoming(null);
+      
+      // Disconnect socket to prevent further issues
+      if (callSocket.connected) {
+        callSocket.disconnect();
+      }
+      
+      // Show notification to OLD session user
+      setTimeout(() => {
+        const userChoice = window.confirm(
+          "🔄 SESSION REPLACED\n\n" +
+          "Your session has been replaced by a new login from another device/tab.\n\n" +
+          "• Click OK to refresh and continue with this tab\n" +
+          "• Click Cancel to close this tab\n\n" +
+          "Note: Only one session can be active at a time."
+        );
+        
+        if (userChoice) {
+          // User wants to continue with this tab - set flag and reload
+          console.log("🔄 User chose to continue - reloading page");
+          sessionStorage.setItem('session_replacement_reload', 'true');
+          window.location.reload();
+        } else {
+          // User wants to close this tab
+          console.log("🚪 User chose to close tab");
+          sessionStorage.removeItem('handling_session_replacement');
+          if (window.opener || window.history.length > 1) {
+            window.close();
+          } else {
+            // If can't close, redirect to login
+            window.location.href = '/login';
+          }
+        }
+      }, 500); // Small delay to ensure disconnect completes
+    };
+
+    const handleIncomingCall = ({ appointment_id, doctor_id, mode, token, doctorName, isTest }) => {
       console.log("🎉 INCOMING CALL RECEIVED:", {
         appointment_id,
         doctor_id,
         mode,
         token,
+        doctorName,
+        isTest,
         currentUserId,
         socketConnected: callSocket.connected
       });
       
-      setIncoming({ appointment_id, doctor_id, mode, token });
+      // Set call state immediately to prevent session replacement popups
+      setIsInCallState(true);
+      console.log("📞 Entered call state - session replacement popups disabled");
+      
+      // Safety timeout: Clear call state after 60 seconds if not cleared manually
+      const callStateTimeout = setTimeout(() => {
+        console.warn("⚠️ Call state timeout reached - auto-clearing call state");
+        setIsInCallState(false);
+        stopRingtone();
+        setIncoming(null);
+      }, 60000); // 60 seconds
+      
+      // Store timeout ID for cleanup
+      window.callStateTimeoutId = callStateTimeout;
+      
+      if (isTest) {
+        console.log("🧪 This is a TEST call notification");
+        // For test calls, just show notification and play sound, don't set incoming state
+        playRingtone();
+        showNotification(doctorName, mode);
+        
+        // Auto-stop test after 5 seconds
+        setTimeout(() => {
+          stopRingtone();
+          setIsInCallState(false); // Clear call state after test
+          // Clear safety timeout
+          if (window.callStateTimeoutId) {
+            clearTimeout(window.callStateTimeoutId);
+            window.callStateTimeoutId = null;
+          }
+          console.log("🛑 Test call notification stopped - call state cleared");
+        }, 5000);
+        return;
+      }
+      
+      setIncoming({ appointment_id, doctor_id, mode, token, doctorName });
 
       // Play ringtone
       playRingtone();
+
+      // Show browser notification
+      showNotification(doctorName, mode);
     };
 
     const handleCallEnd = () => {
-      console.log("Call ended");
+      console.log("Call ended - clearing all call states");
       stopRingtone();
       setIncoming(null);
+      setIsInCallState(false);
+      // Clear safety timeout
+      if (window.callStateTimeoutId) {
+        clearTimeout(window.callStateTimeoutId);
+        window.callStateTimeoutId = null;
+      }
+      console.log("📞 Call state cleared - session replacement popups re-enabled");
       navigate("/patient");
     };
 
@@ -309,6 +844,9 @@ const CallHandler = ({ currentUserId }) => {
     // Socket event listeners
     callSocket.on("connect", handleConnect);
     callSocket.on("disconnect", handleDisconnect);
+    callSocket.on("connect_error", handleConnectError);
+    callSocket.on("error", handleError);
+    callSocket.on("session-replaced", handleSessionReplaced);
     callSocket.on("incoming-call", handleIncomingCall);
     callSocket.on("call-ended", handleCallEnd);
     callSocket.on("test-message", handleTestMessage);
@@ -333,8 +871,15 @@ const CallHandler = ({ currentUserId }) => {
 
     return () => {
       console.log("CallHandler cleanup");
+      
+      // Clean up session replacement flags
+      sessionStorage.removeItem('handling_session_replacement');
+      
       callSocket.off("connect", handleConnect);
       callSocket.off("disconnect", handleDisconnect);
+      callSocket.off("connect_error", handleConnectError);
+      callSocket.off("error", handleError);
+      callSocket.off("session-replaced", handleSessionReplaced);
       callSocket.off("incoming-call", handleIncomingCall);
       callSocket.off("call-ended", handleCallEnd);
       callSocket.off("test-message", handleTestMessage);
@@ -359,6 +904,16 @@ const CallHandler = ({ currentUserId }) => {
       });
 
       if (res?.status) {
+        // Clear call state before navigation
+        setIncoming(null);
+        setIsInCallState(false);
+        // Clear safety timeout
+        if (window.callStateTimeoutId) {
+          clearTimeout(window.callStateTimeoutId);
+          window.callStateTimeoutId = null;
+        }
+        console.log("📞 Call accepted - clearing call state before navigation");
+        
         navigate(`/${incoming?.mode}-call`, {
           state: {
             patientId: currentUserId,
@@ -367,12 +922,27 @@ const CallHandler = ({ currentUserId }) => {
             mode: incoming?.mode,
           },
         });
-        setIncoming(null);
       } else {
         console.error("Failed to accept call:", res);
+        // Clear call state on failure too
+        setIncoming(null);
+        setIsInCallState(false);
+        // Clear safety timeout
+        if (window.callStateTimeoutId) {
+          clearTimeout(window.callStateTimeoutId);
+          window.callStateTimeoutId = null;
+        }
       }
     } catch (error) {
       console.error("Error accepting call:", error);
+      // Clear call state on error
+      setIncoming(null);
+      setIsInCallState(false);
+      // Clear safety timeout
+      if (window.callStateTimeoutId) {
+        clearTimeout(window.callStateTimeoutId);
+        window.callStateTimeoutId = null;
+      }
     }
   };
 
@@ -394,10 +964,26 @@ const CallHandler = ({ currentUserId }) => {
       callSocket.emit("decline-call", { 
         toUserId: incoming?.doctor_id 
       });
-      setIncoming(null);
+      
+              // Clear call state
+        setIncoming(null);
+        setIsInCallState(false);
+        // Clear safety timeout
+        if (window.callStateTimeoutId) {
+          clearTimeout(window.callStateTimeoutId);
+          window.callStateTimeoutId = null;
+        }
+        console.log("📞 Call declined - call state cleared");
     } catch (error) {
       console.error("Error declining call:", error);
+      // Clear call state on error too
       setIncoming(null);
+      setIsInCallState(false);
+      // Clear safety timeout
+      if (window.callStateTimeoutId) {
+        clearTimeout(window.callStateTimeoutId);
+        window.callStateTimeoutId = null;
+      }
     }
   };
 
@@ -414,7 +1000,11 @@ const CallHandler = ({ currentUserId }) => {
           </div>
         </div>
         <h3>Incoming {incoming?.mode} call</h3>
-        <p>Doctor is calling you</p>
+        <p>{incoming?.doctorName ? `Dr. ${incoming.doctorName}` : 'Doctor'} is calling you</p>
+        <div className="call-type-info">
+          <i className={`fa-solid ${incoming?.mode === 'video' ? 'fa-video' : incoming?.mode === 'audio' ? 'fa-microphone' : 'fa-comments'}`}></i>
+          {incoming?.mode?.charAt(0).toUpperCase() + incoming?.mode?.slice(1)} Consultation
+        </div>
         <div className="popup-buttons">
           <button className="accept-btn" onClick={handleAccept}>
             Accept

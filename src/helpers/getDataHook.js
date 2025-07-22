@@ -16,6 +16,7 @@ const useGetMountData = (baseUrl) => {
   const getAllData = useCallback(
     async (baseUrl, loadText) => {
       setLoading(loadText || true);
+      debugger;
       try {
         debugger;
         let url = `${baseUrl}?limit=${pageLimit}&currentPage=${currentPage}`;

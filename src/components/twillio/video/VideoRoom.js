@@ -22,7 +22,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
-  const [isVideoEnabled, setIsVideoEnabled] = useState(mode === "video");
+  const [isVideoEnabled, setIsVideoEnabled] = useState(mode?.toLowerCase() === "video");
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [showFormModal, setShowFormModal] = useState(false);
@@ -57,11 +57,40 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
       );
     };
 
+    console.log("🔗 Attempting to connect to Twilio room with:", {
+      token: token ? `${token.substring(0, 20)}...` : "NULL",
+      appointmentId,
+      mode,
+      tokenLength: token ? token.length : 0,
+      isDoctor,
+      patientId,
+      doctorId
+    });
+
+    // Validate token before attempting connection
+    if (!token) {
+      console.error("❌ No token provided for Twilio connection");
+      console.error("🔧 This usually means:");
+      console.error("   1. Token generation failed on backend");
+      console.error("   2. Twilio credentials are missing");
+      console.error("   3. Network error occurred");
+      return;
+    }
+
+    if (token.length < 100) {
+      console.error("❌ Token seems too short, expected JWT format:", token);
+      console.error("🔧 Received token length:", token.length);
+      return;
+    }
+
+    console.log("✅ Token validation passed, proceeding with room connection...");
+
     // Connect to the Twilio video room
+    const normalizedMode = mode?.toLowerCase();
     Video.connect(token, {
       name: appointmentId,
       audio: true,
-      video: mode === "video",
+      video: normalizedMode === "video",
     })
       .then((room) => {
         console.log("Connected to room:", room.name);
@@ -95,7 +124,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
         }
 
         // Ensure local video track is published for video calls
-        if (mode === "video" && room.localParticipant.videoTracks.size === 0) {
+        if (normalizedMode === "video" && room.localParticipant.videoTracks.size === 0) {
           console.log("No local video track found, creating one...");
           Video.createLocalVideoTrack().then(track => {
             room.localParticipant.publishTrack(track);
@@ -106,7 +135,31 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
         }
       })
       .catch((error) => {
-        console.error("Error connecting to room:", error);
+        console.error("❌ Error connecting to Twilio room:", error);
+        console.error("🔧 Connection details:", {
+          errorName: error.name,
+          errorMessage: error.message,
+          errorCode: error.code,
+          appointmentId,
+          tokenProvided: !!token
+        });
+        
+        // Show user-friendly error message
+        let errorMessage = "Failed to connect to video call. ";
+        
+        if (error.code === 20101) {
+          errorMessage += "Invalid access token. Please try refreshing the page.";
+        } else if (error.code === 53400) {
+          errorMessage += "Room does not exist or has expired.";
+        } else if (error.message.includes("network")) {
+          errorMessage += "Network connection issue. Please check your internet.";
+        } else if (error.message.includes("permission")) {
+          errorMessage += "Camera/microphone permissions denied. Please allow access and try again.";
+        } else {
+          errorMessage += error.message || "Unknown error occurred.";
+        }
+        
+        alert(errorMessage);
       });
 
     // Cleanup function to disconnect from the room when component unmounts
@@ -133,7 +186,7 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
 
   // Toggle video
   const toggleVideo = () => {
-    if (room && mode === "video") {
+    if (room && mode?.toLowerCase() === "video") {
       room.localParticipant.videoTracks.forEach((publication) => {
         if (isVideoEnabled) {
           publication.track.disable();
@@ -288,7 +341,16 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
 
   const renderVideoContent = () => {
     if (!room) {
-      return <p>Connecting to room...</p>;
+      return (
+        <div className="connecting-status">
+          <p>Connecting to room...</p>
+          <div className="connection-details">
+            <strong>Appointment:</strong> {appointmentId}<br/>
+            <strong>Mode:</strong> {mode}<br/>
+            <strong>Token:</strong> {token ? "✅ Provided" : "❌ Missing"}
+          </div>
+        </div>
+      );
     }
 
     // Filter participants to show only local and one remote
@@ -298,31 +360,39 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
 
     return (
       <div className="video-room">
-        {seconds > 0 && <div className="timer">{formatTime(seconds)}</div>}
+        {/* Meeting Info */}
+        <div className="meeting-info">
+          {seconds > 0 && <div className="timer">{formatTime(seconds)}</div>}
+          <div className="meeting-id">ID: {appointmentId}</div>
+        </div>
 
-        {mode === "video" ? (
-          <>
-            <div className="video-participants">
-              {/* Remote participant (full screen) */}
-              {remoteParticipant && (
-                <div className="remote-participant">
-                  <Participant
-                    key={remoteParticipant.sid}
-                    participant={remoteParticipant}
-                    isLocal={false}
-                  />
-                </div>
-              )}
-              
-              {/* Local participant (small preview) */}
-              <div className="local-participant">
-                <Participant 
-                  participant={localParticipant} 
-                  isLocal={true} 
+        {mode?.toLowerCase() === "video" ? (
+          <div className="video-participants">
+            {/* Remote participant (full screen) */}
+            {remoteParticipant ? (
+              <div className="remote-participant">
+                <Participant
+                  key={remoteParticipant.sid}
+                  participant={remoteParticipant}
+                  isLocal={false}
                 />
               </div>
+            ) : (
+              <div className="remote-participant">
+                <div className="connecting-status">
+                  <p>Waiting for other participant to join...</p>
+                </div>
+              </div>
+            )}
+            
+            {/* Local participant (picture-in-picture) */}
+            <div className="local-participant">
+              <Participant 
+                participant={localParticipant} 
+                isLocal={true} 
+              />
             </div>
-          </>
+          </div>
         ) : (
           <div className="audio-placeholder">
             <h2>Audio Call</h2>
@@ -333,19 +403,25 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
               </div>
               
               {/* Remote participant */}
-              {remoteParticipant && (
+              {remoteParticipant ? (
                 <div className="remote-audio-participant">
-                  <Participant
-                    key={remoteParticipant.sid}
-                    participant={remoteParticipant}
-                    isLocal={false}
-                  />
+                  {renderAudioParticipant(false)}
+                </div>
+              ) : (
+                <div className="remote-audio-participant">
+                  <div className="audio-participant">
+                    <div className="audio-avatar">
+                      <span className="participant-initial">?</span>
+                    </div>
+                    <div className="participant-role">Waiting...</div>
+                  </div>
                 </div>
               )}
             </div>
           </div>
         )}
 
+        {/* Modern Controls */}
         <div className="controls">
           {isDoctor && !callStarted && (
             <button
@@ -358,38 +434,27 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
           )}
           <button
             onClick={toggleAudio}
-            title="Toggle Audio"
+            title={isAudioEnabled ? "Mute" : "Unmute"}
             className="control-button"
           >
             {isAudioEnabled ? <Mic /> : <MicOff />}
           </button>
-          {mode === "video" && (
+          {mode?.toLowerCase() === "video" && (
             <button
               onClick={toggleVideo}
-              title="Toggle Video"
+              title={isVideoEnabled ? "Turn off camera" : "Turn on camera"}
               className="control-button"
             >
               {isVideoEnabled ? <VideoIcon /> : <VideoOff />}
             </button>
           )}
-          {/* {mode === "video" && (
-            <button
-              onClick={toggleScreenShare}
-              title="Share Screen"
-              className="control-button"
-            >
-              {isScreenSharing ? <MonitorOff /> : <Monitor />}
-            </button>
-          )} */}
-          {isDoctor && (
-            <button
-              onClick={leaveRoom}
-              title="Leave Room"
-              className="control-button"
-            >
-              <PhoneOff />
-            </button>
-          )}
+          <button
+            onClick={leaveRoom}
+            title="End call"
+            className="control-button"
+          >
+            <PhoneOff />
+          </button>
         </div>
       </div>
     );

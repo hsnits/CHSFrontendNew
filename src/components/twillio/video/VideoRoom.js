@@ -166,26 +166,31 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
         setConnectionState("error");
         setConnectionError(error.message);
         
-        // Auto-retry up to 3 times with exponential backoff
-        if (retryAttempt < 3) {
-          const delay = Math.pow(2, retryAttempt) * 1000; // 1s, 2s, 4s
-          console.log(`🔄 Retrying connection in ${delay}ms (attempt ${retryAttempt + 1}/3)`);
-          setTimeout(() => {
-            if (connectionState !== "room_joined") {
-              connectToRoom();
-            }
-          }, delay);
-        }
       }
-  }, [token, appointmentId, mode, connectionState, retryAttempt, room, participantConnected, participantDisconnected]);
+  }, [token, appointmentId, mode, participantConnected, participantDisconnected]);
+
+  // Handle retry logic separately to avoid circular dependencies
+  useEffect(() => {
+    if (connectionState === "error" && retryAttempt < 3) {
+      const delay = Math.pow(2, retryAttempt) * 1000; // 1s, 2s, 4s
+      console.log(`🔄 Retrying connection in ${delay}ms (attempt ${retryAttempt + 1}/3)`);
+      const timeoutId = setTimeout(() => {
+        connectToRoom();
+      }, delay);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [connectionState, retryAttempt, connectToRoom]);
 
   // Connect to the room when component mounts
   useEffect(() => {
-    if (token && connectionState !== "room_joined") {
+    if (token && connectionState === "connecting") {
       connectToRoom();
     }
+  }, [token, connectToRoom]);
 
-    // Cleanup function to disconnect from the room when component unmounts
+  // Cleanup function when component unmounts
+  useEffect(() => {
     return () => {
       if (room) {
         console.log("🧹 Cleaning up room connection");
@@ -195,13 +200,13 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
         setConnectionState("disconnected");
       }
     };
-  }, [connectToRoom, token, connectionState, room]);
+  }, [room]);
 
   // Retry connection function
   const retryConnection = () => {
     if (retryAttempt < 3) {
-      setRetryAttempt(prev => prev + 1);
       setConnectionError(null);
+      setConnectionState("connecting");
     }
   };
 

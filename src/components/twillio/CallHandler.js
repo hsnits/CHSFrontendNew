@@ -30,14 +30,53 @@ const CallHandler = ({ currentUserId }) => {
   });
 
   // Listen for test response
-      callSocket.on("test-response", (data) => {
-      console.log("🎉 Test response received:", data);
-    });
+  callSocket.on("test-response", (data) => {
+    console.log("🎉 Test response received:", data);
+  });
 
-    // Listen for test messages from backend
-    callSocket.on("test-message", (data) => {
-      console.log("📨 Test message received from backend:", data);
-    });
+  // Listen for test messages from backend
+  callSocket.on("test-message", (data) => {
+    console.log("📨 Test message received from backend:", data);
+  });
+
+  // Listen for online status responses
+  callSocket.on("user-online-status", (data) => {
+    console.log("👤 User online status response:", data);
+    if (data.userId === currentUserId) {
+      console.log(`✅ My online status: ${data.isOnline ? "ONLINE" : "OFFLINE"} (${data.socketCount} sockets)`);
+    }
+  });
+
+  // Auto-join socket room on component mount and user change
+  useEffect(() => {
+    console.log("🔄 CallHandler useEffect - Auto joining socket room");
+    console.log("Current user ID:", currentUserId);
+    console.log("Socket connected:", callSocket.connected);
+    
+    if (currentUserId && callSocket.connected) {
+      console.log("🚀 Auto-joining socket room for user:", currentUserId);
+      callSocket.emit("join-room", { userId: currentUserId });
+      
+      // Verify room join after a short delay
+      setTimeout(() => {
+        console.log("🔍 Checking if user is online after join...");
+        callSocket.emit("check-user-online", { userId: currentUserId });
+      }, 1000);
+    } else if (currentUserId && !callSocket.connected) {
+      console.log("⏳ Socket not connected yet, will retry when connected");
+      // Set up a listener for when socket connects
+      const handleConnect = () => {
+        console.log("🎉 Socket connected, now joining room for user:", currentUserId);
+        callSocket.emit("join-room", { userId: currentUserId });
+        callSocket.off("connect", handleConnect); // Remove listener after use
+      };
+      callSocket.on("connect", handleConnect);
+      
+      return () => {
+        callSocket.off("connect", handleConnect);
+      };
+    }
+  }, [currentUserId, callSocket.connected]);
 
   // Make test function available globally for debugging
   window.testSocketJoin = () => {
@@ -260,20 +299,20 @@ const CallHandler = ({ currentUserId }) => {
      console.log("1. Setting call state...");
      setIsInCallState(true);
      
-     setTimeout(() => {
-       console.log("2. Testing genuine replacement (should be suppressed)...");
-       window.testGenuineReplacement();
-     }, 1000);
+            setTimeout(() => {
+         console.log("2. Testing genuine replacement (should be suppressed)...");
+         window.testGenuineReplacement();
+       }, 1000);
      
      setTimeout(() => {
        console.log("3. Clearing call state...");
        setIsInCallState(false);
      }, 3000);
      
-     setTimeout(() => {
-       console.log("4. Testing genuine replacement again (should show popup)...");
-       window.testGenuineReplacement();
-     }, 4000);
+            setTimeout(() => {
+         console.log("4. Testing genuine replacement again (should show popup)...");
+         window.testGenuineReplacement();
+       }, 4000);
    };
 
   // Force socket reconnection and room join
@@ -312,6 +351,187 @@ const CallHandler = ({ currentUserId }) => {
     .catch(err => {
       console.error("❌ Test notification failed:", err);
     });
+  };
+
+  // Check if current patient shows as online on backend
+  window.checkPatientOnlineStatus = () => {
+    console.log("👤 Checking patient online status...");
+    fetch('http://localhost:5000/doctor/check-patient-online', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patientId: currentUserId })
+    })
+    .then(r => r.json())
+    .then(data => {
+      console.log("📊 Patient online status:", data);
+      if (data.isOnline) {
+        console.log("✅ Patient appears ONLINE to backend");
+      } else {
+        console.log("❌ Patient appears OFFLINE to backend");
+        console.log("🔧 Recommended actions:");
+        console.log("   1. Try: callSocket.emit('join-room', { userId: '" + currentUserId + "' })");
+        console.log("   2. Check socket connection: callSocket.connected");
+        console.log("   3. Check user ID is correct: " + currentUserId);
+      }
+    })
+    .catch(err => {
+      console.error("❌ Failed to check patient status:", err);
+    });
+  };
+
+  // Check Twilio configuration on backend
+  window.checkTwilioConfig = () => {
+    console.log("🔧 Checking Twilio configuration...");
+    fetch('http://localhost:5000/doctor/twilio-config')
+    .then(r => r.json())
+    .then(data => {
+      console.log("⚙️ Twilio config:", data);
+      if (data.allConfigured) {
+        console.log("✅ Twilio is properly configured");
+      } else {
+        console.log("❌ Twilio configuration incomplete");
+        console.log("🔧 Setup instructions:", data.instructions);
+      }
+    })
+    .catch(err => {
+      console.error("❌ Failed to check Twilio config:", err);
+    });
+  };
+
+  // Test Twilio video token generation specifically
+  window.testTwilioVideoAccess = () => {
+    console.log("🎥 Testing Twilio VIDEO access...");
+    fetch('http://localhost:5000/doctor/test-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        identity: 'test-video-user',
+        roomName: 'test-video-room',
+        mode: 'video'
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      console.log("🎥 VIDEO Token Test Result:", data);
+      if (data.success) {
+        console.log("✅ Video tokens can be generated successfully");
+        console.log("📊 Token grants:", data.grants);
+      } else {
+        console.log("❌ Video token generation failed:", data.message);
+        if (data.error === "TWILIO_NOT_CONFIGURED") {
+          console.log("🔧 Solution: Configure Twilio credentials in .env file");
+        }
+      }
+    })
+    .catch(err => {
+      console.error("❌ Video access test failed:", err);
+    });
+  };
+
+  // Test both audio and video token generation
+  window.testTwilioAccess = () => {
+    console.log("🧪 COMPREHENSIVE TWILIO ACCESS TEST");
+    
+    // Test audio first
+    console.log("1️⃣ Testing AUDIO token generation...");
+    fetch('http://localhost:5000/doctor/test-token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        identity: 'test-audio-user',
+        roomName: 'test-audio-room',
+        mode: 'audio'
+      })
+    })
+    .then(r => r.json())
+    .then(audioData => {
+      console.log("🔊 AUDIO Token Result:", audioData);
+      
+      // Then test video
+      console.log("2️⃣ Testing VIDEO token generation...");
+      return fetch('http://localhost:5000/doctor/test-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          identity: 'test-video-user',
+          roomName: 'test-video-room',
+          mode: 'video'
+        })
+      });
+    })
+    .then(r => r.json())
+    .then(videoData => {
+      console.log("🎥 VIDEO Token Result:", videoData);
+      
+      console.log("📋 SUMMARY:");
+      console.log("   Audio tokens:", videoData.success ? "✅ Working" : "❌ Failed");
+      console.log("   Video tokens:", videoData.success ? "✅ Working" : "❌ Failed");
+      
+      if (!videoData.success) {
+        console.log("🚨 VIDEO ACCESS ISSUE DETECTED!");
+        console.log("   Possible causes:");
+        console.log("   1. Twilio account doesn't have Video service enabled");
+        console.log("   2. API Key not in US1 region (required for Video)");
+        console.log("   3. Insufficient account permissions");
+        console.log("   4. Invalid API credentials");
+      }
+    })
+    .catch(err => {
+      console.error("❌ Comprehensive test failed:", err);
+    });
+  };
+
+  // Force rejoin socket room
+  window.forceRejoinRoom = () => {
+    console.log("🔄 Force rejoining socket room...");
+    if (currentUserId) {
+      console.log("📤 Emitting join-room for:", currentUserId);
+      callSocket.emit("join-room", { userId: currentUserId });
+      
+      setTimeout(() => {
+        console.log("🔍 Checking online status after rejoin...");
+        window.checkPatientOnlineStatus();
+      }, 2000);
+    } else {
+      console.error("❌ No current user ID available");
+    }
+  };
+
+  // Comprehensive diagnostic function
+  window.runCallDiagnostics = () => {
+    console.log("🔍 RUNNING COMPREHENSIVE CALL DIAGNOSTICS");
+    console.log("===========================================");
+    
+    // 1. Basic info
+    console.log("1. 📋 BASIC INFO:");
+    console.log("   User ID:", currentUserId);
+    console.log("   Socket connected:", callSocket.connected);
+    console.log("   Socket ID:", callSocket.id);
+    
+    // 2. Socket status
+    console.log("2. 🔌 SOCKET STATUS:");
+    window.debugSocket();
+    
+    // 3. Check Twilio config
+    console.log("3. ⚙️ CHECKING TWILIO CONFIG:");
+    window.checkTwilioConfig();
+    
+    // 4. Force join room
+    console.log("4. 🚀 FORCE JOINING ROOM:");
+    window.forceRejoinRoom();
+    
+    // 5. Test backend communication
+    console.log("5. 📡 TESTING BACKEND COMMUNICATION:");
+    window.testBackendComm();
+    
+    setTimeout(() => {
+      console.log("6. 🧪 TESTING CALL NOTIFICATION:");
+      window.testCallNotification();
+    }, 3000);
+    
+    console.log("===========================================");
+    console.log("✅ Diagnostic complete! Check results above.");
+    console.log("💡 If patient still shows offline, check Twilio environment variables on backend.");
   };
 
   // Request notification permission on component mount
@@ -912,16 +1132,26 @@ const CallHandler = ({ currentUserId }) => {
           clearTimeout(window.callStateTimeoutId);
           window.callStateTimeoutId = null;
         }
-        console.log("📞 Call accepted - clearing call state before navigation");
-        
-        navigate("/video-call", {
-          state: {
-            patientId: currentUserId,
-            doctorId: incoming?.doctor_id,
-            appointmentId: incoming?.appointment_id,
-            mode: incoming?.mode,
-          },
-        });
+                 console.log("📞 Call accepted - clearing call state before navigation");
+         
+         // Navigate to the video call interface
+         // Note: We use a single video-call route that handles both video and audio modes
+         navigate('/video-call', {
+           state: {
+             patientId: currentUserId,
+             doctorId: incoming?.doctor_id,
+             appointmentId: incoming?.appointment_id,
+             mode: incoming?.mode || 'video', // Default to video if mode not specified
+           },
+         });
+         
+         console.log("🔀 Navigation state:", {
+           route: '/video-call',
+           patientId: currentUserId,
+           doctorId: incoming?.doctor_id,
+           appointmentId: incoming?.appointment_id,
+           mode: incoming?.mode || 'video'
+         });
       } else {
         console.error("Failed to accept call:", res);
         // Clear call state on failure too

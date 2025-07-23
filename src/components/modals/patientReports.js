@@ -149,8 +149,9 @@ const AppointmentReports = ({
         // Close the modal
         handleClose();
         
-        // Navigate to the call interface
-        navigate(`/${appointmentType.toLowerCase()}-call`, {
+        // Navigate to the correct call interface based on appointment type
+        const callRoute = appointmentType?.toLowerCase() === 'audio' ? '/audio-call' : '/video-call';
+        navigate(callRoute, {
           state: {
             patientId,
             doctorId,

@@ -1,3 +1,4 @@
+// Google Meet–style layout refactor
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Video from "twilio-video";
 import Participant from "./Participant";
@@ -7,8 +8,6 @@ import {
   MicOff,
   Video as VideoIcon,
   VideoOff,
-  Monitor,
-  MonitorOff,
   PhoneCall,
   PhoneOff,
 } from "lucide-react";
@@ -47,6 +46,13 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
 
     return () => clearInterval(interval);
   }, [participants]);
+
+  // Debug: log participants and localParticipant whenever they change
+  useEffect(() => {
+    const localParticipant = room?.localParticipant;
+    console.log('[VideoRoom] participants:', participants.map(p => p.identity));
+    console.log('[VideoRoom] localParticipant:', localParticipant?.identity);
+  }, [participants, room]);
 
   // Helper functions for participant management
   const participantConnected = useCallback((participant) => {
@@ -379,286 +385,59 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
     );
   };
 
-  const renderVideoContent = () => {
-    // Show connection status if not ready
-    if (connectionState !== "ready" && connectionState !== "connected") {
-      return (
-        <div className="connection-status-container">
-          <div className="connection-status-content">
-            {connectionState === "error" ? (
-              <>
-                <div className="error-icon">❌</div>
-                <h3>Connection Failed</h3>
-                <p className="error-message">{connectionError}</p>
-                <div className="error-actions">
-                  {retryAttempt < 3 ? (
-                    <button 
-                      className="btn-retry" 
-                      onClick={retryConnection}
-                    >
-                      Retry ({retryAttempt}/3)
-                    </button>
-                  ) : (
-                    <p className="retry-limit">Maximum retry attempts reached</p>
-                  )}
-                  <button 
-                    className="btn-back" 
-                    onClick={handleLogout}
-                  >
-                    Leave Call
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="loading-spinner"></div>
-                <h3>
-                  {connectionState === "connecting" && "Connecting to call..."}
-                  {connectionState === "establishing" && "Establishing connection..."}
-                  {connectionState === "room_joined" && "Joined room successfully"}
-                  {connectionState === "media_setup" && "Setting up audio/video..."}
-                </h3>
-                <p className="status-subtitle">
-                  {connectionState === "connecting" && "Please wait while we connect you"}
-                  {connectionState === "establishing" && "Securing video connection"}
-                  {connectionState === "room_joined" && "Preparing media streams"}
-                  {connectionState === "media_setup" && "Almost ready..."}
-                </p>
-                <div className="connection-details">
-                  <small>Room: {appointmentId} | Mode: {mode || "video"} | Attempt: {retryAttempt + 1}</small>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    if (!room) {
-      return (
-        <div className="connection-status-container">
-          <div className="connection-status-content">
-            <div className="loading-spinner"></div>
-            <h3>Initializing room...</h3>
-          </div>
-        </div>
-      );
-    }
-
-    // Filter participants to show only local and one remote
-    const localParticipant = room.localParticipant;
+  // Replace renderVideoContent with Google Meet–style layout
+  const renderMeetLayout = () => {
+    const localParticipant = room?.localParticipant;
     const remoteParticipants = participants.filter(p => p !== localParticipant);
-    const remoteParticipant = remoteParticipants[0]; // Only show the first remote participant
-
-    // Add stable rendering with transition states
+    const remoteParticipant = remoteParticipants[0];
     const isVideoMode = mode?.toLowerCase() === "video";
-    const hasRemoteParticipant = remoteParticipant && remoteParticipant.state === "connected";
+    const hasRemote = remoteParticipant && remoteParticipant.state === "connected";
 
     return (
-      <div className="google-meet-container">
-        {/* Meeting Header */}
-        <div className="meeting-header">
-          <div className="meeting-info">
-            <h3 className="meeting-title">Healthcare Consultation</h3>
-            <span className="meeting-id">ID: {appointmentId}</span>
-          </div>
-          <div className="meeting-time">
-            {seconds > 0 && <span className="timer">{formatTime(seconds)}</span>}
-          </div>
-        </div>
-
-        {/* Main Video Area */}
-        <div className="main-video-area">
-          {isVideoMode ? (
-            <div className="video-grid">
-              {/* Main speaker view */}
-              <div className="main-speaker">
-                {hasRemoteParticipant ? (
-                  <div className="participant-container">
-                    <Participant
-                      key={remoteParticipant.sid}
-                      participant={remoteParticipant}
-                      isLocal={false}
-                    />
-                    <div className="participant-info">
-                      <span className="participant-name">
-                        {isDoctor ? 'Patient' : 'Dr. ' + (remoteParticipant.identity || 'Doctor')}
-                      </span>
-                      <div className="connection-indicator">
-                        <div className="signal-bars">
-                          <div className="bar"></div>
-                          <div className="bar"></div>
-                          <div className="bar"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="waiting-participant">
-                    <div className="waiting-avatar">
-                      <div className="avatar-placeholder">
-                        {isDoctor ? 'P' : 'D'}
-                      </div>
-                    </div>
-                    <p className="waiting-text">
-                      Waiting for {isDoctor ? 'patient' : 'doctor'} to join...
-                    </p>
-                  </div>
-                )}
+      <div className="meet-root" style={{height: '100vh', width: '100vw', overflow: 'hidden', display: 'flex', flexDirection: 'column', background: '#181c24'}}>
+        {/* Main video area */}
+        <div className="meet-main" style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative'}}>
+          {/* Remote video or placeholder */}
+          <div className="meet-remote" style={{width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            {hasRemote ? (
+              <Participant participant={remoteParticipant} isLocal={false} />
+            ) : (
+              <div className="meet-placeholder" style={{color: '#fff', fontSize: 24, textAlign: 'center'}}>
+                Waiting for {isDoctor ? 'patient' : 'doctor'} to join...
               </div>
-
-              {/* Local participant (picture-in-picture) */}
-              <div className="local-participant-pip">
-                <div className="participant-container">
-                  <Participant 
-                    participant={localParticipant} 
-                    isLocal={true} 
-                  />
-                  <div className="participant-info">
-                    <span className="participant-name">You</span>
-                    <div className="local-indicator">
-                      <svg width="12" height="12" viewBox="0 0 12 12">
-                        <circle cx="6" cy="6" r="6" fill="#34a853"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Audio Call Interface */
-            <div className="audio-call-interface">
-              <div className="audio-header">
-                <h2 className="audio-title">Audio Call</h2>
-                <p className="audio-subtitle">Healthcare Consultation</p>
-              </div>
-              
-              <div className="audio-participants-grid">
-                {/* Local participant */}
-                <div className="audio-participant local">
-                  <div className="audio-avatar">
-                    <span className="avatar-text">
-                      {isDoctor ? 'Dr' : (user?.profile?.firstName?.[0] || 'P')}
-                    </span>
-                    <div className={`audio-indicator ${isAudioEnabled ? 'speaking' : 'muted'}`}>
-                      {isAudioEnabled ? (
-                        <div className="sound-waves">
-                          <div className="wave"></div>
-                          <div className="wave"></div>
-                          <div className="wave"></div>
-                        </div>
-                      ) : (
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/>
-                        </svg>
-                      )}
-                    </div>
-                  </div>
-                  <div className="participant-details">
-                    <h4 className="participant-name">You</h4>
-                    <p className="participant-role">{isDoctor ? 'Doctor' : 'Patient'}</p>
-                  </div>
-                </div>
-
-                {/* Remote participant */}
-                {hasRemoteParticipant ? (
-                  <div className="audio-participant remote">
-                    <div className="audio-avatar">
-                      <span className="avatar-text">
-                        {isDoctor ? 'P' : 'Dr'}
-                      </span>
-                      <div className="audio-indicator speaking">
-                        <div className="sound-waves">
-                          <div className="wave"></div>
-                          <div className="wave"></div>
-                          <div className="wave"></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="participant-details">
-                      <h4 className="participant-name">
-                        {isDoctor ? 'Patient' : 'Doctor'}
-                      </h4>
-                      <p className="participant-role">{isDoctor ? 'Patient' : 'Healthcare Provider'}</p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="audio-participant waiting">
-                    <div className="audio-avatar waiting">
-                      <span className="avatar-text">
-                        {isDoctor ? 'P' : 'Dr'}
-                      </span>
-                      <div className="waiting-indicator">
-                        <div className="pulse"></div>
-                      </div>
-                    </div>
-                    <div className="participant-details">
-                      <h4 className="participant-name">
-                        Waiting for {isDoctor ? 'patient' : 'doctor'}...
-                      </h4>
-                      <p className="participant-role">Connecting...</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Enhanced Controls Bar */}
-        <div className="google-meet-controls">
-          <div className="controls-section left">
-            <div className="meeting-code">
-              <span>Room: {appointmentId}</span>
-            </div>
-          </div>
-          
-          <div className="controls-section center">
-            {isDoctor && !callStarted && (
-              <button
-                onClick={initiateCall}
-                className="control-btn call-btn"
-                title="Start Call"
-              >
-                <PhoneCall size={20} />
-                <span className="btn-label">Start Call</span>
-              </button>
             )}
-            
-            <button
-              onClick={toggleAudio}
-              className={`control-btn ${!isAudioEnabled ? 'disabled' : ''}`}
-              title={isAudioEnabled ? 'Mute' : 'Unmute'}
-            >
-              {isAudioEnabled ? <Mic size={20} /> : <MicOff size={20} />}
+          </div>
+          {/* Local PiP - always render, with fallback if no video */}
+          <div className="meet-pip" style={{position: 'absolute', bottom: 32, right: 32, width: 200, height: 120, background: '#222', borderRadius: 12, boxShadow: '0 2px 12px #0008', overflow: 'hidden', zIndex: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            {localParticipant ? (
+              <Participant participant={localParticipant} isLocal={true} />
+            ) : (
+              <div style={{color: '#fff', fontSize: 14, textAlign: 'center'}}>No local video</div>
+            )}
+            <div className="meet-pip-label" style={{color: '#fff', fontSize: 12, marginTop: 2}}>You</div>
+          </div>
+          {/* Timer and names */}
+          <div className="meet-header" style={{position: 'absolute', top: 24, left: 0, width: '100%', display: 'flex', justifyContent: 'center', pointerEvents: 'none'}}>
+            <div style={{background: '#222b', color: '#fff', borderRadius: 8, padding: '4px 16px', fontSize: 16, display: 'flex', alignItems: 'center', gap: 16}}>
+              <span>{isDoctor ? 'Doctor' : 'Patient'}: You</span>
+              {hasRemote && <span>{isDoctor ? 'Patient' : 'Doctor'}: {remoteParticipant.identity || 'Remote'}</span>}
+              {seconds > 0 && <span className="meet-timer">{formatTime(seconds)}</span>}
+            </div>
+          </div>
+        </div>
+        {/* Controls bar - always render */}
+        <div className="meet-controls" style={{height: 80, width: '100%', position: 'absolute', bottom: 0, right:0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32}}>
+          <button onClick={toggleAudio} className="meet-btn" style={{background: 'none', border: 'none', color: isAudioEnabled ? '#fff' : '#f44336', fontSize: 28, margin: '0 12px', cursor: 'pointer'}} title={isAudioEnabled ? 'Mute' : 'Unmute'}>
+            {isAudioEnabled ? <Mic size={32} /> : <MicOff size={32} />}
+          </button>
+          {isVideoMode && (
+            <button onClick={toggleVideo} className="meet-btn" style={{background: 'none', border: 'none', color: isVideoEnabled ? '#fff' : '#f44336', fontSize: 28, margin: '0 12px', cursor: 'pointer'}} title={isVideoEnabled ? 'Turn off camera' : 'Turn on camera'}>
+              {isVideoEnabled ? <VideoIcon size={32} /> : <VideoOff size={32} />}
             </button>
-            
-            {isVideoMode && (
-              <button
-                onClick={toggleVideo}
-                className={`control-btn ${!isVideoEnabled ? 'disabled' : ''}`}
-                title={isVideoEnabled ? 'Turn off camera' : 'Turn on camera'}
-              >
-                {isVideoEnabled ? <VideoIcon size={20} /> : <VideoOff size={20} />}
-              </button>
-            )}
-            
-            {isDoctor && (
-              <button
-                onClick={leaveRoom}
-                className="control-btn end-call-btn"
-                title="End Call"
-              >
-                <PhoneOff size={20} />
-              </button>
-            )}
-          </div>
-          
-          <div className="controls-section right">
-            <div className="participant-count">
-              <span>{participants.length} participant{participants.length !== 1 ? 's' : ''}</span>
-            </div>
-          </div>
+          )}
+          <button onClick={leaveRoom} className="meet-btn" style={{background: '#f44336', border: 'none', color: '#fff', borderRadius: '50%', width: 56, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 12px', cursor: 'pointer'}} title="End Call">
+            <PhoneOff size={32} />
+          </button>
         </div>
       </div>
     );
@@ -666,7 +445,8 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
 
   return (
     <>
-      {renderVideoContent()}
+      {/* Only show the video overlay if not showing a modal */}
+      {(!showFormModal && !showSuccessModal) && renderMeetLayout()}
       {showFormModal && (
         <AppointmentFormModal
           appointmentId={appointmentId}
@@ -674,7 +454,6 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
           onSubmit={handleFormSubmit}
         />
       )}
-
       {showSuccessModal && (
         <AppointmentSuccessModal
           isDoctor={isDoctor}

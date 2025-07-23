@@ -231,25 +231,8 @@ function TwillioCall() {
   );
 
   return (
-    <div className="app-video">
-      <div className="header-video">
-        <img
-          src={ChsLogo}
-          style={{ height: 50 }}
-          className="img-fluid"
-          alt="Logo"
-        />
-        <div className="header-info">
-          <h2>{mode?.charAt(0).toUpperCase() + mode?.slice(1) || "Video"} Consultation</h2>
-          {connectionStatus && (
-            <span className={`connection-status status-${connectionStatus}`}>
-              {connectionStatus.replace("_", " ").toUpperCase()}
-            </span>
-          )}
-        </div>
-      </div>
-      
-      <main className="main-video">
+    <div className="app-video" style={{height: "100vh", width: "100vw", overflow: "hidden"}}>
+      <main className="main-video" style={{height: "100vh", width: "100vw", overflow: "hidden"}}>
         {loading && <LoadingScreen />}
         
         {error && !loading && <ErrorScreen />}
@@ -272,10 +255,6 @@ function TwillioCall() {
           </>
         )}
       </main>
-      
-      <div className="footer-video">
-        <p>Powered by CHS Healthcare | Secure & Encrypted</p>
-      </div>
     </div>
   );
 }

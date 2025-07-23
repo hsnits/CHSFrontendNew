@@ -32,6 +32,9 @@ const VideoRoom = ({ appointmentId, token, handleLogout, mode, isDoctor, patient
   const [connectionError, setConnectionError] = useState(null);
   const [retryAttempt, setRetryAttempt] = useState(0);
 
+  // Get user data from localStorage
+  const user = getLocalStorage(STORAGE.USER_KEY);
+
   const screenTrack = useRef(null);
 
   useEffect(() => {

@@ -221,7 +221,7 @@ export default function FeaturedProduct({
                       <div className="product-meta">
                         <span className="company-badge">{item.companyName}</span>
                         {item.quantity && (
-                          <span className="quantity-badge">{item.quantity} ml</span>
+                          <span className="quantity-badge">{item.quantity} {item.unit?.name}</span>
                         )}
                       </div>
 

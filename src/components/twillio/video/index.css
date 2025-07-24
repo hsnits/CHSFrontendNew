@@ -816,6 +816,51 @@
   }
 }
 
+/* Responsive controls bar for mobile */
+@media (max-width: 600px) {
+  .meet-controls {
+    position: fixed !important;
+    left: 8px !important;
+    right: 8px !important;
+    bottom: 36px !important;
+    width: calc(100vw - 16px) !important;
+    height: 64px !important;
+    gap: 16px !important;
+    background: #181c24 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 2px 12px #0006 !important;
+    z-index: 10001 !important;
+    padding: 0 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .meet-btn {
+    font-size: 32px !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    border-radius: 50% !important;
+    margin: 0 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .meet-pip {
+    width: 220px !important;
+    height: 132px !important;
+    bottom: 128px !important;
+    right: 12px !important;
+    border-radius: 8px !important;
+  }
+  .meet-header {
+    top: 8px !important;
+    font-size: 13px !important;
+    padding: 0 4px !important;
+  }
+}
+
 /* === LOADING AND CONNECTION STATES === */
 .connection-status-container {
   position: fixed;

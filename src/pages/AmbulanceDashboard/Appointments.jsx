@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { getDataAPI, postDataAPI } from '../../helpers/axiosInstance';
 import { toast } from 'react-toastify';
+import { getLocalStorage } from '../../helpers/storage';
+import { STORAGE } from '../../constants/Storage';
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
@@ -14,9 +16,22 @@ const Appointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const response = await getDataAPI('/api/ambulance/appointments');
+      const user = getLocalStorage(STORAGE.USER_KEY);
+      
+      // Extract profile ID correctly - profile is an object, not a string
+      const profileId = user?.profile?._id;
+      
+      if (!profileId) {
+        toast.error('No ambulance profile found');
+        return;
+      }
+      
+      const response = await getDataAPI(`/ambulance/appointments?profileId=${profileId}`);
+      
       if (response.data.success) {
         setAppointments(response.data.data);
+      } else {
+        toast.error('Failed to load appointments');
       }
     } catch (error) {
       console.error('Error fetching appointments:', error);

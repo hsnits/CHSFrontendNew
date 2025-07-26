@@ -223,6 +223,15 @@ export default function AmbulanceBooking({ type }) {
   };
 
   const handleUpdateAppointment = (uploadedFile) => {
+    const user = getLocalStorage(STORAGE.USER_KEY);
+    // Extract ambulance profile ID correctly - profile is an object, not a string
+    const ambulanceProfileId = user?.profile?._id;
+    
+    if (!ambulanceProfileId) {
+      alert('Ambulance profile not found. Please contact support.');
+      return;
+    }
+    
     const formattedData = {
       ...formData,
       id: getAppointmentId?.appointment_id,
@@ -234,16 +243,13 @@ export default function AmbulanceBooking({ type }) {
       dropLocation: formData.dropLocation,
       patientCondition: formData.patientCondition,
       urgencyLevel: formData.urgencyLevel,
-      ambulanceType: formData.ambulanceType,
       contactPerson: formData.contactPerson,
       contactNumber: formData.contactNumber,
       specialInstructions: formData.specialInstructions,
+      ambulanceType: formData.ambulanceType,
+      // Set refAmbulance to the ambulance profile ID
+      refAmbulance: ambulanceProfileId
     };
-
-    // Set the correct ref field
-    if (type === "ambulance") {
-      formattedData.refAmbulance = data?.refAmbulance?._id || data?.ambulance?._id;
-    }
 
     dispatch(updateAppointment(formattedData)).then((res) => {
       if (res?.meta?.requestStatus === "fulfilled") {

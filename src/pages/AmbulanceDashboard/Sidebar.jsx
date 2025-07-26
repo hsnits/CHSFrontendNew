@@ -5,6 +5,8 @@ import { callPutApi, callGetApi } from "../../_service";
 import { toast } from "react-toastify";
 
 const Sidebar = ({ userData, profileData }) => {
+
+  debugger;
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const activeKey = searchParams.get("key") || "first";
@@ -95,8 +97,9 @@ const Sidebar = ({ userData, profileData }) => {
               </div>
             )}
           </div>
+          
           <h5 className="mb-2">
-            {profileData?.firstName || userData?.name || "Ambulance Driver"}
+            {profileData?.firstName || userData?.name || "Ambulance Driver"}  {profileData?.lastName || ""}
           </h5>
           <p className="text-muted small mb-3">
             {profileData?.displayName || "Emergency Services"}

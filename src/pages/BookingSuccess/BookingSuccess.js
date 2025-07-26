@@ -491,6 +491,60 @@ export default function BookingSuccess() {
                         <p>Yes</p>
                       </div>
                     )}
+
+                    {/* Ambulance-specific fields */}
+                    {type === 'ambulance' && (
+                      <>
+                        {data?.pickupLocation && (
+                          <div className="detail-card">
+                            <h6><MapPin className="icon" />Pickup Location</h6>
+                            <p>{data.pickupLocation}</p>
+                          </div>
+                        )}
+                        {data?.dropLocation && (
+                          <div className="detail-card">
+                            <h6><MapPin className="icon" />Drop Location</h6>
+                            <p>{data.dropLocation}</p>
+                          </div>
+                        )}
+                        {data?.ambulanceType && (
+                          <div className="detail-card">
+                            <h6><FileText className="icon" />Ambulance Type</h6>
+                            <p>{data.ambulanceType}</p>
+                          </div>
+                        )}
+                        {data?.urgencyLevel && (
+                          <div className="detail-card">
+                            <h6><FileText className="icon" />Urgency Level</h6>
+                            <p>{data.urgencyLevel}</p>
+                          </div>
+                        )}
+                        {data?.contactPerson && (
+                          <div className="detail-card">
+                            <h6><User className="icon" />Contact Person</h6>
+                            <p>{data.contactPerson}</p>
+                          </div>
+                        )}
+                        {data?.contactNumber && (
+                          <div className="detail-card">
+                            <h6><User className="icon" />Contact Number</h6>
+                            <p>{data.contactNumber}</p>
+                          </div>
+                        )}
+                        {data?.specialInstructions && (
+                          <div className="detail-card">
+                            <h6><FileText className="icon" />Special Instructions</h6>
+                            <p>{data.specialInstructions}</p>
+                          </div>
+                        )}
+                        {data?.patientCondition && (
+                          <div className="detail-card">
+                            <h6><FileText className="icon" />Patient Condition</h6>
+                            <p>{data.patientCondition}</p>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
 
                   <div className="actions">

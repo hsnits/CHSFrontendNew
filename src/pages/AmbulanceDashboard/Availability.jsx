@@ -115,12 +115,7 @@ const Availability = () => {
   return (
     <div className="availability-container">
       {/* Debug Section - Remove this in production */}
-      <div style={{ background: '#f0f0f0', padding: '10px', margin: '10px 0', borderRadius: '5px', fontSize: '12px' }}>
-        <strong>Debug Info:</strong>
-        <div>isAvailable: {JSON.stringify(availability.isAvailable)}</div>
-        <div>emergencyAvailable: {JSON.stringify(availability.emergencyAvailable)}</div>
-        <div>Full availability object: {JSON.stringify(availability, null, 2)}</div>
-      </div>
+      
 
       <div className="availability-header">
         <h2>Availability Settings</h2>
@@ -131,7 +126,7 @@ const Availability = () => {
         <div className="form-section">
           <h3>General Availability</h3>
           <div className="form-group">
-            <label className="toggle-label">
+            <label className="toggle-label" style={{display: 'flex', alignItems: 'center', gap: 10}}>
               <input
                 type="checkbox"
                 checked={!!availability.isAvailable}
@@ -140,7 +135,7 @@ const Availability = () => {
                   handleToggleChange('isAvailable', e.target.checked);
                 }}
               />
-              <span className="toggle-slider"></span>
+              <span className="toggle-slider1" style={{display:'inline-block!important'}}></span>
               Currently Available for Bookings
             </label>
           </div>
@@ -155,7 +150,7 @@ const Availability = () => {
                   handleToggleChange('emergencyAvailable', e.target.checked);
                 }}
               />
-              <span className="toggle-slider"></span>
+              <span className="toggle-slider1"></span>
               Available for Emergency Calls (24/7)
             </label>
           </div>
@@ -242,30 +237,9 @@ const Availability = () => {
             {saving ? 'Saving...' : 'Save Changes'}
           </button>
           
-          {/* Debug Test Buttons - Remove in production */}
-          <button 
-            type="button"
-            onClick={() => {
-              console.log('Testing API fetch...');
-              fetchAvailability();
-            }}
-            className="btn btn-outline"
-            style={{ marginLeft: '10px' }}
-          >
-            Test Fetch
-          </button>
+         
           
-          <button 
-            type="button"
-            onClick={() => {
-              console.log('Testing toggle isAvailable...');
-              handleToggleChange('isAvailable', !availability.isAvailable);
-            }}
-            className="btn btn-outline"
-            style={{ marginLeft: '10px' }}
-          >
-            Toggle Available
-          </button>
+         
         </div>
       </div>
 
@@ -374,7 +348,7 @@ const Availability = () => {
           display: none;
         }
 
-        .toggle-slider {
+        .toggle-slider1 {
           width: 50px;
           height: 24px;
           background: #ccc;
@@ -382,9 +356,10 @@ const Availability = () => {
           position: relative;
           margin-right: 15px;
           transition: background 0.3s ease;
+          display: inline-block!important;
         }
 
-        .toggle-slider::after {
+        .toggle-slider1::after {
           content: '';
           position: absolute;
           width: 20px;
@@ -396,11 +371,11 @@ const Availability = () => {
           transition: transform 0.3s ease;
         }
 
-        .toggle-label input[type="checkbox"]:checked + .toggle-slider {
+        .toggle-label input[type="checkbox"]:checked + .toggle-slider1 {
           background: #007bff;
         }
 
-        .toggle-label input[type="checkbox"]:checked + .toggle-slider::after {
+        .toggle-label input[type="checkbox"]:checked + .toggle-slider1::after {
           transform: translateX(26px);
         }
 
